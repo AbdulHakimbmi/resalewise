@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="ResaleWise SG — explore historical Singapore HDB resale prices by town, flat type, floor area and remaining lease.">
+    <title>Home · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+        <section class="home-hero">
+            <div class="copy">
+                <div class="kicker">● Singapore resale, made clearer</div>
+                <h1>Find your next home in <em class="town-rotator" data-town-rotator aria-live="polite">Tampines</em></h1>
+                <p>Explore HDB resale records through value, space, remaining lease and town-level price benchmarks—so every shortlisting decision feels more informed.</p>
+                <div style="margin-top:27px"><a class="primary-btn" href="search.html">Start exploring →</a></div>
+            </div>
+            <div class="art">
+                <div class="orb"></div>
+                <div class="float top">
+                    <div class="small-kicker">Market pulse</div><strong>164.3</strong><span>Resale price index<br>Latest available quarter</span></div>
+                <div class="skyline"><span class="building"></span><span class="building"></span><span class="building"></span><span class="building"></span><span class="building"></span><span class="building"></span></div>
+                <div class="float bottom">
+                    <div class="small-kicker">Value match</div><strong>86 / 100</strong><span>Tampines · 4-Room<br>Example comparison score</span></div>
+            </div>
+        </section>
+        <form class="filter-card" id="heroSearch" action="search.html" method="get">
+            <div class="filter-grid">
+                <div class="field"><label for="heroTown">Preferred town</label><select id="heroTown" name="town"><option value="">Any town</option><option>Tampines</option><option>Bedok</option><option>Sengkang</option><option>Punggol</option></select></div>
+                <div class="field"><label for="heroType">Flat type</label><select id="heroType" name="flat_type"><option value="">Any flat type</option><option>3 Room</option><option>4 Room</option><option>5 Room</option></select></div>
+                <div class="field"><label for="heroBudget">Maximum budget</label><input id="heroBudget" name="budget" inputmode="numeric" placeholder="e.g. 600,000"></div>
+                <div class="field"><label for="heroLease">Minimum lease</label><select id="heroLease" name="min_lease"><option value="">Any duration</option><option value="60">60 years</option><option value="70">70 years</option><option value="80">80 years</option></select></div>
+                <div class="field"><label for="heroArea">Minimum area</label><select id="heroArea" name="min_area"><option value="">Any size</option><option value="70">70 sqm</option><option value="90">90 sqm</option><option value="110">110 sqm</option></select></div><button class="search-btn" type="submit">Find matches →</button></div>
+        </form>
+        <section class="town-section" id="townExplorer" data-reveal>
+            <div class="section-head">
+                <div>
+                    <div class="small-kicker">Start with a place</div>
+                    <h2>Explore resale context <em>by town.</em></h2>
+                </div>
+                <p>All towns shown are recognised in the main HDB resale transaction dataset. Select a town to explore historical records, benchmarks and community perspectives.</p>
+            </div>
+            <div class="town-search-row">
+                <p>Drag the carousel, use arrow keys, or jump directly to a town.</p>
+                <div class="town-jump"><label for="townJump">Jump to town</label><select id="townJump"><option value="">Select a town</option><option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option><option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option><option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option><option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option><option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option><option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option><option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option><option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option><option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option></select></div>
+            </div>
+            <div class="coverflow-shell" data-coverflow>
+                <div class="coverflow-stage" tabindex="0" role="region" aria-label="Explore Singapore HDB towns carousel">
+                    <article class="town-slide" data-town="ANG MO KIO" data-caption="Established mature-town context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Ang Mo Kio</h3>
+                            <p>Established mature-town context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BEDOK" data-caption="Mature-estate everyday amenities" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bedok</h3>
+                            <p>Mature-estate everyday amenities</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BISHAN" data-caption="Central-town convenience context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bishan</h3>
+                            <p>Central-town convenience context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BUKIT BATOK" data-caption="West-side residential context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bukit Batok</h3>
+                            <p>West-side residential context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BUKIT MERAH" data-caption="City-fringe resale context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bukit Merah</h3>
+                            <p>City-fringe resale context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BUKIT PANJANG" data-caption="North-west neighbourhood context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bukit Panjang</h3>
+                            <p>North-west neighbourhood context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="BUKIT TIMAH" data-caption="Limited HDB transaction context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Bukit Timah</h3>
+                            <p>Limited HDB transaction context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="CENTRAL AREA" data-caption="Central-area resale context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Central Area</h3>
+                            <p>Central-area resale context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="CHOA CHU KANG" data-caption="West-side family-living context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Choa Chu Kang</h3>
+                            <p>West-side family-living context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="CLEMENTI" data-caption="West-side mature-estate context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Clementi</h3>
+                            <p>West-side mature-estate context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="GEYLANG" data-caption="City-fringe neighbourhood context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Geylang</h3>
+                            <p>City-fringe neighbourhood context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="HOUGANG" data-caption="North-east residential context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Hougang</h3>
+                            <p>North-east residential context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="JURONG EAST" data-caption="Regional-centre living context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Jurong East</h3>
+                            <p>Regional-centre living context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="JURONG WEST" data-caption="West-side value comparison context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Jurong West</h3>
+                            <p>West-side value comparison context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="KALLANG/WHAMPOA" data-caption="Central-fringe estate context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Kallang/Whampoa</h3>
+                            <p>Central-fringe estate context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="MARINE PARADE" data-caption="East-coast mature-estate context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Marine Parade</h3>
+                            <p>East-coast mature-estate context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="PASIR RIS" data-caption="East-side family-living context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Pasir Ris</h3>
+                            <p>East-side family-living context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="PUNGGOL" data-caption="Waterfront and newer-estate context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Punggol</h3>
+                            <p>Waterfront and newer-estate context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="QUEENSTOWN" data-caption="City-fringe mature-estate context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Queenstown</h3>
+                            <p>City-fringe mature-estate context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="SEMBAWANG" data-caption="Northern residential context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Sembawang</h3>
+                            <p>Northern residential context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="SENGKANG" data-caption="North-east family-living context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Sengkang</h3>
+                            <p>North-east family-living context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="SERANGOON" data-caption="Established north-east context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Serangoon</h3>
+                            <p>Established north-east context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="TAMPINES" data-caption="Established east-side convenience" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Tampines</h3>
+                            <p>Established east-side convenience</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="TOA PAYOH" data-caption="Central mature-town living" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Toa Payoh</h3>
+                            <p>Central mature-town living</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="WOODLANDS" data-caption="Northern regional-centre context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Woodlands</h3>
+                            <p>Northern regional-centre context</p>
+                        </div>
+                    </article>
+                    <article class="town-slide" data-town="YISHUN" data-caption="Northern town comparison context" tabindex="-1">
+                        <div class="town-info">
+                            <div class="small-kicker">Explore town</div>
+                            <h3>Yishun</h3>
+                            <p>Northern town comparison context</p>
+                        </div>
+                    </article>
+                </div><button class="coverflow-btn prev" type="button" aria-label="Previous town">←</button><button class="coverflow-btn next" type="button" aria-label="Next town">→</button>
+                <div class="town-caption">
+                    <div data-town-caption><strong>Ang Mo Kio</strong><span>Established mature-town context</span></div>
+                    <div class="dots"><button class="dot active" aria-label="Go to Ang Mo Kio" type="button"></button><button class="dot" aria-label="Go to Bedok" type="button"></button><button class="dot" aria-label="Go to Bishan" type="button"></button><button class="dot"
+                            aria-label="Go to Bukit Batok" type="button"></button><button class="dot" aria-label="Go to Bukit Merah" type="button"></button><button class="dot" aria-label="Go to Bukit Panjang" type="button"></button><button class="dot" aria-label="Go to Bukit Timah"
+                            type="button"></button><button class="dot" aria-label="Go to Central Area" type="button"></button><button class="dot" aria-label="Go to Choa Chu Kang" type="button"></button><button class="dot" aria-label="Go to Clementi" type="button"></button>
+                        <button class="dot" aria-label="Go to Geylang" type="button"></button><button class="dot" aria-label="Go to Hougang" type="button"></button><button class="dot" aria-label="Go to Jurong East" type="button"></button><button class="dot"
+                            aria-label="Go to Jurong West" type="button"></button>
+                        <button class="dot" aria-label="Go to Kallang/Whampoa" type="button"></button><button class="dot" aria-label="Go to Marine Parade" type="button"></button><button class="dot" aria-label="Go to Pasir Ris" type="button"></button>
+                        <button
+                            class="dot" aria-label="Go to Punggol" type="button"></button>
+                            <button class="dot" aria-label="Go to Queenstown" type="button"></button>
+                            <button class="dot" aria-label="Go to Sembawang" type="button"></button><button class="dot" aria-label="Go to Sengkang" type="button"></button><button class="dot" aria-label="Go to Serangoon" type="button"></button>
+                            <button class="dot" aria-label="Go to Tampines" type="button"></button>
+                            <button class="dot" aria-label="Go to Toa Payoh" type="button"></button><button class="dot" aria-label="Go to Woodlands" type="button"></button><button class="dot" aria-label="Go to Yishun" type="button"></button></div>
+                </div>
+            </div>
+        </section>
+        <section class="section" data-reveal>
+            <div class="section-head">
+                <div>
+                    <div class="small-kicker">A more useful shortlisting process</div>
+                    <h2>See the <em>story</em> behind the sale.</h2>
+                </div>
+                <p>ResaleWise turns historical transaction records into clear comparison signals that are easy to understand at a glance.</p>
+            </div>
+            <div class="grid3">
+                <article class="card metric accent" data-reveal>
+                    <div class="label">Town benchmark</div><strong data-count-to="-6.2" data-count-prefix="" data-count-suffix="%" data-count-decimals="1">−6.2%</strong><span>Example: a transaction priced below its town, flat-type and quarter median.</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Space comparison</div><strong data-count-to="96" data-count-suffix=" sqm">96 sqm</strong><span>Compare floor area across similar historical resale records in seconds.</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Records analysed</div><strong data-count-to="985219" data-count-group="1">985,219</strong><span>Official HDB resale transactions powering every benchmark on this site.</span></article>
+            </div>
+        </section>
+
+        <!-- Scrollytelling: sticky visual, steps highlight as you scroll -->
+        <section class="section scrolly" id="howItWorks">
+            <div class="section-head" data-reveal>
+                <div>
+                    <div class="small-kicker">How ResaleWise works</div>
+                    <h2>From a million records to <em>one clear decision.</em></h2>
+                </div>
+                <p>Scroll through the four steps — the panel on the right follows along.</p>
+            </div>
+            <div class="scrolly-grid">
+                <div class="scrolly-steps">
+                    <article class="scrolly-step" data-step="0">
+                        <div class="step-no">01</div>
+                        <h3>Pick a town or flat</h3>
+                        <p>Start from a town, a flat type, a budget — or just browse. Every filter maps to real resale records.</p>
+                    </article>
+                    <article class="scrolly-step" data-step="1">
+                        <div class="step-no">02</div>
+                        <h3>See the market shape</h3>
+                        <p>Live charts show how prices are spread and how size drives value, so you know what "normal" looks like.</p>
+                    </article>
+                    <article class="scrolly-step" data-step="2">
+                        <div class="step-no">03</div>
+                        <h3>Spot the value</h3>
+                        <p>Each flat is scored against the median for its town and type — instantly flagging good deals and premiums.</p>
+                    </article>
+                    <article class="scrolly-step" data-step="3">
+                        <div class="step-no">04</div>
+                        <h3>Shortlist &amp; compare</h3>
+                        <p>Save the flats you like and compare them side by side to make a confident, evidence-based choice.</p>
+                    </article>
+                </div>
+                <div class="scrolly-sticky">
+                    <!-- Step 1: a REAL mini search — type a town and go -->
+                    <div class="scrolly-visual" data-visual="0">
+                        <div class="sv-icon">🔍</div>
+                        <div class="sv-caption"><b>Search &amp; filter</b><span>Type a town to jump straight in</span></div>
+                        <div class="sv-mock sv-search-live">
+                            <input id="scrollySearch" type="text" autocomplete="off" placeholder="Try “Tampines”…" aria-label="Search a town">
+                            <ul class="combo-menu" id="scrollyMenu" role="listbox" hidden></ul>
+                            <button class="dark-btn sv-go" id="scrollyGo" type="button">Search →</button>
+                        </div>
+                    </div>
+                    <!-- Step 2: clickable → insights -->
+                    <a class="scrolly-visual sv-link" data-visual="1" href="insights.html">
+                        <div class="sv-icon">📊</div>
+                        <div class="sv-caption"><b>Understand the market</b><span>Open live market insights →</span></div>
+                        <div class="sv-mock sv-mock-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    </a>
+                    <!-- Step 3: clickable → search (value scores live there) -->
+                    <a class="scrolly-visual sv-link" data-visual="2" href="search.html">
+                        <div class="sv-icon">🎯</div>
+                        <div class="sv-caption"><b>Value scoring</b><span>See value scores in search →</span></div>
+                        <div class="sv-mock sv-mock-score"><span class="sv-badge">12% below median · Great value</span></div>
+                    </a>
+                    <!-- Step 4: clickable → compare -->
+                    <a class="scrolly-visual sv-link" data-visual="3" href="compare.html">
+                        <div class="sv-icon">⚖️</div>
+                        <div class="sv-caption"><b>Compare shortlist</b><span>Open your compare board →</span></div>
+                        <div class="sv-mock sv-mock-compare"><i></i><i></i></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live data band: real numbers, animated in on scroll -->
+        <section class="section live-band" data-reveal>
+            <div class="live-inner">
+                <div class="small-kicker">Backed by real data</div>
+                <h2>Real numbers, <em>right now.</em></h2>
+                <div class="live-stats" id="liveStats">
+                    <div class="live-stat"><strong id="lsRecords">—</strong><span>Resale records analysed</span></div>
+                    <div class="live-stat"><strong id="lsTowns">—</strong><span>Towns covered</span></div>
+                    <div class="live-stat"><strong id="lsMedian">—</strong><span>Median 4-Room price (recent)</span></div>
+                    <div class="live-stat"><strong id="lsTypes">—</strong><span>Flat types tracked</span></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/mist-background.js"></script>
+        <script src="assets/js/town-coverflow.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+    </main>
+</body>
+
+</html>

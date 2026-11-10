@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="ResaleWise SG — explore Singapore HDB resale price trends and town-by-town medians by flat type and time window.">
+    <title>Market Insights · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+        <section class="page-hero">
+            <div class="kicker">Market insight dashboard</div>
+            <h1>Explore the <em>market.</em></h1>
+            <p>Pick a flat type, town and time window to see live medians, price-per-sqm and quarterly trends — computed on demand from nearly a million HDB resale transactions.</p>
+        </section>
+
+        <!-- Interactive controls -->
+        <form class="filter-card" id="insightControls">
+            <div class="filter-grid">
+                <div class="field"><label for="iFlatType">Flat type</label><select id="iFlatType"></select></div>
+                <div class="field"><label for="iTown">Town focus</label><select id="iTown"><option value="">All towns</option></select></div>
+                <div class="field"><label for="iMonths">Time window</label><select id="iMonths">
+                    <option value="12">Last 12 months</option>
+                    <option value="24" selected>Last 24 months</option>
+                    <option value="36">Last 36 months</option>
+                    <option value="60">Last 60 months</option>
+                    <option value="120">Last 10 years</option>
+                </select></div>
+                <button class="search-btn" type="submit">Update insights →</button>
+            </div>
+        </form>
+
+        <section class="section" style="padding-top:26px">
+            <!-- Headline stat cards -->
+            <div class="grid3">
+                <article class="card metric accent" data-reveal>
+                    <div class="label" id="cMedianLabel">Median resale price</div><strong id="cMedian">–</strong><span id="cMedianSub">Loading…</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Median price / sqm</div><strong id="cPsm">–</strong><span id="cPsmSub">Per-square-metre benchmark for the selection.</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Transactions in window</div><strong id="cCount">–</strong><span id="cCountSub">Matching records used for these numbers.</span></article>
+            </div>
+
+            <!-- Cheapest / priciest hint -->
+            <div class="card" id="extremesCard" style="margin-top:14px;padding:18px 22px">
+                <div class="notice" id="extremesText">Finding the most and least expensive towns…</div>
+            </div>
+
+            <!-- Charts -->
+            <div class="dash" style="margin-top:18px">
+                <article class="card chart-card" data-reveal>
+                    <h3 id="trendTitle">Resale price trend</h3>
+                    <p id="trendSub">Quarterly median resale price.</p>
+                    <div class="line-chart">
+                        <svg id="trendChart" viewBox="0 0 700 260" preserveAspectRatio="none"></svg>
+                        <div class="chart-tip" id="chartTip" hidden></div>
+                    </div>
+                    <div class="legend"><span><i></i><span id="legendLabel">Median resale price</span></span><span id="trendDelta" class="trend-delta"></span></div>
+                </article>
+                <article class="card chart-card" data-reveal>
+                    <h3>Town median comparison</h3>
+                    <p id="townCompSub">Median resale price by town. Click a bar to focus that town.</p>
+                    <div class="town-list" id="townList"><div class="notice">Loading…</div></div>
+                </article>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/mist-background.js"></script>
+        <script src="assets/js/town-coverflow.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script>
+        (async function () {
+          const $ = id => document.getElementById(id);
+          const flatSel  = $("iFlatType"), townSel = $("iTown"), monthsSel = $("iMonths");
+          const trendSvg = $("trendChart"), chartTip = $("chartTip");
+          const townListEl = $("townList");
+
+          const fmtMoney = n => "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
+          const fmtShort = n => "$" + (Math.round(Number(n) / 1000)).toLocaleString("en-SG") + "k";
+          const fmtQ = iso => {
+            const d = new Date(iso);
+            return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear();
+          };
+
+          // ---- Populate controls (shared helpers, DB-driven) ----
+          await Promise.all([
+            populateFlatTypes(flatSel, { includeAny: false }),
+            populateTowns(townSel, { includeAny: true, anyLabel: "All towns" })
+          ]);
+          // Default to 4 Room if present.
+          for (const o of flatSel.options) {
+            if (o.textContent.trim().toUpperCase() === "4 ROOM") { flatSel.value = o.value; break; }
+          }
+
+          // ---- Summary cards ----
+          function renderSummary(data) {
+            const s = data.summary || {};
+            const town = data.town ? titleCase(data.town) : "all towns";
+            $("cMedianLabel").textContent = "Median · " + town;
+            $("cMedian").textContent = s.median_price ? fmtMoney(s.median_price) : "No data";
+            $("cMedianSub").textContent = s.median_price
+              ? `Range ${fmtShort(s.min_price)}–${fmtShort(s.max_price)} · ~${s.avg_area} sqm avg`
+              : "No transactions in this window.";
+            $("cPsm").textContent = s.median_psm ? fmtMoney(s.median_psm) : "–";
+            $("cCount").textContent = (s.txn_count || 0).toLocaleString("en-SG");
+
+            const ex = data.extremes || {};
+            if (ex.cheapest_town && ex.priciest_town) {
+              $("extremesText").innerHTML =
+                `For <b>${titleCase(data.flat_type)}</b> in this window, the most affordable town is ` +
+                `<b>${titleCase(ex.cheapest_town)}</b> (median ${fmtMoney(ex.cheapest_price)}) and the ` +
+                `priciest is <b>${titleCase(ex.priciest_town)}</b> (median ${fmtMoney(ex.priciest_price)}).`;
+            } else {
+              $("extremesText").textContent = "Not enough data across towns for this selection.";
+            }
+          }
+
+          // ---- Town comparison bars (clickable) ----
+          function renderTowns(rows, focusTown) {
+            if (!rows.length) { townListEl.innerHTML = '<div class="notice">No town has ≥5 transactions in this window.</div>'; return; }
+            const max = Math.max(...rows.map(r => r.median_price));
+            townListEl.innerHTML = rows.map(r => {
+              const on = focusTown && r.town_name === focusTown ? " focus" : "";
+              return `
+                <button class="town-row town-row-btn${on}" data-town="${r.town_name}" type="button" title="${r.txn_count} transactions">
+                  <span>${titleCase(r.town_name)}</span>
+                  <div class="bar"><i style="width:${Math.round(r.median_price / max * 100)}%"></i></div>
+                  <b>${fmtShort(r.median_price)}</b>
+                </button>`;
+            }).join("");
+            townListEl.querySelectorAll(".town-row-btn").forEach(btn => {
+              btn.addEventListener("click", () => {
+                // Focus this town in the controls + reload.
+                for (const o of townSel.options) {
+                  if (o.textContent.trim().toUpperCase() === btn.dataset.town.toUpperCase()) { townSel.value = o.value; break; }
+                }
+                update();
+              });
+            });
+          }
+
+          // ---- Trend line chart with hover tooltip ----
+          let trendPoints = [];
+          function renderTrend(rows) {
+            trendPoints = [];
+            if (!rows.length) { trendSvg.innerHTML = ''; $("trendDelta").textContent = ""; return; }
+            const W = 700, H = 260, padL = 20, padR = 20, padT = 20, padB = 30;
+            const xs = rows.map((_, i) => padL + i * (W - padL - padR) / Math.max(rows.length - 1, 1));
+            const ys = rows.map(r => r.median_price);
+            const yMin = Math.min(...ys), yMax = Math.max(...ys);
+            const yPx = v => padT + (1 - (v - yMin) / Math.max(yMax - yMin, 1)) * (H - padT - padB);
+
+            const linePts = rows.map((r, i) => `${xs[i]},${yPx(r.median_price)}`).join(" ");
+            const areaPts = `${padL},${H - padB} ${linePts} ${xs[xs.length - 1]},${H - padB}`;
+
+            let dots = "";
+            rows.forEach((r, i) => {
+              trendPoints.push({ x: xs[i], y: yPx(r.median_price), q: r.quarter, price: r.median_price, n: r.txn_count });
+              dots += `<circle cx="${xs[i]}" cy="${yPx(r.median_price)}" r="4" fill="#d1f56a" opacity="0.9"/>`;
+            });
+
+            trendSvg.innerHTML = `
+              <path d="M${linePts.replace(/ /g, " L")}" fill="none" stroke="#7cddb4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M${areaPts.replace(/ /g, " L")}" fill="rgba(209,245,106,.16)" stroke="none"/>
+              ${dots}`;
+
+            // Change over the window
+            const first = rows[0].median_price, last = rows[rows.length - 1].median_price;
+            const pct = ((last - first) / first) * 100;
+            const arrow = pct >= 0 ? "▲" : "▼";
+            $("trendDelta").textContent = `${arrow} ${Math.abs(pct).toFixed(1)}% over window`;
+            $("trendDelta").className = "trend-delta " + (pct >= 0 ? "up" : "down");
+          }
+
+          // Hover tooltip on the chart
+          const chartWrap = trendSvg.parentElement;
+          chartWrap.addEventListener("mousemove", e => {
+            if (!trendPoints.length) return;
+            const rect = trendSvg.getBoundingClientRect();
+            const relX = (e.clientX - rect.left) / rect.width * 700;
+            let nearest = trendPoints[0], best = Infinity;
+            for (const p of trendPoints) {
+              const d = Math.abs(p.x - relX);
+              if (d < best) { best = d; nearest = p; }
+            }
+            const px = (nearest.x / 700) * rect.width;
+            const py = (nearest.y / 260) * rect.height;
+            chartTip.hidden = false;
+            chartTip.style.left = px + "px";
+            chartTip.style.top = py + "px";
+            chartTip.innerHTML = `<b>${fmtQ(nearest.q)}</b>${fmtMoney(nearest.price)}<span>${nearest.n} txns</span>`;
+          });
+          chartWrap.addEventListener("mouseleave", () => { chartTip.hidden = true; });
+
+          // ---- Load everything for the current selection ----
+          async function update() {
+            const flat_type = flatSel.value;
+            const town = townSel.value || "";
+            const months = monthsSel.value;
+
+            $("trendTitle").textContent = `Resale price trend · ${flat_type}` + (town ? ` · ${town}` : "");
+            $("trendSub").textContent = `Quarterly median resale price, ${town || "all towns"}, last ${months} months of data.`;
+            $("townCompSub").textContent = `Median ${flat_type} price by town. Click a bar to focus that town.`;
+            $("legendLabel").textContent = `Median ${flat_type} price`;
+            townListEl.innerHTML = '<div class="notice">Loading…</div>';
+
+            try {
+              const params = { flat_type, months };
+              if (town) params.town = town;
+              const [summary, medians, trend] = await Promise.all([
+                apiGet("/api/insights/summary", params),
+                apiGet("/api/insights/town-medians", { flat_type, months }),
+                apiGet("/api/insights/trend", params)
+              ]);
+              renderSummary(summary);
+              renderTowns(medians.rows, town || null);
+              renderTrend(trend.rows);
+            } catch (e) {
+              townListEl.innerHTML = `<div class="notice">Could not load insights: ${e.message}. Is the API running on port 5000?</div>`;
+              $("cMedian").textContent = "Error";
+            }
+          }
+
+          $("insightControls").addEventListener("submit", ev => { ev.preventDefault(); update(); });
+          // Live-update when any control changes (no need to press the button).
+          [flatSel, townSel, monthsSel].forEach(el => el.addEventListener("change", update));
+
+          update();
+        })();
+        </script>
+    </main>
+</body>
+
+</html>

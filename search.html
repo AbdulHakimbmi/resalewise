@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="ResaleWise SG — search historical Singapore HDB resale transactions with charts and value scoring.">
+    <title>Find a Flat · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+        <section class="page-hero">
+            <div class="kicker">Resale record explorer</div>
+            <h1>Find comparable <em>transactions.</em></h1>
+            <p>Use the filters to explore historical HDB resale records. Results are drawn live from official transaction data and update as you refine your criteria.</p>
+        </section>
+        <form class="filter-card">
+            <div class="filter-grid">
+                <div class="field town-combo" id="townCombo">
+                    <label for="townInput">Town</label>
+                    <input id="townInput" type="text" autocomplete="off" placeholder="Type or pick a town…" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="townMenu">
+                    <input type="hidden" id="townValue">
+                    <ul class="combo-menu" id="townMenu" role="listbox" hidden></ul>
+                </div>
+                <div class="field"><label for="typeSel">Flat type</label><select id="typeSel"><option>Any flat type</option><option>4 Room</option><option>3 Room</option><option>5 Room</option></select></div>
+                <div class="field"><label for="budgetInput">Budget</label><input id="budgetInput" inputmode="numeric" placeholder="Up to $600,000"></div>
+                <div class="field"><label for="leaseSel">Minimum lease</label><select id="leaseSel"><option value="">Any lease</option><option value="60">60 years</option><option value="70">70 years</option><option value="80">80 years</option></select></div>
+                <div class="field"><label for="areaSel">Minimum area</label><select id="areaSel"><option value="">Any size</option><option value="70">70 sqm</option><option value="90">90 sqm</option><option value="110">110 sqm</option></select></div><button class="search-btn" type="submit">Apply filters →</button></div>
+        </form>
+        <section class="section">
+            <div class="results-layout">
+                <aside class="card side-filter">
+                    <h3>Refine results</h3>
+                    <p class="side-hint">Narrow the results further — updates instantly.</p>
+                    <div class="filter-group"><label for="fMinArea">Floor area (sqm)</label>
+                        <div class="range"><input id="fMinArea" inputmode="numeric" placeholder="Min"><input id="fMaxArea" inputmode="numeric" placeholder="Max"></div>
+                    </div>
+                    <div class="filter-group"><label for="fStorey">Storey range</label><select id="fStorey">
+                        <option value="">Any storey</option>
+                        <option value="1-3">01–03 (low)</option>
+                        <option value="4-6">04–06</option>
+                        <option value="7-9">07–09</option>
+                        <option value="10-12">10–12</option>
+                        <option value="13-">13 and above (high)</option>
+                    </select></div>
+                    <div class="filter-group"><label for="fModel">Flat model</label><select id="fModel"><option value="">Any model</option></select></div>
+                    <button class="dark-btn" style="width:100%;margin-bottom:8px" id="applyRefine" type="button">Apply refinements →</button>
+                    <button class="ghost-btn" style="width:100%" id="resetFilters" type="button">Reset all filters</button></aside>
+                <div>
+                    <div class="result-toolbar">
+                        <div><strong id="resultCount">Loading…</strong><br><span id="resultSub">Historical HDB resale transactions</span></div>
+                        <button class="ghost-btn" data-toast="Sorted by most recent transaction.">Sort: Most recent ↓</button>
+                    </div>
+
+                    <!-- Analytics for the current filter set -->
+                    <div class="dash search-charts" id="searchCharts" hidden>
+                        <article class="card chart-card">
+                            <h3>How much do these flats sell for?</h3>
+                            <p id="histSub">Number of matching flats in each price range.</p>
+                            <div class="chart-body">
+                                <div class="y-axis-label">No. of flats</div>
+                                <div class="bar-chart" id="histChart"></div>
+                            </div>
+                            <div class="x-axis-label">Resale price →</div>
+                            <div class="chart-insight" id="histInsight"></div>
+                        </article>
+                        <article class="card chart-card">
+                            <h3>Do bigger flats cost more?</h3>
+                            <p id="scatterSub">Each dot is one sold flat: its size vs its price.</p>
+                            <div class="chart-body">
+                                <div class="y-axis-label">Price →</div>
+                                <div class="scatter-wrap"><svg id="scatterChart" viewBox="0 0 340 220" preserveAspectRatio="none"></svg></div>
+                            </div>
+                            <div class="x-axis-label">Floor area (sqm) →</div>
+                            <div class="chart-insight" id="scatterInsight"></div>
+                        </article>
+                    </div>
+
+                    <div class="result-list" id="resultList"></div>
+                    <div class="load-more-row" id="loadMoreRow" hidden>
+                        <button class="ghost-btn" id="loadMoreBtn" type="button">Load more results ↓</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="footer">
+            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/mist-background.js"></script>
+        <script src="assets/js/town-coverflow.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script>
+        (async function () {
+          const form   = document.querySelector(".filter-card");
+          const listEl = document.getElementById("resultList");
+          const cntEl  = document.getElementById("resultCount");
+
+          // Explicit control references (robust to DOM order changes).
+          const typeSel     = document.getElementById("typeSel");
+          const budgetInput = document.getElementById("budgetInput");
+          const leaseSel    = document.getElementById("leaseSel");
+          const areaSel     = document.getElementById("areaSel");
+          // Town combobox
+          const townInput   = document.getElementById("townInput");
+          const townValue   = document.getElementById("townValue");
+          const townMenu    = document.getElementById("townMenu");
+
+          function fmtMoney(n) {
+            return "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
+          }
+            function fmtMonth(iso) {
+                const s = String(iso);
+                const d = new Date(s.length === 7 ? s + "-01" : s);
+                return d.toLocaleString("en-SG", { month: "short", year: "numeric" });
+            }
+          function leaseYears(m) { return Math.floor((m || 0) / 12); }
+
+          const subEl      = document.getElementById("resultSub");
+          const loadMoreRow = document.getElementById("loadMoreRow");
+          const loadMoreBtn = document.getElementById("loadMoreBtn");
+          const PAGE_SIZE   = 30;
+
+          // Pagination state for the CURRENT filter set.
+          let state = { offset: 0, total: 0, loading: false, median: null };
+
+          // Value score: how a price compares to the median of the current
+          // result set. Below median = better value.
+          function valueBadge(price) {
+            if (!state.median) return "";
+            const pct = ((price - state.median) / state.median) * 100;
+            let cls, label;
+            if (pct <= -8)      { cls = "vgood";  label = `${Math.abs(pct).toFixed(0)}% below median · Great value`; }
+            else if (pct < -2)  { cls = "good";   label = `${Math.abs(pct).toFixed(0)}% below median · Good value`; }
+            else if (pct <= 2)  { cls = "fair";   label = `Around the median price`; }
+            else if (pct <= 8)  { cls = "high";   label = `${pct.toFixed(0)}% above median`; }
+            else                { cls = "vhigh";  label = `${pct.toFixed(0)}% above median · Premium`; }
+            return `<span class="value-badge ${cls}">${label}</span>`;
+          }
+
+          function cardHtml(r) {
+            return `
+              <article class="card transaction">
+                <div>
+                  <div class="type">${r.flat_type_name} · ${r.town_name}</div>
+                  <h3>${r.block_no} ${r.street_name}</h3>
+                  <p>Historical transaction · ${fmtMonth(r.month)} · Storey ${String(r.storey_low).padStart(2,"0")} to ${String(r.storey_high).padStart(2,"0")}</p>
+                  ${valueBadge(r.resale_price)}
+                </div>
+                <div class="details">
+                  <div><b>${Math.round(r.floor_area_sqm)} sqm</b>Floor area</div>
+                  <div><b>${leaseYears(r.remaining_lease_months)} years</b>Lease remaining</div>
+                  <div><b>${r.flat_model_name}</b>Flat model</div>
+                </div>
+                <div class="price">
+                  <strong>${fmtMoney(r.resale_price)}</strong>
+                  <br>
+                  <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${r.txn_id}">View details →</a>
+                </div>
+              </article>`;
+          }
+
+          // Side-panel refine controls (read by id, not index).
+          const fMinArea = document.getElementById("fMinArea");
+          const fMaxArea = document.getElementById("fMaxArea");
+          const fStorey  = document.getElementById("fStorey");
+          const fModel   = document.getElementById("fModel");
+
+          function currentParams() {
+            // "Any …" options have empty values, so they contribute no filter
+            // and the backend returns the varied (non-clustered) result mix.
+            const p = {
+              town:      townValue?.value || "",
+              flat_type: typeSel?.value,
+              budget:    (budgetInput?.value || "").replace(/[^0-9]/g, ""),
+              min_lease: (leaseSel?.value || "").replace(/[^0-9]/g, ""),
+              min_area:  (areaSel?.value || "").replace(/[^0-9.]/g, ""),
+            };
+            // Side-panel refinements
+            const sideMin = (fMinArea?.value || "").replace(/[^0-9.]/g, "");
+            const sideMax = (fMaxArea?.value || "").replace(/[^0-9.]/g, "");
+            if (sideMin) p.min_area = sideMin;   // side panel overrides the top min-area
+            if (sideMax) p.max_area = sideMax;
+            if (fStorey?.value) p.storey = fStorey.value;
+            if (fModel?.value)  p.flat_model = fModel.value;
+            return p;
+          }
+
+          function updateToolbar() {
+            const shown = listEl.children.length;
+            const total = state.total.toLocaleString("en-SG");
+            if (state.total === 0) {
+              cntEl.textContent = "No matches";
+              subEl.textContent = "Try widening your filters";
+            } else {
+              cntEl.textContent = shown.toLocaleString("en-SG") + " of " + total;
+              subEl.textContent = "matching resale transactions";
+            }
+          }
+
+          // ---- Charts for the current filter set ----
+          const chartsWrap = document.getElementById("searchCharts");
+          const histEl     = document.getElementById("histChart");
+          const scatterSvg = document.getElementById("scatterChart");
+
+          const shortK = n => "$" + Math.round(Number(n) / 1000) + "k";
+
+          function renderHistogram(buckets, median) {
+            if (!buckets || !buckets.length) { histEl.innerHTML = ""; return; }
+            const max = Math.max(...buckets.map(b => b.count), 1);
+            histEl.innerHTML = buckets.map(b => {
+              const h = Math.round(b.count / max * 100);
+              // Mark the bucket the median falls into.
+              const isMedian = median != null && median >= b.low && median < b.high;
+              return `<div class="hist-col${isMedian ? ' is-median' : ''}"
+                           title="${b.count.toLocaleString()} flats sold between ${shortK(b.low)} and ${shortK(b.high)}">
+                        <div class="hist-bar" style="height:${Math.max(h,1)}%"></div>
+                        <span>${shortK(b.low)}</span>
+                      </div>`;
+            }).join("");
+          }
+
+          function renderScatter(points, median) {
+            if (!points || !points.length) { scatterSvg.innerHTML = ""; return; }
+            const W = 340, H = 220, padL = 34, padR = 8, padT = 12, padB = 26;
+            const areas = points.map(p => p.area), prices = points.map(p => p.price);
+            const aMin = Math.min(...areas), aMax = Math.max(...areas);
+            const pMin = Math.min(...prices), pMax = Math.max(...prices);
+            const x = a => padL + (a - aMin) / Math.max(aMax - aMin, 1) * (W - padL - padR);
+            const y = p => padT + (1 - (p - pMin) / Math.max(pMax - pMin, 1)) * (H - padT - padB);
+
+            // Axis ticks (min/mid/max) for both axes
+            const aMid = Math.round((aMin + aMax) / 2), pMid = Math.round((pMin + pMax) / 2);
+            const axis = `
+              <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>
+              <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>
+              <text x="${padL-4}" y="${y(pMax)+3}" text-anchor="end" class="axis-tick">${shortK(pMax)}</text>
+              <text x="${padL-4}" y="${y(pMin)}" text-anchor="end" class="axis-tick">${shortK(pMin)}</text>
+              <text x="${x(aMin)}" y="${H-padB+12}" text-anchor="middle" class="axis-tick">${aMin}</text>
+              <text x="${x(aMid)}" y="${H-padB+12}" text-anchor="middle" class="axis-tick">${aMid}</text>
+              <text x="${x(aMax)}" y="${H-padB+12}" text-anchor="middle" class="axis-tick">${aMax}</text>`;
+
+            const dots = points.map(p =>
+              `<circle cx="${x(p.area).toFixed(1)}" cy="${y(p.price).toFixed(1)}" r="2.3" fill="var(--forest)" opacity="0.5"/>`
+            ).join("");
+            let medLine = "";
+            if (median) {
+              const my = y(median).toFixed(1);
+              medLine = `<line x1="${padL}" y1="${my}" x2="${W-padR}" y2="${my}" stroke="var(--lime)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                         <text x="${W-padR}" y="${(+my)-4}" text-anchor="end" class="axis-tick" fill="var(--lime)">median ${shortK(median)}</text>`;
+            }
+            scatterSvg.innerHTML = axis + dots + medLine;
+          }
+
+          // Build a human scope label from the active filters, e.g.
+          // "4 Room flats in Tampines" or "all flats across every town".
+          function scopeLabel(p) {
+            const town = p.town ? titleCase(p.town) : null;
+            const type = p.flat_type ? titleCase(p.flat_type) + " flats" : "flats";
+            if (town) return `${type} in ${town}`;
+            return `${type} across all of Singapore`;
+          }
+          function isFiltered(p) {
+            return !!(p.town || p.flat_type || p.flat_model || p.budget ||
+                      p.min_lease || p.min_area || p.max_area || p.storey);
+          }
+
+          function renderCharts(stats, params) {
+            if (!stats || !stats.n) { chartsWrap.hidden = true; return; }
+            chartsWrap.hidden = false;
+
+            const scope = scopeLabel(params);
+            const filtered = isFiltered(params);
+            const prompt = filtered ? "" :
+              ` <span class="chart-prompt">Pick a town or use the filters above to sharpen this.</span>`;
+
+            // Histogram
+            document.getElementById("histSub").textContent =
+              `${stats.n.toLocaleString("en-SG")} ${scope} · half sold below ${fmtMoney(stats.median_price)}`;
+            const buckets = stats.buckets || [];
+            let peak = buckets[0] || null;
+            buckets.forEach(b => { if (peak && b.count > peak.count) peak = b; });
+            const histInsight = document.getElementById("histInsight");
+            if (peak && peak.count) {
+              histInsight.innerHTML =
+                `💡 Most ${scope} sold for <b>${shortK(peak.low)}–${shortK(peak.high)}</b>. ` +
+                `The highlighted bar marks the median (${fmtMoney(stats.median_price)}).` + prompt;
+            } else { histInsight.textContent = ""; }
+
+            // Scatter
+            document.getElementById("scatterSub").textContent =
+              `Median ${fmtMoney(stats.median_psm)} per sqm · ${scope}.`;
+            document.getElementById("scatterInsight").innerHTML =
+              `💡 Each dot is one sold flat (${scope}). Dots rising to the right mean larger flats cost more; ` +
+              `the dashed line is the median price — dots below it are relatively better value.` + prompt;
+
+            renderHistogram(stats.buckets, stats.median_price);
+            renderScatter(stats.scatter, stats.median_price);
+          }
+
+          async function loadStats() {
+            const params = currentParams();
+            try {
+              const stats = await apiGet("/api/search-stats", params);
+              state.median = stats.median_price || null;
+              renderCharts(stats, params);
+            } catch (e) {
+              chartsWrap.hidden = true;
+              state.median = null;
+            }
+          }
+
+          // fresh = true clears the list and resets pagination (new search).
+          // fresh = false appends the next page (Load more).
+          async function load(fresh) {
+            if (state.loading) return;
+            state.loading = true;
+
+            if (fresh) {
+              state.offset = 0;
+              listEl.innerHTML = "";
+              cntEl.textContent = "Loading…";
+              subEl.textContent = "Searching…";
+              loadMoreRow.hidden = true;
+              // Fetch stats first so the median is ready for value badges + charts.
+              await loadStats();
+            } else {
+              loadMoreBtn.textContent = "Loading…";
+              loadMoreBtn.disabled = true;
+            }
+
+            const params = Object.assign(currentParams(), {
+              limit: PAGE_SIZE,
+              offset: state.offset
+            });
+
+            try {
+              const data = await apiGet("/api/search", params);
+              const rows = data.rows || [];
+              state.total = data.total || 0;
+
+              if (fresh && rows.length === 0) {
+                listEl.innerHTML =
+                  '<article class="card transaction"><div><h3>No matching transactions</h3><p>Try widening your filters.</p></div></article>';
+              } else {
+                listEl.insertAdjacentHTML("beforeend", rows.map(cardHtml).join(""));
+              }
+
+              state.offset += rows.length;
+              updateToolbar();
+
+              loadMoreRow.hidden = !data.has_more;
+              loadMoreBtn.textContent = "Load more results ↓";
+              loadMoreBtn.disabled = false;
+            } catch (e) {
+              if (fresh) {
+                cntEl.textContent = "Error";
+                subEl.textContent = "";
+                listEl.innerHTML =
+                  `<article class="card transaction"><div><h3>Could not load results</h3><p>${e.message}</p></div></article>`;
+              } else {
+                loadMoreBtn.textContent = "Retry ↓";
+                loadMoreBtn.disabled = false;
+              }
+            } finally {
+              state.loading = false;
+            }
+          }
+
+          function run() { load(true); }
+          loadMoreBtn.addEventListener("click", () => load(false));
+
+          const resetBtn = document.getElementById("resetFilters");
+          if (resetBtn) resetBtn.addEventListener("click", () => {
+            if (townInput) townInput.value = "";
+            if (townValue) townValue.value = "";
+            if (typeSel)   typeSel.selectedIndex = 0;
+            if (budgetInput) budgetInput.value = "";
+            if (leaseSel)  leaseSel.selectedIndex = 0;
+            if (areaSel)   areaSel.selectedIndex = 0;
+            if (fMinArea) fMinArea.value = "";
+            if (fMaxArea) fMaxArea.value = "";
+            if (fStorey)  fStorey.selectedIndex = 0;
+            if (fModel)   fModel.selectedIndex = 0;
+            run();
+          });
+
+          // "Apply refinements" re-runs the search with the side-panel filters.
+          const applyBtn = document.getElementById("applyRefine");
+          if (applyBtn) applyBtn.addEventListener("click", run);
+
+          // Top filters apply on change; budget on Enter/blur.
+          [typeSel, leaseSel, areaSel].forEach(el => el && el.addEventListener("change", run));
+          if (budgetInput) {
+            budgetInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
+            budgetInput.addEventListener("blur", run);
+          }
+          // Side-panel: storey/model on change, area on Enter.
+          [fStorey, fModel].forEach(el => el && el.addEventListener("change", run));
+          [fMinArea, fMaxArea].forEach(el => el && el.addEventListener("keydown", e => {
+            if (e.key === "Enter") { e.preventDefault(); run(); }
+          }));
+
+          // Populate the Town and Flat type dropdowns with the FULL list from
+          // the database (shared helper in api.js), so every town is selectable.
+          // Both include an "Any" option selected by default — so a fresh page
+          // load sends NO filters, which triggers the varied (non-clustered)
+          // result ordering on the backend instead of defaulting to one town.
+          async function populateOptions() {
+            await Promise.all([
+              populateFlatTypes(typeSel, { includeAny: true, anyLabel: "Any flat type" }),
+              populateFlatModels(fModel, { includeAny: true, anyLabel: "Any model" }),
+              setupTownCombo()
+            ]);
+          }
+
+          // ---- Town combobox: type to filter, click/Enter to pick ----
+          let townList = [];      // Title-cased town names
+          let comboActive = -1;   // highlighted suggestion index
+
+          async function setupTownCombo() {
+            try {
+              const data = await getOptions();
+              townList = (data.towns || []).map(t => titleCase(t));
+            } catch (e) {
+              townList = [];
+            }
+            if (!townInput) return;
+
+            function openMenu(items) {
+              if (!items.length) { closeMenu(); return; }
+              townMenu.innerHTML = items.map((name, i) =>
+                `<li role="option" class="combo-item${i === comboActive ? ' active' : ''}" data-name="${name}">${name}</li>`
+              ).join("");
+              townMenu.hidden = false;
+              townInput.setAttribute("aria-expanded", "true");
+            }
+            function closeMenu() {
+              townMenu.hidden = true;
+              townMenu.innerHTML = "";
+              comboActive = -1;
+              townInput.setAttribute("aria-expanded", "false");
+            }
+            function filtered() {
+              const q = townInput.value.trim().toLowerCase();
+              const base = q ? townList.filter(n => n.toLowerCase().includes(q)) : townList.slice();
+              return base.slice(0, 8);
+            }
+            function pick(name) {
+              townInput.value = name;
+              townValue.value = name ? name.toUpperCase() : "";
+              closeMenu();
+              run();
+            }
+
+            townInput.addEventListener("input", () => {
+              // Typing clears any previously committed town until re-picked.
+              townValue.value = "";
+              comboActive = -1;
+              openMenu(filtered());
+            });
+            townInput.addEventListener("focus", () => openMenu(filtered()));
+            townInput.addEventListener("keydown", e => {
+              const items = [...townMenu.querySelectorAll(".combo-item")];
+              if (e.key === "ArrowDown") { e.preventDefault(); comboActive = Math.min(comboActive + 1, items.length - 1); openMenu(filtered()); }
+              else if (e.key === "ArrowUp") { e.preventDefault(); comboActive = Math.max(comboActive - 1, 0); openMenu(filtered()); }
+              else if (e.key === "Enter") {
+                e.preventDefault();
+                const items2 = filtered();
+                if (comboActive >= 0 && items2[comboActive]) pick(items2[comboActive]);
+                else if (items2.length === 1) pick(items2[0]);
+                else if (townInput.value.trim() === "") pick("");   // cleared → any town
+                else { const exact = townList.find(n => n.toLowerCase() === townInput.value.trim().toLowerCase()); if (exact) pick(exact); }
+              } else if (e.key === "Escape") { closeMenu(); }
+            });
+            townMenu.addEventListener("mousedown", e => {
+              const li = e.target.closest(".combo-item");
+              if (li) { e.preventDefault(); pick(li.dataset.name); }
+            });
+            // Click outside closes; if the text doesn't match a town, clear it.
+            document.addEventListener("click", e => {
+              if (!e.target.closest("#townCombo")) {
+                if (townInput.value.trim() && !townValue.value) {
+                  const exact = townList.find(n => n.toLowerCase() === townInput.value.trim().toLowerCase());
+                  if (exact) { townValue.value = exact.toUpperCase(); townInput.value = exact; }
+                  else { townInput.value = ""; }   // unmatched text → treat as Any town
+                }
+                closeMenu();
+              }
+            });
+          }
+
+          // Pre-fill the filter form from URL params (e.g. arriving from the
+          // homepage hero search: search.html?town=TAMPINES&flat_type=4+ROOM...).
+          function hydrateFromUrl() {
+            const qp = new URLSearchParams(location.search);
+            if (![...qp.keys()].length) return;
+
+            function setSelect(sel, wanted, { numeric = false } = {}) {
+              if (!sel || wanted == null || wanted === "") return;
+              const want = String(wanted).trim().toUpperCase();
+              for (const opt of sel.options) {
+                const optVal = numeric
+                  ? opt.value.replace(/[^0-9]/g, "")
+                  : opt.textContent.trim().toUpperCase();
+                if (optVal === (numeric ? String(wanted).replace(/[^0-9]/g, "") : want)) {
+                  sel.value = opt.value;
+                  return;
+                }
+              }
+            }
+
+            // Town: set both the visible input and the hidden value.
+            const t = qp.get("town");
+            if (t && townInput && townValue) {
+              townInput.value = titleCase(t);
+              townValue.value = t.toUpperCase();
+            }
+            setSelect(typeSel, qp.get("flat_type"));                  // Flat type
+            if (qp.get("budget") && budgetInput) budgetInput.value = qp.get("budget");
+            setSelect(leaseSel, qp.get("min_lease"), { numeric: true }); // Min lease
+            setSelect(areaSel,  qp.get("min_area"), { numeric: true });  // Min area
+          }
+
+          form.addEventListener("submit", ev => { ev.preventDefault(); run(); });
+
+          // Load the full town/flat-type lists first, THEN honor URL params,
+          // THEN run the initial search.
+          await populateOptions();
+          hydrateFromUrl();
+          run();
+        })();
+        </script>
+    </main>
+</body>
+
+</html>

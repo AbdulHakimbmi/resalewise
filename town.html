@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="ResaleWise SG — explore an HDB town: median resale prices, recent transactions and an interactive map of the area.">
+    <title>Town · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+
+        <section class="page-hero">
+            <div class="kicker">Town profile</div>
+            <h1 id="townTitle">Loading <em>town…</em></h1>
+            <p id="townIntro">Median resale prices, recent transactions and where this town sits on the map.</p>
+            <div class="town-switcher">
+                <label for="townSwitch">Choose a town</label>
+                <select id="townSwitch"><option value="">Select a town</option></select>
+                <a class="text-btn" href="index.html#townExplorer" style="white-space:nowrap">or browse the carousel →</a>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top:26px">
+            <!-- Stat cards -->
+            <div class="grid3">
+                <article class="card metric accent" data-reveal>
+                    <div class="label">Median · 4 Room (last 24m)</div><strong id="tMedian">–</strong><span id="tMedianSub">Loading…</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Transactions (last 24m)</div><strong id="tCount">–</strong><span>Recorded 4-Room resale transactions in this town.</span></article>
+                <article class="card metric" data-reveal>
+                    <div class="label">Median price / sqm</div><strong id="tPsm">–</strong><span>Per-square-metre benchmark for 4-Room flats.</span></article>
+            </div>
+
+            <!-- Map + recent transactions -->
+            <div class="town-layout" style="margin-top:18px">
+                <article class="card chart-card" data-reveal>
+                    <h3>Recent transactions</h3>
+                    <p id="recentSub">Most recent resale records in this town.</p>
+                    <div class="result-list" id="recentList" style="margin-top:14px"><div class="notice">Loading…</div></div>
+                    <div style="margin-top:16px"><a class="ghost-btn" id="seeAllBtn" href="#">See all in search →</a></div>
+                </article>
+                <aside class="card chart-card map-card" data-reveal>
+                    <h3>On the map</h3>
+                    <p>Interactive view of the area. Drag, zoom and explore.</p>
+                    <div class="map-wrap">
+                        <iframe id="townMap" title="Map of the town" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                    </div>
+                </aside>
+            </div>
+
+            <!-- What residents say (town reviews) -->
+            <article class="card chart-card" data-reveal style="margin-top:18px">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+                    <div>
+                        <h3 id="reviewsHeading">What residents say</h3>
+                        <p id="reviewsSub">Community perspectives on this town.</p>
+                    </div>
+                    <a class="ghost-btn" id="addReviewBtn" href="reviews.html">Write a review →</a>
+                </div>
+                <div id="townReviews" style="margin-top:16px"><div class="notice">Loading reviews…</div></div>
+                <div style="margin-top:14px" hidden id="moreReviewsRow">
+                    <button class="ghost-btn" id="moreReviewsBtn" type="button">View more reviews ↓</button>
+                </div>
+            </article>
+        </section>
+
+        <footer class="footer">
+            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/mist-background.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script>
+        (async function () {
+          const $ = id => document.getElementById(id);
+          const params = new URLSearchParams(location.search);
+          const townParam = (params.get("town") || "").trim();
+
+          const fmtMoney = n => "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
+          const fmtMonth = iso => {
+            const s = String(iso);
+            const d = new Date(s.length === 7 ? s + "-01" : s);
+            return d.toLocaleString("en-SG", { month: "short", year: "numeric" });
+          };
+          const leaseYears = m => Math.floor((m || 0) / 12);
+
+          // ---- Town switcher: ALWAYS populate (even with no town selected),
+          //      preselect current if any, navigate on change. ----
+          const switchSel = $("townSwitch");
+          await populateTowns(switchSel, {
+            includeAny: true,
+            anyLabel: townParam ? "View another town…" : "Select a town…",
+            selected: townParam
+          });
+          switchSel.addEventListener("change", function () {
+            if (switchSel.value) {
+              location.href = "town.html?town=" + encodeURIComponent(switchSel.value.toUpperCase());
+            }
+          });
+
+          // ---- No town selected: invite picking from the dropdown or carousel ----
+          if (!townParam) {
+            $("townTitle").innerHTML = "Explore a <em>town.</em>";
+            $("townIntro").textContent =
+              "Choose a town below to see its median resale prices, recent transactions and an interactive map — or browse the carousel on the home page.";
+            // Hide the empty stat/detail sections until a town is chosen.
+            const sec = document.querySelector(".section");
+            if (sec) sec.style.display = "none";
+            return;
+          }
+
+          const townTitle = titleCase(townParam);
+          document.title = townTitle + " · ResaleWise SG";
+          $("townTitle").innerHTML = `Living in <em>${townTitle}.</em>`;
+          $("townIntro").textContent =
+            `Median resale prices, recent transactions and where ${townTitle} sits on the map — all from official HDB records.`;
+          $("seeAllBtn").href = "search.html?town=" + encodeURIComponent(townParam);
+
+          // ---- Interactive map (keyless Google Maps embed, no API key needed) ----
+          const query = encodeURIComponent(townTitle + ", Singapore");
+          $("townMap").src = "https://www.google.com/maps?q=" + query + "&z=14&output=embed";
+
+          // ---- Stats (reuse the insights summary endpoint) ----
+          (async function loadStats() {
+            try {
+              const s = await apiGet("/api/insights/summary", { flat_type: "4 ROOM", town: townParam, months: 24 });
+              const sm = s.summary || {};
+              $("tMedian").textContent = sm.median_price ? fmtMoney(sm.median_price) : "No data";
+              $("tMedianSub").textContent = sm.median_price
+                ? `Range ${fmtMoney(sm.min_price)}–${fmtMoney(sm.max_price)}`
+                : "No 4-Room transactions in the last 24 months.";
+              $("tCount").textContent = (sm.txn_count || 0).toLocaleString("en-SG");
+              $("tPsm").textContent = sm.median_psm ? fmtMoney(sm.median_psm) : "–";
+            } catch (e) {
+              $("tMedian").textContent = "Error";
+              $("tMedianSub").textContent = e.message;
+            }
+          })();
+
+          // ---- Recent transactions in this town ----
+          (async function loadRecent() {
+            const listEl = $("recentList");
+            try {
+              const data = await apiGet("/api/search", { town: townParam, limit: 6 });
+              const rows = data.rows || [];
+              if (!rows.length) { listEl.innerHTML = '<div class="notice">No transactions found for this town.</div>'; return; }
+              listEl.innerHTML = rows.map(r => `
+                <article class="card transaction">
+                  <div>
+                    <div class="type">${r.flat_type_name} · ${titleCase(r.town_name)}</div>
+                    <h3>${r.block_no} ${r.street_name}</h3>
+                    <p>${fmtMonth(r.month)} · ${Math.round(r.floor_area_sqm)} sqm · ${leaseYears(r.remaining_lease_months)} yrs lease</p>
+                  </div>
+                  <div class="price">
+                    <strong>${fmtMoney(r.resale_price)}</strong><br>
+                    <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${r.txn_id}">Details →</a>
+                  </div>
+                </article>`).join("");
+            } catch (e) {
+              listEl.innerHTML = `<div class="notice">Could not load transactions: ${e.message}</div>`;
+            }
+          })();
+
+          // ---- Town reviews (first 5, with "view more") ----
+          (async function loadReviews() {
+            const box  = $("townReviews");
+            const heading = $("reviewsHeading");
+            const sub = $("reviewsSub");
+            const moreRow = $("moreReviewsRow");
+            const moreBtn = $("moreReviewsBtn");
+            $("addReviewBtn").href = "reviews.html";
+
+            heading.textContent = `What residents say about ${townTitle}`;
+
+            const ago = iso => {
+              const d = new Date(iso), s = Math.floor((Date.now() - d.getTime()) / 1000);
+              if (s < 3600) return Math.max(1, Math.floor(s/60)) + " min ago";
+              if (s < 86400) return Math.floor(s/3600) + " h ago";
+              if (s < 604800) return Math.floor(s/86400) + " days ago";
+              return d.toLocaleDateString("en-SG", { day:"numeric", month:"short", year:"numeric" });
+            };
+            const stars = n => "★".repeat(n) + "☆".repeat(5 - n);
+            const reviewHtml = r => `
+              <div class="review">
+                <div class="review-top">
+                  <b>${r.author || "Anonymous"}</b>
+                  <span>${stars(r.rating)} · ${ago(r.created_at)}</span>
+                </div>
+                <p>${r.comment}</p>
+                <div class="review-tags">${(r.tags || []).map(t => `<i>${t}</i>`).join("")}</div>
+              </div>`;
+
+            try {
+              const rows = await apiGet("/api/reviews", { town: townParam, limit: 50 });
+              if (!rows.length) {
+                sub.textContent = "No reviews yet for this town.";
+                box.innerHTML = `<div class="notice">Be the first to share what it's like living in ${townTitle}. <a href="reviews.html" style="color:var(--lime);font-weight:800">Write a review →</a></div>`;
+                return;
+              }
+              const avg = (rows.reduce((s, r) => s + (r.rating || 0), 0) / rows.length).toFixed(1);
+              sub.textContent = `${rows.length} review${rows.length === 1 ? "" : "s"} · average ${avg}/5`;
+
+              const FIRST = 5;
+              const first = rows.slice(0, FIRST);
+              const rest  = rows.slice(FIRST);
+              box.innerHTML = first.map(reviewHtml).join("");
+
+              if (rest.length) {
+                moreRow.hidden = false;
+                let expanded = false;
+                moreBtn.addEventListener("click", () => {
+                  expanded = !expanded;
+                  if (expanded) {
+                    box.insertAdjacentHTML("beforeend", rest.map(reviewHtml).join(""));
+                    moreBtn.textContent = "Show fewer reviews ↑";
+                  } else {
+                    box.innerHTML = first.map(reviewHtml).join("");
+                    moreBtn.textContent = `View ${rest.length} more review${rest.length === 1 ? "" : "s"} ↓`;
+                    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                  }
+                });
+                moreBtn.textContent = `View ${rest.length} more review${rest.length === 1 ? "" : "s"} ↓`;
+              }
+            } catch (e) {
+              box.innerHTML = `<div class="notice">Could not load reviews: ${e.message}</div>`;
+            }
+          })();
+        })();
+        </script>
+    </main>
+</body>
+
+</html>
