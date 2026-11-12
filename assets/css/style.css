@@ -12,6 +12,19 @@
     --r-lg: 22px
 }
 
+/* Light mode — bone/graphite inverted to a clean paper look with navy accent */
+:root[data-theme="light"] {
+    --bg: #f4f2ec;
+    --ink: #1b1e24;
+    --muted: #5c5f66;
+    --line: rgba(20, 24, 34, .12);
+    --panel: rgba(255, 255, 255, .82);
+    --forest: #2f5bbf;
+    --lime: #2f5bbf;
+    --orange: #b06a2e;
+    --shadow: 0 22px 50px rgba(30, 40, 70, .14);
+}
+
 * {
     box-sizing: border-box
 }
@@ -72,13 +85,25 @@ button {
 .nav {
     min-height: 68px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     gap: 20px;
     padding: 0 8px;
-    border-bottom: 1px solid rgba(224, 227, 234, .07);
-    background: rgba(14, 16, 19, .28);
-    backdrop-filter: blur(14px)
+    background: transparent;
+}
+
+/* 3-zone nav: brand left, main links centred, account actions + toggle right.
+   auto margins on both sides of .nav-links push it to the centre and separate
+   it from the right-hand cluster (fixes the "too close to Shortlist" gap). */
+.nav > .nav-links {
+    margin-left: auto;
+    margin-right: auto;
+}
+.nav > .nav-actions { margin-left: 0; }
+.nav > .theme-toggle { margin-left: 0; }
+/* On mobile the links/actions are hidden, so push the toggle + menu right. */
+@media (max-width: 720px) {
+    .nav > .nav-links { margin: 0; }
+    .nav > .theme-toggle { margin-left: auto; }
 }
 
 .brand {
@@ -2036,15 +2061,42 @@ select option {
     position: sticky;
     top: 0;
     z-index: 50;
-    transition: min-height .25s ease, background .25s ease,
-                box-shadow .25s ease, backdrop-filter .25s ease;
+    transition: min-height .28s ease, background .28s ease,
+                box-shadow .28s ease, backdrop-filter .28s ease,
+                border-color .28s ease;
+}
+
+/* Full-bleed background layer: spans the whole viewport width (independent of
+   the shell's side padding at any breakpoint) and caps the gap above the bar,
+   so page content never peeks around or above the nav as you scroll. */
+.nav::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    z-index: -1;
+    pointer-events: none;
+    background: rgba(14, 16, 19, .35);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(224, 227, 234, .07);
+    transition: background .28s ease, box-shadow .28s ease,
+                backdrop-filter .28s ease, border-color .28s ease;
 }
 
 .nav.nav-scrolled {
     min-height: 56px;
-    background: rgba(14, 16, 19, .72);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
-    backdrop-filter: blur(18px);
+}
+
+.nav.nav-scrolled::before {
+    background: rgba(12, 14, 17, .92);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .3);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-bottom-color: rgba(224, 227, 234, .12);
 }
 
 /* --- Mobile menu open state (dropdown under the nav) --- */
@@ -2350,6 +2402,11 @@ select option {
     grid-template-columns: 1.15fr .85fr;
     gap: 18px;
     align-items: start;
+}
+
+/* Details-page map card (plain .card, no built-in padding) needs its own. */
+.map-card:not(.chart-card) {
+    padding: 24px;
 }
 
 .map-card .map-wrap {
@@ -2809,3 +2866,701 @@ a.sv-link.active:hover {
 }
 
 .score-label b { color: var(--ink); }
+
+
+/* --- Auth pages + nav user state --- */
+.auth-error {
+    margin: 4px 0 16px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #ffd7c2;
+    background: rgba(200, 90, 70, .14);
+    border: 1px solid rgba(200, 90, 70, .35);
+}
+
+.auth-error[hidden] { display: none; }
+
+.auth-ok {
+    margin: 4px 0 16px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #bfe6c8;
+    background: rgba(90, 170, 120, .14);
+    border: 1px solid rgba(90, 170, 120, .35);
+}
+
+.auth-ok[hidden] { display: none; }
+
+.account-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+@media (max-width: 800px) {
+    .account-grid { grid-template-columns: 1fr; }
+}
+
+.nav-user {
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--lime);
+    text-transform: capitalize;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* --- Locked shortlist (logged-out compare page) --- */
+.locked-shortlist {
+    text-align: center;
+    max-width: 560px;
+    margin: 40px auto;
+    padding: 40px 30px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+}
+
+.locked-shortlist .lock-ico { font-size: 2.4rem; }
+
+.locked-shortlist h3 {
+    margin: 14px 0 8px;
+    font-size: 1.5rem;
+    letter-spacing: -.04em;
+}
+
+.locked-shortlist p {
+    margin: 0 auto 22px;
+    max-width: 440px;
+    color: var(--muted);
+    font-size: .86rem;
+    line-height: 1.7;
+}
+
+.lock-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+
+/* ============================================================
+   Theme toggle button + light-mode surface adjustments
+   ============================================================ */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .06);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--lime);
+    color: var(--lime);
+}
+
+.theme-toggle svg { width: 18px; height: 18px; }
+
+/* --- Light mode surface overrides (things not driven purely by tokens) --- */
+:root[data-theme="light"] body {
+    background: var(--bg);
+}
+
+:root[data-theme="light"] body:before {
+    background: radial-gradient(circle at 10% 0%, rgba(80, 110, 190, .12), transparent 36%),
+                radial-gradient(circle at 90% 36%, rgba(120, 130, 160, .10), transparent 40%),
+                var(--bg);
+}
+
+/* The animated WebGL mist is dark by nature — fade it right down in light mode */
+:root[data-theme="light"] .mist-canvas {
+    opacity: .10;
+}
+
+:root[data-theme="light"] .nav {
+    background: transparent;
+}
+
+:root[data-theme="light"] .nav::before {
+    background: rgba(248, 247, 243, .72);
+    border-bottom-color: rgba(20, 24, 34, .1);
+}
+
+:root[data-theme="light"] .nav.nav-scrolled::before {
+    background: rgba(248, 247, 243, .94);
+    box-shadow: 0 8px 28px rgba(30, 40, 70, .1);
+    border-bottom-color: rgba(20, 24, 34, .12);
+}
+
+:root[data-theme="light"] .nav-links { color: #3a3d44; }
+
+:root[data-theme="light"] .home-hero,
+:root[data-theme="light"] .page-hero {
+    background: linear-gradient(135deg, rgba(226, 232, 246, .9), rgba(255, 255, 255, .92));
+}
+
+:root[data-theme="light"] .home-hero p,
+:root[data-theme="light"] .page-hero p { color: #4a4d54; }
+
+:root[data-theme="light"] .field,
+:root[data-theme="light"] .filter-card,
+:root[data-theme="light"] .combo-menu {
+    background: rgba(255, 255, 255, .9);
+}
+
+:root[data-theme="light"] .field select,
+:root[data-theme="light"] .field input,
+:root[data-theme="light"] .town-combo input#townInput { color: var(--ink); }
+
+:root[data-theme="light"] .theme-toggle {
+    background: rgba(20, 24, 34, .04);
+}
+
+:root[data-theme="light"] .scrolly-sticky {
+    background: linear-gradient(140deg, rgba(226, 232, 246, .8), rgba(255, 255, 255, .9));
+}
+
+:root[data-theme="light"] .float { background: rgba(255,255,255,.96); }
+
+/* ---- Light mode: force readable text everywhere ----
+   Many text colours are hardcoded light greys for the dark theme. In light
+   mode we override them to dark, readable tones by element rather than by
+   chasing every hex value. */
+:root[data-theme="light"] {
+    color: var(--ink);
+}
+
+/* Kickers / mono labels (e.g. "RESALE RECORD EXPLORER") */
+:root[data-theme="light"] .kicker,
+:root[data-theme="light"] .small-kicker,
+:root[data-theme="light"] .metric .label,
+:root[data-theme="light"] .field label,
+:root[data-theme="light"] .form-row label {
+    color: #4a5db0;              /* muted navy — readable, on-brand */
+}
+
+/* Body copy, captions, secondary text */
+:root[data-theme="light"] .section-head p,
+:root[data-theme="light"] .chart-card p,
+:root[data-theme="light"] .metric span,
+:root[data-theme="light"] .scrolly-step p,
+:root[data-theme="light"] .side-hint,
+:root[data-theme="light"] .notice,
+:root[data-theme="light"] .town-row,
+:root[data-theme="light"] .transaction p,
+:root[data-theme="light"] .type,
+:root[data-theme="light"] .live-stat span,
+:root[data-theme="light"] .review-top span,
+:root[data-theme="light"] .float span,
+:root[data-theme="light"] .footer,
+:root[data-theme="light"] .chart-insight {
+    color: #4a4d54 !important;   /* dark grey */
+}
+
+/* Headings / strong values → near-black ink */
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] .transaction h3,
+:root[data-theme="light"] .compare-price,
+:root[data-theme="light"] .property h2,
+:root[data-theme="light"] .score-label b,
+:root[data-theme="light"] .review p {
+    color: var(--ink) !important;
+}
+
+/* Metric big numbers + accent text stay navy for contrast */
+:root[data-theme="light"] .metric strong,
+:root[data-theme="light"] .live-stat strong,
+:root[data-theme="light"] .nav-user,
+:root[data-theme="light"] .text-btn {
+    color: var(--lime) !important;
+}
+
+/* Chart axis ticks + scatter dots readable on light */
+:root[data-theme="light"] .axis-tick { fill: #6a6d74; }
+:root[data-theme="light"] .hist-col span { color: #6a6d74; }
+
+/* Chart insight box: lighten the navy tint background so dark text reads */
+:root[data-theme="light"] .chart-insight {
+    background: rgba(80, 110, 190, .08);
+    border-color: rgba(80, 110, 190, .2);
+}
+:root[data-theme="light"] .chart-insight b { color: var(--ink); }
+
+/* Value badges: on light backgrounds the pale text is invisible — darken each
+   to a saturated, readable tone with a slightly stronger tint. */
+:root[data-theme="light"] .value-badge.vgood { color: #1f6b3a; background: rgba(90, 170, 120, .18); border-color: rgba(60, 140, 90, .4); }
+:root[data-theme="light"] .value-badge.good  { color: #234e8f; background: rgba(80, 120, 200, .16); border-color: rgba(60, 100, 190, .4); }
+:root[data-theme="light"] .value-badge.fair  { color: #4a4d54; background: rgba(120, 125, 135, .16); border-color: rgba(120, 125, 135, .4); }
+:root[data-theme="light"] .value-badge.high  { color: #8a5316; background: rgba(200, 150, 90, .18); border-color: rgba(180, 120, 60, .4); }
+:root[data-theme="light"] .value-badge.vhigh { color: #9a3b1e; background: rgba(200, 110, 80, .16); border-color: rgba(180, 90, 60, .4); }
+
+/* Review comment box: dark surface → light surface with dark text in light mode */
+:root[data-theme="light"] .review-form textarea {
+    background: rgba(255, 255, 255, .92);
+    color: var(--ink);
+    border-color: var(--line);
+}
+:root[data-theme="light"] .review-form textarea::placeholder { color: #7c7f86; }
+
+/* Rating number buttons: readable in light mode */
+:root[data-theme="light"] .rate {
+    background: rgba(20, 24, 34, .05);
+    color: #4a4d54;
+}
+:root[data-theme="light"] .rate.active {
+    background: var(--lime);
+    color: #fff;
+}
+
+/* Review tags (chips) on the form */
+:root[data-theme="light"] .tag {
+    background: rgba(80, 110, 190, .1);
+    color: #34478f;
+}
+
+/* Form inputs (login/register/account) + town switcher: dark boxes → light */
+:root[data-theme="light"] .form-row input,
+:root[data-theme="light"] .town-switcher,
+:root[data-theme="light"] .town-switcher select {
+    background: rgba(255, 255, 255, .92);
+    color: var(--ink);
+    border-color: var(--line);
+}
+:root[data-theme="light"] .form-row input::placeholder { color: #7c7f86; }
+:root[data-theme="light"] .form-row input:disabled {
+    background: rgba(20, 24, 34, .04);
+    color: #6a6d74;
+}
+:root[data-theme="light"] .town-switcher label { color: #4a5db0; }
+:root[data-theme="light"] .town-switcher select option {
+    background-color: #ffffff;
+    color: var(--ink);
+}
+
+/* Homepage carousel "Jump to town" control */
+:root[data-theme="light"] .town-jump select {
+    background: rgba(255, 255, 255, .92);
+    color: var(--ink);
+    border-color: var(--line);
+}
+:root[data-theme="light"] .town-jump select option {
+    background-color: #ffffff;
+    color: var(--ink);
+}
+:root[data-theme="light"] .town-jump label { color: #4a5db0; }
+
+/* Auth error / success boxes: darken text for light backgrounds */
+:root[data-theme="light"] .auth-error {
+    color: #9a2f1e;
+    background: rgba(200, 90, 70, .12);
+    border-color: rgba(200, 90, 70, .4);
+}
+:root[data-theme="light"] .auth-ok {
+    color: #1f6b3a;
+    background: rgba(90, 170, 120, .14);
+    border-color: rgba(60, 140, 90, .4);
+}
+
+/* Reviews + tags */
+:root[data-theme="light"] .review-tags i {
+    color: #4a5db0;
+    background: rgba(80, 110, 190, .1);
+}
+
+/* Cards: give a solid light surface so translucent panels don't wash out */
+:root[data-theme="light"] .card {
+    background: rgba(255, 255, 255, .9);
+    box-shadow: 0 14px 32px rgba(30, 40, 70, .08);
+}
+
+
+/* ============================================================
+   Reviews page (revamped)
+   ============================================================ */
+.review-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 26px;
+    position: relative;
+    z-index: 1;
+}
+
+.rv-stat strong {
+    display: block;
+    font-size: clamp(1.6rem, 2.4vw, 2.3rem);
+    letter-spacing: -.05em;
+    color: var(--lime);
+}
+
+.rv-stat span {
+    font-size: .72rem;
+    color: var(--muted);
+}
+
+/* Form field labels + text input */
+.rv-field-label {
+    font: 500 .64rem "DM Mono", monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.rv-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    outline: 0;
+    background: rgba(15, 16, 20, .54);
+    color: var(--ink);
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+.rv-input::placeholder { color: #7c7f86; }
+
+/* Star rating picker */
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.star-rating .star {
+    border: 0;
+    background: transparent;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: rgba(150, 155, 170, .35);
+    cursor: pointer;
+    transition: color .12s ease, transform .12s ease;
+    padding: 0 1px;
+}
+
+.star-rating .star.on { color: var(--lime); }
+.star-rating .star:hover { transform: scale(1.12); }
+
+.star-caption {
+    margin-left: 10px;
+    font-size: .74rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.tag-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.rv-signin-note {
+    margin: 12px 0 0;
+    font-size: .72rem;
+    color: var(--muted);
+    text-align: center;
+}
+.rv-signin-note a { color: var(--lime); font-weight: 800; }
+
+/* Reviews list toolbar */
+.reviews-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.reviews-count {
+    font-size: .74rem;
+    color: var(--muted);
+}
+
+.reviews-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.reviews-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(15, 16, 20, .55);
+    color: var(--ink);
+    font-size: .74rem;
+    font-weight: 700;
+    outline: 0;
+    cursor: pointer;
+}
+
+.reviews-controls select option { background-color: #14161b; color: var(--ink); }
+
+/* Review cards with avatar */
+.review-card {
+    display: flex;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+}
+.review-card:last-child { border-bottom: 0; }
+
+.rc-avatar {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: .82rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--forest), var(--lime));
+}
+
+.rc-body { flex: 1; min-width: 0; }
+
+.rc-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.rc-head b { font-size: .9rem; }
+
+.rc-town {
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--lime);
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: rgba(111, 155, 255, .12);
+}
+
+.rc-time { font-size: .68rem; color: var(--muted); margin-left: auto; }
+
+.stars { color: var(--lime); font-size: .82rem; letter-spacing: 1px; }
+.stars .stars-off { color: rgba(150, 155, 170, .3); }
+
+.rc-text { margin: 8px 0 10px; color: #c9cbd0; font-size: .82rem; line-height: 1.65; }
+
+.empty-reviews {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+.empty-reviews .er-ico { font-size: 2rem; }
+.empty-reviews h4 { margin: 10px 0 6px; font-size: 1.1rem; color: var(--ink); }
+.empty-reviews p { margin: 0; font-size: .82rem; }
+
+/* Light-mode fixes for the revamped reviews page */
+:root[data-theme="light"] .rv-input,
+:root[data-theme="light"] .reviews-controls select {
+    background: rgba(255, 255, 255, .92);
+    color: var(--ink);
+    border-color: var(--line);
+}
+:root[data-theme="light"] .rv-input::placeholder { color: #7c7f86; }
+:root[data-theme="light"] .reviews-controls select option { background-color: #fff; color: var(--ink); }
+:root[data-theme="light"] .rc-text { color: #4a4d54; }
+:root[data-theme="light"] .rv-field-label,
+:root[data-theme="light"] .reviews-count,
+:root[data-theme="light"] .rv-stat span { color: #4a4d54; }
+:root[data-theme="light"] .star-rating .star { color: rgba(60, 70, 100, .3); }
+
+
+/* ============================================================
+   Insights: extra charts
+   ============================================================ */
+
+/* Flat-type comparison — horizontal bars */
+.bar-rows {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 92px 1fr 56px;
+    gap: 12px;
+    align-items: center;
+    font-size: .74rem;
+    color: var(--muted);
+    padding: 4px 6px;
+    border-radius: 8px;
+}
+
+.bar-row.focus {
+    background: rgba(111, 155, 255, .1);
+    outline: 1px solid rgba(111, 155, 255, .3);
+}
+
+.bar-row.focus .br-label { color: var(--lime); font-weight: 800; }
+
+.br-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.br-track {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(224, 227, 234, .12);
+    overflow: hidden;
+}
+
+.br-track i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--forest), var(--lime));
+}
+
+.br-val { text-align: right; color: var(--ink); font-weight: 800; }
+
+/* Affordability price bands — single stacked bar + legend */
+.band-chart { margin-top: 16px; }
+
+.band-bar {
+    display: flex;
+    height: 26px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: rgba(224, 227, 234, .08);
+}
+
+.band-seg {
+    height: 100%;
+    transition: width .5s cubic-bezier(.22,.61,.36,1);
+}
+
+.band-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 14px;
+}
+
+.band-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .72rem;
+    color: var(--muted);
+}
+
+.band-key i {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* Light-mode text for the new charts */
+:root[data-theme="light"] .bar-row,
+:root[data-theme="light"] .band-key { color: #4a4d54; }
+:root[data-theme="light"] .br-val { color: var(--ink); }
+
+
+/* ============================================================
+   Insights dashboard: draggable tiles
+   ============================================================ */
+.dash-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 18px 0 14px;
+}
+
+.dash-hint {
+    font-size: .74rem;
+    color: var(--muted);
+}
+
+/* Masonry-ish grid: two columns, tiles size to their own content so there's
+   no awkward empty gap under a short chart. */
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    align-items: start;         /* key: tiles don't stretch to the tallest sibling */
+}
+
+.dash-tile {
+    position: relative;
+    align-self: start;
+    cursor: default;
+}
+
+.dash-tile.dash-wide {
+    grid-column: 1 / -1;        /* full-width tile */
+}
+
+.tile-grip {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--muted);
+    cursor: grab;
+    user-select: none;
+    opacity: .5;
+    transition: opacity .2s ease, color .2s ease;
+}
+
+.dash-tile:hover .tile-grip { opacity: 1; color: var(--lime); }
+.tile-grip:active { cursor: grabbing; }
+
+.dash-tile.dragging {
+    opacity: .55;
+    outline: 2px dashed rgba(111, 155, 255, .5);
+    outline-offset: -4px;
+}
+
+.dash-tile.drop-target {
+    outline: 2px solid rgba(111, 155, 255, .55);
+    outline-offset: -4px;
+}
+
+/* Keep the trend chart from leaving a tall gap: let its card sit at natural
+   height (align-items:start on the grid already handles the stretch). */
+.dash-tile .line-chart { margin-bottom: 4px; }
+
+/* The town list can be long (26 towns) — cap it and scroll so no single tile
+   dominates the dashboard height. */
+.dash-tile .town-list {
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+@media (max-width: 900px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .dash-tile.dash-wide { grid-column: auto; }
+}

@@ -17,41 +17,77 @@
         <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
             <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
             <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
-        <section class="page-hero">
+        <section class="page-hero reviews-hero">
             <div class="kicker">Community perspective</div>
-            <h1>Town context, in <em>people's words.</em></h1>
-            <p>Neighbourhood reviews add real, lived context alongside the resale data — amenities, transport, atmosphere and daily life, straight from residents.</p>
+            <h1>The neighbourhood, in <em>residents' words.</em></h1>
+            <p>Prices tell you what a flat costs. Reviews tell you what it's like to actually live there — the hawker you'll miss, the commute you'll do daily, the park downstairs. Share yours and help the next buyer.</p>
+            <div class="review-stats" id="reviewStats">
+                <div class="rv-stat"><strong id="rsTotal">—</strong><span>Resident reviews</span></div>
+                <div class="rv-stat"><strong id="rsTowns">—</strong><span>Towns covered</span></div>
+                <div class="rv-stat"><strong id="rsAvg">—</strong><span>Average rating</span></div>
+            </div>
         </section>
+
         <section class="section">
             <div class="review-layout">
+                <!-- Write a review -->
                 <form class="card review-form" id="reviewForm">
-                    <h3>Share a town perspective</h3>
-                    <div class="field" style="margin-bottom:13px"><label>Town</label>
-                        <select id="reviewTown">
-                            <option value="">Select a town</option>
-                        </select>
+                    <div class="small-kicker">Share your experience</div>
+                    <h3 style="margin:6px 0 4px">Write a review</h3>
+                    <p class="side-hint" style="margin:0 0 16px">It takes 30 seconds and genuinely helps other buyers.</p>
+
+                    <div class="field" style="margin-bottom:14px"><label for="reviewTown">Which town?</label>
+                        <select id="reviewTown"><option value="">Select a town</option></select>
                     </div>
-                    <div class="small-kicker">Overall experience</div>
-                    <div class="rating" id="reviewRating">
-                        <button class="rate" type="button" data-r="1">1</button>
-                        <button class="rate" type="button" data-r="2">2</button>
-                        <button class="rate" type="button" data-r="3">3</button>
-                        <button class="rate active" type="button" data-r="4">4</button>
-                        <button class="rate" type="button" data-r="5">5</button>
+
+                    <div class="rv-field-label">Your name</div>
+                    <input class="rv-input" id="reviewAuthor" type="text" placeholder="e.g. Wei Ming" style="margin-bottom:16px">
+
+                    <div class="rv-field-label">Overall rating</div>
+                    <div class="star-rating" id="starRating" role="radiogroup" aria-label="Rating">
+                        <button type="button" class="star" data-r="1" aria-label="1 star">★</button>
+                        <button type="button" class="star" data-r="2" aria-label="2 stars">★</button>
+                        <button type="button" class="star" data-r="3" aria-label="3 stars">★</button>
+                        <button type="button" class="star" data-r="4" aria-label="4 stars">★</button>
+                        <button type="button" class="star" data-r="5" aria-label="5 stars">★</button>
+                        <span class="star-caption" id="starCaption">Tap to rate</span>
                     </div>
-                    <div class="small-kicker" style="margin-bottom:8px">Your comment</div>
-                    <textarea id="reviewComment" placeholder="Share useful context about amenities, transport, atmosphere or daily life..."></textarea>
-                    <div style="display:flex;gap:7px;flex-wrap:wrap;margin:12px 0">
+
+                    <div class="rv-field-label" style="margin-top:16px">Your review</div>
+                    <textarea id="reviewComment" placeholder="What's daily life like here? Think amenities, transport, food, noise, community…"></textarea>
+
+                    <div class="rv-field-label" style="margin-top:14px">What stands out? (optional)</div>
+                    <div class="tag-picker">
                         <span class="tag" data-tag="near-food">Near food</span>
+                        <span class="tag" data-tag="great-hawkers">Great hawkers</span>
                         <span class="tag" data-tag="family-friendly">Family-friendly</span>
                         <span class="tag" data-tag="near-transport">Near transport</span>
-                        <span class="tag warn" data-tag="busy-peak-hours">Busy peak hours</span>
+                        <span class="tag" data-tag="quiet">Quiet</span>
+                        <span class="tag" data-tag="green-spaces">Green spaces</span>
+                        <span class="tag" data-tag="good-schools">Good schools</span>
+                        <span class="tag warn" data-tag="busy-peak-hours">Busy at peak</span>
                     </div>
-                    <button class="primary-btn full" type="submit">Submit review →</button>
+
+                    <button class="primary-btn full" type="submit" style="margin-top:18px">Post my review →</button>
+                    <p class="rv-signin-note" id="signinNote" hidden>Posting as a guest. <a href="login.html?next=reviews.html">Log in</a> to post under your name.</p>
                 </form>
+
+                <!-- Read reviews -->
                 <article class="card reviews-panel">
-                    <h3>Recent town perspectives</h3>
-                    <div class="notice">Real perspectives from residents and buyers, most recent first.</div>
+                    <div class="reviews-toolbar">
+                        <div>
+                            <h3 style="margin:0">What residents say</h3>
+                            <span class="reviews-count" id="reviewsCount">Loading…</span>
+                        </div>
+                        <div class="reviews-controls">
+                            <select id="filterTown" aria-label="Filter by town"><option value="">All towns</option></select>
+                            <select id="sortBy" aria-label="Sort reviews">
+                                <option value="recent">Most recent</option>
+                                <option value="high">Highest rated</option>
+                                <option value="low">Lowest rated</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="reviewsList"><div class="notice">Loading…</div></div>
                 </article>
             </div>
@@ -62,92 +98,151 @@
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
         <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
         <script>
         (async function () {
-          const listEl  = document.getElementById("reviewsList");
-          const form    = document.getElementById("reviewForm");
-          const townSel = document.getElementById("reviewTown");
-          const comment = document.getElementById("reviewComment");
-          const ratingEl= document.getElementById("reviewRating");
-          const tagEls  = form.querySelectorAll("[data-tag]");
+          const $ = id => document.getElementById(id);
+          const listEl   = $("reviewsList");
+          const form     = $("reviewForm");
+          const townSel  = $("reviewTown");
+          const authorEl = $("reviewAuthor");
+          const comment  = $("reviewComment");
+          const starEl   = $("starRating");
+          const starCap  = $("starCaption");
+          const filterTown = $("filterTown");
+          const sortBy   = $("sortBy");
+          const tagEls   = form.querySelectorAll("[data-tag]");
 
-          let selectedRating = 4;
+          const RATING_WORDS = { 1: "Poor", 2: "Fair", 3: "Good", 4: "Great", 5: "Excellent" };
+          let selectedRating = 0;
+          let allReviews = [];
 
-          // Populate the town dropdown from the DB (shared helper), keeping the
-          // "Select a town" placeholder as the first option.
+          // Prefill author from the logged-in account, if any.
+          const me = (typeof Auth !== "undefined") ? Auth.user() : null;
+          if (me && me.name) { authorEl.value = me.name; }
+          else { $("signinNote").hidden = false; }
+
+          // Populate both town dropdowns from the DB.
           populateTowns(townSel, { includeAny: true, anyLabel: "Select a town" });
+          populateTowns(filterTown, { includeAny: true, anyLabel: "All towns" });
 
           function ago(iso) {
-            const d = new Date(iso);
-            const s = Math.floor((Date.now() - d.getTime()) / 1000);
-            if (s < 60)    return "just now";
-            if (s < 3600)  return Math.floor(s/60) + " min ago";
-            if (s < 86400) return Math.floor(s/3600) + " h ago";
+            const d = new Date(iso), s = Math.floor((Date.now() - d.getTime()) / 1000);
+            if (s < 60)     return "just now";
+            if (s < 3600)   return Math.floor(s/60) + " min ago";
+            if (s < 86400)  return Math.floor(s/3600) + " h ago";
             if (s < 604800) return Math.floor(s/86400) + " days ago";
             return d.toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" });
           }
+          const initials = name => (name || "A").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+          const stars = n => '<span class="stars">' + "★".repeat(n) + '<span class="stars-off">' + "★".repeat(5-n) + "</span></span>";
 
-          function render(rows) {
+          function updateStats(rows) {
+            const towns = new Set(rows.map(r => r.town));
+            const avg = rows.length ? (rows.reduce((s,r)=>s+(r.rating||0),0)/rows.length) : 0;
+            $("rsTotal").textContent = rows.length.toLocaleString("en-SG");
+            $("rsTowns").textContent = towns.size;
+            $("rsAvg").textContent = rows.length ? avg.toFixed(1) + " ★" : "—";
+          }
+
+          function applyView() {
+            let rows = allReviews.slice();
+            const t = filterTown.value;
+            if (t) rows = rows.filter(r => (r.town || "").toUpperCase() === t.toUpperCase());
+            if (sortBy.value === "high") rows.sort((a,b) => b.rating - a.rating);
+            else if (sortBy.value === "low") rows.sort((a,b) => a.rating - b.rating);
+            else rows.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+            $("reviewsCount").textContent =
+              rows.length + " review" + (rows.length === 1 ? "" : "s") + (t ? " in " + titleCase(t) : " across all towns");
+
             if (!rows.length) {
-              listEl.innerHTML = '<div class="notice">No reviews yet. Be the first to share a perspective.</div>';
+              listEl.innerHTML = '<div class="empty-reviews"><div class="er-ico">✍️</div><h4>No reviews here yet</h4><p>Be the first to share what it\u2019s like living in this town.</p></div>';
               return;
             }
             listEl.innerHTML = rows.map(r => `
-              <div class="review">
-                <div class="review-top">
-                  <b>${r.author || "Anonymous"} · ${titleCase(r.town)}</b>
-                  <span>${ago(r.created_at)} · ${r.rating}/5</span>
+              <div class="review-card">
+                <div class="rc-avatar">${initials(r.author)}</div>
+                <div class="rc-body">
+                  <div class="rc-head">
+                    <b>${r.author || "Anonymous"}</b>
+                    <span class="rc-town">${titleCase(r.town)}</span>
+                    <span class="rc-time">${ago(r.created_at)}</span>
+                  </div>
+                  ${stars(r.rating)}
+                  <p class="rc-text">${r.comment}</p>
+                  <div class="review-tags">${(r.tags || []).map(t => `<i>${t}</i>`).join("")}</div>
                 </div>
-                <p>${r.comment}</p>
-                <div class="review-tags">${(r.tags || []).map(t => `<i>${t}</i>`).join("")}</div>
               </div>
             `).join("");
           }
 
           async function load() {
             try {
-              const rows = await apiGet("/api/reviews", { limit: 50 });
-              render(rows);
+              allReviews = await apiGet("/api/reviews", { limit: 200 });
+              updateStats(allReviews);
+              applyView();
             } catch (e) {
               listEl.innerHTML = `<div class="notice">Could not load reviews: ${e.message}</div>`;
             }
           }
 
-          ratingEl.addEventListener("click", ev => {
-            const btn = ev.target.closest("[data-r]");
-            if (!btn) return;
-            selectedRating = Number(btn.dataset.r);
-            ratingEl.querySelectorAll(".rate").forEach(b => b.classList.toggle("active", b === btn));
+          // Star rating interaction (hover preview + click to set)
+          const starBtns = [...starEl.querySelectorAll(".star")];
+          function paintStars(n) {
+            starBtns.forEach((b,i) => b.classList.toggle("on", i < n));
+          }
+          starBtns.forEach(b => {
+            const val = Number(b.dataset.r);
+            b.addEventListener("mouseenter", () => { paintStars(val); starCap.textContent = RATING_WORDS[val]; });
+            b.addEventListener("click", () => {
+              selectedRating = val; paintStars(val); starCap.textContent = RATING_WORDS[val] + " · " + val + "/5";
+            });
+          });
+          starEl.addEventListener("mouseleave", () => {
+            paintStars(selectedRating);
+            starCap.textContent = selectedRating ? RATING_WORDS[selectedRating] + " · " + selectedRating + "/5" : "Tap to rate";
           });
 
           tagEls.forEach(t => t.addEventListener("click", () => t.classList.toggle("active")));
+          filterTown.addEventListener("change", applyView);
+          sortBy.addEventListener("change", applyView);
 
           form.addEventListener("submit", async ev => {
             ev.preventDefault();
             const town = townSel.value;
             const text = comment.value.trim();
-            if (!town)  return alert("Please select a town.");
-            if (!text)  return alert("Please write a short comment.");
+            const author = authorEl.value.trim() || "Anonymous";
+            if (!town) return showToast ? showToast("Please choose a town.") : alert("Please choose a town.");
+            if (!selectedRating) return showToast ? showToast("Please pick a star rating.") : alert("Please pick a star rating.");
+            if (!text) return showToast ? showToast("Please write a short review.") : alert("Please write a short review.");
 
-            const tags = [...tagEls].filter(t => t.classList.contains("active"))
-                                    .map(t => t.getAttribute("data-tag"));
-
+            const tags = [...tagEls].filter(t => t.classList.contains("active")).map(t => t.getAttribute("data-tag"));
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.textContent = "Posting…";
             try {
               const res = await fetch(API_BASE + "/api/reviews", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ town, rating: selectedRating, comment: text, tags, author: "You" })
+                body: JSON.stringify({ town, rating: selectedRating, comment: text, tags, author })
               });
               if (!res.ok) throw new Error("API " + res.status);
               comment.value = "";
+              selectedRating = 0; paintStars(0); starCap.textContent = "Tap to rate";
               tagEls.forEach(t => t.classList.remove("active"));
+              if (typeof showToast === "function") showToast("Thanks! Your review is live.");
+              // Show the town they just reviewed.
+              filterTown.value = [...filterTown.options].find(o => o.textContent.toUpperCase() === titleCase(town).toUpperCase())?.value || "";
               await load();
             } catch (e) {
-              alert("Could not submit review: " + e.message);
+              if (typeof showToast === "function") showToast("Could not submit: " + e.message);
+              else alert("Could not submit review: " + e.message);
+            } finally {
+              btn.disabled = false; btn.textContent = "Post my review →";
             }
           });
 

@@ -34,6 +34,7 @@
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
         <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
@@ -42,7 +43,6 @@
         (async function () {
           const grid   = document.getElementById("compareGrid");
           const notice = document.getElementById("compareNotice");
-          const USER_ID = 1;  // stub user until login is built
 
           const fmtMoney = n => "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
           const fmtMonth = iso => {
@@ -134,10 +134,9 @@
               btn.addEventListener("click", async () => {
                 const txn_id = btn.getAttribute("data-remove");
                 try {
-                  const res = await fetch(`${API_BASE}/api/bookmarks/${txn_id}?user_id=${USER_ID}`, { method: "DELETE" });
+                  const res = await authFetch(`/api/bookmarks/${txn_id}`, { method: "DELETE" });
                   if (!res.ok) throw new Error("API " + res.status);
-                  // Reload to re-rank the recommendation after removal.
-                  const fresh = await apiGet("/api/bookmarks", { user_id: USER_ID });
+                  const fresh = await (await authFetch("/api/bookmarks")).json();
                   render(fresh);
                 } catch (e) {
                   notice.textContent = "Could not remove: " + e.message;
@@ -146,8 +145,28 @@
             });
           }
 
+          // Logged OUT: show a limited, non-persistent state — no saved shortlist
+          // is kept between visits. Invite the user to sign in.
+          if (!Auth.isLoggedIn()) {
+            banner.hidden = true;
+            grid.innerHTML = "";
+            notice.innerHTML =
+              `<div class="locked-shortlist">
+                 <div class="lock-ico">🔒</div>
+                 <h3>Log in to build your shortlist</h3>
+                 <p>Saving flats and comparing them for value is a free account feature — your shortlist stays with you across visits and devices. Guests can browse and search freely, but shortlists aren't saved.</p>
+                 <div class="lock-actions">
+                   <a class="primary-btn" href="login.html?next=compare.html">Log in</a>
+                   <a class="ghost-btn" href="register.html?next=compare.html">Create a free account →</a>
+                 </div>
+               </div>`;
+            return;
+          }
+
           try {
-            const rows = await apiGet("/api/bookmarks", { user_id: USER_ID });
+            const res = await authFetch("/api/bookmarks");
+            if (!res.ok) throw new Error("API " + res.status);
+            const rows = await res.json();
             render(rows);
           } catch (e) {
             notice.textContent = "Could not load your shortlist: " + e.message;

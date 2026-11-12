@@ -26,6 +26,13 @@
             <div class="detail-layout">
                 <article class="card property" id="propertyDetail"></article>
                 <aside class="stack">
+                    <article class="card map-card">
+                        <h3>Location</h3>
+                        <p id="mapSub">Where this flat is on the map.</p>
+                        <div class="map-wrap">
+                            <iframe id="detailMap" title="Map of the property location" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                        </div>
+                    </article>
                     <article class="notice">This is a historical completed transaction from official HDB records, not an active listing.</article>
                 </aside>
             </div>
@@ -36,6 +43,7 @@
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
         <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
@@ -44,7 +52,6 @@
         (async function () {
           const el = document.getElementById("propertyDetail");
           const id = new URLSearchParams(location.search).get("id");
-          const USER_ID = 1;  // stub user until login is built
 
           function fmtMoney(n) {
             return "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
@@ -79,6 +86,17 @@
                 <a class="ghost-btn" href="search.html">← Back to results</a>
               </div>
             `;
+
+            // Locate the property on the map (block + street + town → keyless embed).
+            const mapEl = document.getElementById("detailMap");
+            if (mapEl) {
+              const query = encodeURIComponent(
+                `${r.block_no} ${r.street_name}, ${titleCase(r.town_name)}, Singapore`
+              );
+              mapEl.src = "https://www.google.com/maps?q=" + query + "&z=16&output=embed";
+              const sub = document.getElementById("mapSub");
+              if (sub) sub.textContent = `${r.block_no} ${r.street_name}, ${titleCase(r.town_name)}`;
+            }
           }
 
           function renderError(msg) {
@@ -87,8 +105,11 @@
           }
 
           async function checkSaved(txn_id) {
+            if (!Auth.isLoggedIn()) return false;
             try {
-              const rows = await apiGet("/api/bookmarks", { user_id: USER_ID });
+              const res = await authFetch("/api/bookmarks");
+              if (!res.ok) return false;
+              const rows = await res.json();
               return rows.some(b => b.txn_id === txn_id);
             } catch { return false; }
           }
@@ -97,18 +118,23 @@
             const btn = document.getElementById("saveBtn");
             if (!btn) return;
             btn.addEventListener("click", async () => {
+              // Saving requires an account — send guests to login and come back.
+              if (!Auth.isLoggedIn()) {
+                location.href = "login.html?next=" + encodeURIComponent("details.html?id=" + txn_id);
+                return;
+              }
               const isSaved = btn.dataset.saved === "1";
               try {
                 if (isSaved) {
-                  const res = await fetch(`${API_BASE}/api/bookmarks/${txn_id}?user_id=${USER_ID}`, { method: "DELETE" });
+                  const res = await authFetch(`/api/bookmarks/${txn_id}`, { method: "DELETE" });
                   if (!res.ok) throw new Error("API " + res.status);
                   btn.dataset.saved = "0";
                   btn.textContent = "♡ Add to shortlist";
                 } else {
-                  const res = await fetch(`${API_BASE}/api/bookmarks`, {
+                  const res = await authFetch(`/api/bookmarks`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: USER_ID, txn_id })
+                    body: JSON.stringify({ txn_id })
                   });
                   if (!res.ok) throw new Error("API " + res.status);
                   btn.dataset.saved = "1";
@@ -126,6 +152,9 @@
           try {
             const r = await apiGet("/api/details/" + id);
             render(r);
+            // If not logged in, nudge the button label so intent is clear.
+            const saveBtn = document.getElementById("saveBtn");
+            if (saveBtn && !Auth.isLoggedIn()) saveBtn.textContent = "♡ Log in to save";
             bindSave(r.txn_id);
             if (await checkSaved(r.txn_id)) {
               const btn = document.getElementById("saveBtn");

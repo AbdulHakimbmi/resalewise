@@ -18,6 +18,173 @@ def q(sql, params=None):
         cur.execute(sql, params or [])
         return cur.fetchall()
 
+def _ensure_schema():
+    """Lightweight, idempotent migrations so the app works against an existing
+    shared database without re-running the full ETL. Safe to run every start."""
+    try:
+        with psycopg2.connect(PG) as conn, conn.cursor() as cur:
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(80)")
+    except Exception as e:
+        print("[schema] migration skipped:", e)
+
+_ensure_schema()
+
+# ---------------------------------------------------------------------------
+# Authentication (token-based)
+# ---------------------------------------------------------------------------
+# We use signed bearer tokens (not cookies) because the frontend (Apache :80)
+# and this API (:5000) are different origins — cross-origin session cookies are
+# unreliable over plain-HTTP localhost. Tokens live in the browser's
+# localStorage and are sent as "Authorization: Bearer <token>".
+#
+# Token format:  base64url(payload_json) . base64url(hmac_sha256(payload))
+# Passwords are hashed with Werkzeug (ships with Flask) — never stored plain.
+import hmac, hashlib, base64, json, time, functools
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Secret for signing tokens. For this team project it's fine inline; in a real
+# deployment this would come from an environment variable.
+TOKEN_SECRET = b"resalewise-sg-dev-secret-change-me"
+TOKEN_TTL    = 60 * 60 * 24 * 30   # 30 days
+
+def _b64(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+def _unb64(s: str) -> bytes:
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+def make_token(user_id: int, email: str) -> str:
+    # Name is not embedded in the token (it can change); it's returned in the
+    # login/register/me response bodies instead.
+    payload = {"uid": user_id, "email": email, "exp": int(time.time()) + TOKEN_TTL}
+    body = _b64(json.dumps(payload, separators=(",", ":")).encode())
+    sig  = _b64(hmac.new(TOKEN_SECRET, body.encode(), hashlib.sha256).digest())
+    return body + "." + sig
+
+def verify_token(token: str):
+    """Return the payload dict if the token is valid and unexpired, else None."""
+    try:
+        body, sig = token.split(".", 1)
+        expected = _b64(hmac.new(TOKEN_SECRET, body.encode(), hashlib.sha256).digest())
+        if not hmac.compare_digest(sig, expected):
+            return None
+        payload = json.loads(_unb64(body))
+        if payload.get("exp", 0) < int(time.time()):
+            return None
+        return payload
+    except Exception:
+        return None
+
+def current_user():
+    """Resolve the logged-in user from the Authorization header, or None."""
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return None
+    payload = verify_token(auth[7:])
+    if not payload:
+        return None
+    rows = q("SELECT user_id, email, name, created_at FROM users WHERE user_id = %s", [payload["uid"]])
+    return rows[0] if rows else None
+
+def require_auth(fn):
+    """Decorator: 401 unless a valid token is present. Injects `user` kwarg."""
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = current_user()
+        if not user:
+            return jsonify({"error": "authentication required"}), 401
+        return fn(*args, user=user, **kwargs)
+    return wrapper
+
+
+@app.route("/api/register", methods=["POST"])
+def register():
+    data  = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    pw    = data.get("password") or ""
+    name  = (data.get("name") or "").strip()[:80]
+
+    if not name:
+        return jsonify({"error": "Please enter your name."}), 400
+    if "@" not in email or "." not in email:
+        return jsonify({"error": "A valid email is required."}), 400
+    if len(pw) < 6:
+        return jsonify({"error": "Password must be at least 6 characters."}), 400
+
+    if q("SELECT 1 FROM users WHERE email = %s", [email]):
+        return jsonify({"error": "An account with this email already exists."}), 409
+
+    pw_hash = generate_password_hash(pw)
+    with psycopg2.connect(PG) as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO users (email, password_hash, name) VALUES (%s, %s, %s) RETURNING user_id",
+            [email, pw_hash, name]
+        )
+        uid = cur.fetchone()[0]
+    token = make_token(uid, email)
+    return jsonify({"token": token, "user": {"user_id": uid, "email": email, "name": name}}), 201
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data  = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    pw    = data.get("password") or ""
+
+    rows = q("SELECT user_id, email, name, password_hash FROM users WHERE email = %s", [email])
+    if not rows or not check_password_hash(rows[0]["password_hash"], pw):
+        return jsonify({"error": "Incorrect email or password."}), 401
+
+    u = rows[0]
+    token = make_token(u["user_id"], u["email"])
+    return jsonify({"token": token, "user": {"user_id": u["user_id"], "email": u["email"], "name": u.get("name")}})
+
+
+@app.route("/api/me")
+def me():
+    user = current_user()
+    if not user:
+        return jsonify({"error": "not authenticated"}), 401
+    return jsonify({"user_id": user["user_id"], "email": user["email"], "name": user.get("name")})
+
+
+@app.route("/api/me", methods=["PATCH"])
+@require_auth
+def update_me(user):
+    """Update the logged-in user's display name and/or password."""
+    data = request.get_json(silent=True) or {}
+    new_name = data.get("name")
+    new_pw   = data.get("new_password")
+    cur_pw   = data.get("current_password")
+
+    updates, params = [], []
+
+    if new_name is not None:
+        new_name = new_name.strip()[:80]
+        if not new_name:
+            return jsonify({"error": "Name cannot be empty."}), 400
+        updates.append("name = %s"); params.append(new_name)
+
+    if new_pw:
+        if len(new_pw) < 6:
+            return jsonify({"error": "New password must be at least 6 characters."}), 400
+        # Require the current password to change it.
+        row = q("SELECT password_hash FROM users WHERE user_id = %s", [user["user_id"]])
+        if not row or not check_password_hash(row[0]["password_hash"], cur_pw or ""):
+            return jsonify({"error": "Your current password is incorrect."}), 400
+        updates.append("password_hash = %s"); params.append(generate_password_hash(new_pw))
+
+    if not updates:
+        return jsonify({"error": "Nothing to update."}), 400
+
+    params.append(user["user_id"])
+    with psycopg2.connect(PG) as conn, conn.cursor() as cur:
+        cur.execute("UPDATE users SET " + ", ".join(updates) + " WHERE user_id = %s", params)
+
+    fresh = q("SELECT user_id, email, name FROM users WHERE user_id = %s", [user["user_id"]])[0]
+    return jsonify({"ok": True, "user": {"user_id": fresh["user_id"], "email": fresh["email"], "name": fresh.get("name")}})
+
+
 @app.route("/api/ping")
 def ping():
     return jsonify({"ok": True})
@@ -419,9 +586,43 @@ def insights_summary():
         "extremes": extremes,
     })
 
+
+@app.route("/api/insights/by-flat-type")
+def insights_by_flat_type():
+    """Median resale price and median price/sqm for EACH flat type, within the
+    window (and optional town). Shows how much stepping up in size costs."""
+    town   = request.args.get("town")
+    months = request.args.get("months", 24, type=int)
+
+    where = """
+      FROM resale_transactions t
+      JOIN blocks b      ON b.block_id = t.block_id
+      JOIN towns tw      ON tw.town_id = b.town_id
+      JOIN flat_types ft ON ft.flat_type_id = t.flat_type_id
+      WHERE t.month >= ((SELECT MAX(month) FROM resale_transactions) - (%s || ' months')::interval)
+    """
+    p = [months]
+    if town:
+        where += " AND tw.town_name = %s"
+        p.append(town)
+
+    rows = q("""
+      SELECT ft.flat_type_name,
+             ft.flat_type_id,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY t.resale_price))::int AS median_price,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+               ORDER BY (t.resale_price / NULLIF(t.floor_area_sqm, 0))))::int AS median_psm,
+             COUNT(*)::int AS txn_count
+    """ + where + """
+      GROUP BY ft.flat_type_name, ft.flat_type_id
+      HAVING COUNT(*) >= 5
+      ORDER BY ft.flat_type_id
+    """, p)
+    return jsonify({"town": town, "months": months, "rows": rows})
+
 @app.route("/api/bookmarks", methods=["GET"])
-def list_bookmarks():
-    user_id = request.args.get("user_id", 1, type=int)
+@require_auth
+def list_bookmarks(user):
     rows = q("""
       SELECT b.txn_id, b.notes, b.created_at,
              t.month, tw.town_name, ft.flat_type_name, fm.flat_model_name,
@@ -436,7 +637,7 @@ def list_bookmarks():
       JOIN flat_models fm ON fm.flat_model_id = t.flat_model_id
       WHERE b.user_id = %s
       ORDER BY b.created_at DESC
-    """, [user_id])
+    """, [user["user_id"]])
     for r in rows:
         r["resale_price"]   = float(r["resale_price"])
         r["floor_area_sqm"] = float(r["floor_area_sqm"])
@@ -446,9 +647,9 @@ def list_bookmarks():
 
 
 @app.route("/api/bookmarks", methods=["POST"])
-def add_bookmark():
+@require_auth
+def add_bookmark(user):
     data    = request.get_json(silent=True) or {}
-    user_id = int(data.get("user_id", 1))
     txn_id  = int(data.get("txn_id", 0))
     notes   = data.get("notes")
     if not txn_id:
@@ -458,16 +659,16 @@ def add_bookmark():
           INSERT INTO bookmarks (user_id, txn_id, notes)
           VALUES (%s, %s, %s)
           ON CONFLICT (user_id, txn_id) DO UPDATE SET notes = EXCLUDED.notes
-        """, [user_id, txn_id, notes])
-    return jsonify({"ok": True, "user_id": user_id, "txn_id": txn_id})
+        """, [user["user_id"], txn_id, notes])
+    return jsonify({"ok": True, "txn_id": txn_id})
 
 
 @app.route("/api/bookmarks/<int:txn_id>", methods=["DELETE"])
-def remove_bookmark(txn_id):
-    user_id = request.args.get("user_id", 1, type=int)
+@require_auth
+def remove_bookmark(txn_id, user):
     with psycopg2.connect(PG) as conn, conn.cursor() as cur:
         cur.execute("DELETE FROM bookmarks WHERE user_id = %s AND txn_id = %s",
-                    [user_id, txn_id])
+                    [user["user_id"], txn_id])
     return jsonify({"ok": True})
 
 @app.route("/api/reviews", methods=["GET"])

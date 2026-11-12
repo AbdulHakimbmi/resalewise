@@ -98,7 +98,7 @@
 
         const path = imagePathForTown(town);
 
-        image.alt = "Illustrative AI-generated HDB estate image for " + town;
+        image.alt = "HDB estate view of " + town;
         image.loading = "eager";
         image.decoding = "async";
 

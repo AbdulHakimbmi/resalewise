@@ -55,9 +55,15 @@
                 <div class="notice" id="extremesText">Finding the most and least expensive towns…</div>
             </div>
 
-            <!-- Charts -->
-            <div class="dash" style="margin-top:18px">
-                <article class="card chart-card" data-reveal>
+            <!-- Draggable dashboard -->
+            <div class="dash-toolbar">
+                <span class="dash-hint">⠿ Drag the cards to rearrange your dashboard — your layout is saved automatically.</span>
+                <button class="ghost-btn" id="resetLayout" type="button">Reset layout</button>
+            </div>
+            <div class="dash-grid" id="dashGrid">
+
+                <article class="card chart-card dash-tile" draggable="true" data-tile="trend" data-reveal>
+                    <div class="tile-grip" title="Drag to move">⠿</div>
                     <h3 id="trendTitle">Resale price trend</h3>
                     <p id="trendSub">Quarterly median resale price.</p>
                     <div class="line-chart">
@@ -66,11 +72,42 @@
                     </div>
                     <div class="legend"><span><i></i><span id="legendLabel">Median resale price</span></span><span id="trendDelta" class="trend-delta"></span></div>
                 </article>
-                <article class="card chart-card" data-reveal>
+
+                <article class="card chart-card dash-tile" draggable="true" data-tile="towns" data-reveal>
+                    <div class="tile-grip" title="Drag to move">⠿</div>
                     <h3>Town median comparison</h3>
                     <p id="townCompSub">Median resale price by town. Click a bar to focus that town.</p>
                     <div class="town-list" id="townList"><div class="notice">Loading…</div></div>
                 </article>
+
+                <article class="card chart-card dash-tile" draggable="true" data-tile="bytype" data-reveal>
+                    <div class="tile-grip" title="Drag to move">⠿</div>
+                    <h3>What does each flat size cost?</h3>
+                    <p id="byTypeSub">Median resale price by flat type.</p>
+                    <div class="bar-rows" id="byTypeChart"><div class="notice">Loading…</div></div>
+                    <div class="chart-insight" id="byTypeInsight"></div>
+                </article>
+
+                <article class="card chart-card dash-tile" draggable="true" data-tile="volume" data-reveal>
+                    <div class="tile-grip" title="Drag to move">⠿</div>
+                    <h3>How active is the market?</h3>
+                    <p id="volSub">Number of sales each quarter — higher bars mean more choice.</p>
+                    <div class="chart-body">
+                        <div class="y-axis-label">Sales</div>
+                        <div class="bar-chart" id="volChart"></div>
+                    </div>
+                    <div class="x-axis-label">Time →</div>
+                    <div class="chart-insight" id="volInsight"></div>
+                </article>
+
+                <article class="card chart-card dash-tile dash-wide" draggable="true" data-tile="bands" data-reveal>
+                    <div class="tile-grip" title="Drag to move">⠿</div>
+                    <h3>Where do prices land?</h3>
+                    <p id="bandSub">Share of sales in each price bracket.</p>
+                    <div class="band-chart" id="bandChart"><div class="notice">Loading…</div></div>
+                    <div class="chart-insight" id="bandInsight"></div>
+                </article>
+
             </div>
         </section>
 
@@ -80,6 +117,7 @@
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
         <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
@@ -208,29 +246,113 @@
           });
           chartWrap.addEventListener("mouseleave", () => { chartTip.hidden = true; });
 
+          const shortK = n => "$" + Math.round(Number(n) / 1000) + "k";
+
+          // ---- Flat-type price comparison (horizontal bars) ----
+          function renderByType(rows, flat_type) {
+            const el = $("byTypeChart");
+            if (!rows || !rows.length) { el.innerHTML = '<div class="notice">Not enough data.</div>'; return; }
+            const max = Math.max(...rows.map(r => r.median_price));
+            el.innerHTML = rows.map(r => {
+              const on = r.flat_type_name === flat_type ? " focus" : "";
+              return `<div class="bar-row${on}">
+                        <span class="br-label">${titleCase(r.flat_type_name)}</span>
+                        <div class="br-track"><i style="width:${Math.round(r.median_price/max*100)}%"></i></div>
+                        <b class="br-val">${shortK(r.median_price)}</b>
+                      </div>`;
+            }).join("");
+            // Insight: cost to step up from smallest to largest available type.
+            const lo = rows[0], hi = rows[rows.length - 1];
+            if (lo && hi && hi !== lo) {
+              const jump = Math.round((hi.median_price - lo.median_price) / 1000);
+              $("byTypeInsight").innerHTML =
+                `💡 Stepping up from a <b>${titleCase(lo.flat_type_name)}</b> to a <b>${titleCase(hi.flat_type_name)}</b> costs about <b>$${jump.toLocaleString()}k</b> more at the median.`;
+            } else { $("byTypeInsight").textContent = ""; }
+          }
+
+          // ---- Transaction volume per quarter (vertical bars) ----
+          function renderVolume(rows) {
+            const el = $("volChart");
+            if (!rows || !rows.length) { el.innerHTML = ""; $("volInsight").textContent = ""; return; }
+            const max = Math.max(...rows.map(r => r.txn_count), 1);
+            el.innerHTML = rows.map(r => {
+              const h = Math.round(r.txn_count / max * 100);
+              return `<div class="hist-col" title="${r.txn_count} sales in ${fmtQ(r.quarter)}">
+                        <div class="hist-bar" style="height:${Math.max(h,1)}%"></div>
+                        <span>${fmtQ(r.quarter).replace(' ', "'").replace('20','')}</span>
+                      </div>`;
+            }).join("");
+            const total = rows.reduce((s,r) => s + r.txn_count, 0);
+            const busiest = rows.reduce((a,b) => b.txn_count > a.txn_count ? b : a, rows[0]);
+            $("volInsight").innerHTML =
+              `💡 <b>${total.toLocaleString()}</b> sales in this window. The busiest quarter was <b>${fmtQ(busiest.quarter)}</b> with ${busiest.txn_count.toLocaleString()} sales.`;
+          }
+
+          // ---- Affordability price bands (stacked horizontal segments) ----
+          function renderBands(stats) {
+            const el = $("bandChart");
+            if (!stats || !stats.n) { el.innerHTML = '<div class="notice">Not enough data.</div>'; $("bandInsight").textContent = ""; return; }
+            // Group the fine buckets into 5 readable brackets by price.
+            const brackets = [
+              { label: "Under $400k", lo: 0,       hi: 400000 },
+              { label: "$400–500k",   lo: 400000,  hi: 500000 },
+              { label: "$500–650k",   lo: 500000,  hi: 650000 },
+              { label: "$650–800k",   lo: 650000,  hi: 800000 },
+              { label: "$800k+",      lo: 800000,  hi: Infinity },
+            ];
+            const counts = brackets.map(br =>
+              (stats.buckets || []).reduce((s,b) => {
+                const mid = (b.low + b.high) / 2;
+                return s + (mid >= br.lo && mid < br.hi ? b.count : 0);
+              }, 0)
+            );
+            const total = counts.reduce((a,b) => a+b, 0) || 1;
+            const palette = ["#6f9bff", "#5a86e6", "#4f7fd6", "#d8a26a", "#c58a4e"];
+            el.innerHTML = `
+              <div class="band-bar">${brackets.map((br,i) => {
+                const pct = counts[i] / total * 100;
+                return pct > 0 ? `<span class="band-seg" style="width:${pct}%;background:${palette[i]}" title="${br.label}: ${Math.round(pct)}%"></span>` : "";
+              }).join("")}</div>
+              <div class="band-legend">${brackets.map((br,i) =>
+                `<span class="band-key"><i style="background:${palette[i]}"></i>${br.label} · ${Math.round(counts[i]/total*100)}%</span>`
+              ).join("")}</div>`;
+            const topIdx = counts.indexOf(Math.max(...counts));
+            $("bandInsight").innerHTML =
+              `💡 Most sales here fall in the <b>${brackets[topIdx].label}</b> bracket (${Math.round(counts[topIdx]/total*100)}% of transactions).`;
+          }
+
           // ---- Load everything for the current selection ----
           async function update() {
             const flat_type = flatSel.value;
             const town = townSel.value || "";
             const months = monthsSel.value;
 
+            const scope = town || "all towns";
             $("trendTitle").textContent = `Resale price trend · ${flat_type}` + (town ? ` · ${town}` : "");
-            $("trendSub").textContent = `Quarterly median resale price, ${town || "all towns"}, last ${months} months of data.`;
+            $("trendSub").textContent = `Quarterly median resale price, ${scope}, last ${months} months of data.`;
             $("townCompSub").textContent = `Median ${flat_type} price by town. Click a bar to focus that town.`;
             $("legendLabel").textContent = `Median ${flat_type} price`;
+            $("byTypeSub").textContent = `Median price by flat type in ${scope} (last ${months} months).`;
+            $("volSub").textContent = `${flat_type} sales per quarter in ${scope} — taller bars mean more choice.`;
+            $("bandSub").textContent = `Share of ${flat_type} sales in each price bracket, ${scope}.`;
             townListEl.innerHTML = '<div class="notice">Loading…</div>';
 
             try {
               const params = { flat_type, months };
               if (town) params.town = town;
-              const [summary, medians, trend] = await Promise.all([
+              const [summary, medians, trend, byType, stats] = await Promise.all([
                 apiGet("/api/insights/summary", params),
                 apiGet("/api/insights/town-medians", { flat_type, months }),
-                apiGet("/api/insights/trend", params)
+                apiGet("/api/insights/trend", params),
+                apiGet("/api/insights/by-flat-type", town ? { town, months } : { months }),
+                apiGet("/api/search-stats", params)   // reuse: buckets for price bands
               ]);
               renderSummary(summary);
               renderTowns(medians.rows, town || null);
               renderTrend(trend.rows);
+              renderByType(byType.rows, flat_type);
+              renderVolume(trend.rows);
+              renderBands(stats);
             } catch (e) {
               townListEl.innerHTML = `<div class="notice">Could not load insights: ${e.message}. Is the API running on port 5000?</div>`;
               $("cMedian").textContent = "Error";
@@ -240,6 +362,63 @@
           $("insightControls").addEventListener("submit", ev => { ev.preventDefault(); update(); });
           // Live-update when any control changes (no need to press the button).
           [flatSel, townSel, monthsSel].forEach(el => el.addEventListener("change", update));
+
+          // ---- Draggable dashboard (reorder tiles; layout saved locally) ----
+          (function dashboardDnD() {
+            const grid = $("dashGrid");
+            const LS_KEY = "rw_dash_order";
+            const tiles = () => [...grid.querySelectorAll(".dash-tile")];
+
+            // Restore saved order.
+            const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+            if (Array.isArray(saved)) {
+              saved.forEach(name => {
+                const el = grid.querySelector('.dash-tile[data-tile="' + name + '"]');
+                if (el) grid.appendChild(el);   // re-append in saved sequence
+              });
+            }
+
+            function saveOrder() {
+              localStorage.setItem(LS_KEY, JSON.stringify(tiles().map(t => t.dataset.tile)));
+            }
+
+            let dragEl = null;
+
+            grid.addEventListener("dragstart", (e) => {
+              const tile = e.target.closest(".dash-tile");
+              if (!tile) return;
+              dragEl = tile;
+              tile.classList.add("dragging");
+              e.dataTransfer.effectAllowed = "move";
+              try { e.dataTransfer.setData("text/plain", tile.dataset.tile); } catch (_) {}
+            });
+
+            grid.addEventListener("dragend", () => {
+              if (dragEl) dragEl.classList.remove("dragging");
+              dragEl = null;
+              grid.querySelectorAll(".drop-target").forEach(t => t.classList.remove("drop-target"));
+              saveOrder();
+            });
+
+            grid.addEventListener("dragover", (e) => {
+              e.preventDefault();               // allow drop
+              const over = e.target.closest(".dash-tile");
+              grid.querySelectorAll(".drop-target").forEach(t => { if (t !== over) t.classList.remove("drop-target"); });
+              if (!over || over === dragEl) return;
+              over.classList.add("drop-target");
+              // Insert before or after depending on cursor position.
+              const rect = over.getBoundingClientRect();
+              const after = (e.clientY - rect.top) > rect.height / 2;
+              if (after) over.after(dragEl); else over.before(dragEl);
+            });
+
+            grid.addEventListener("drop", (e) => { e.preventDefault(); });
+
+            $("resetLayout").addEventListener("click", () => {
+              localStorage.removeItem(LS_KEY);
+              location.reload();
+            });
+          })();
 
           update();
         })();

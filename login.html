@@ -20,13 +20,15 @@
         <section class="login">
             <article class="card login-card">
                 <div class="small-kicker">Welcome back</div>
-                <h1>Sign in to your shortlist.</h1>
-                <p>Sign in to save flats, build a shortlist and compare transactions across visits.</p>
-                <form data-demo-form="Accounts are coming soon — sign-in will be enabled shortly.">
-                    <div class="form-row"><label>Email address</label><input type="email" placeholder="you@example.com" required></div>
-                    <div class="form-row"><label>Password</label><input type="password" placeholder="••••••••" required></div>
-                    <div class="split-note"><label><input type="checkbox"> Remember me</label><a href="#" data-toast="Password reset is coming soon.">Forgot password?</a></div><button class="primary-btn full">Log in →</button></form>
-                <p style="margin:20px 0 0;text-align:center">New to ResaleWise SG? <a href="#" style="color:var(--forest);font-weight:800" data-toast="Account creation is coming soon.">Create an account</a></p>
+                <h1>Sign in to your <em>shortlist.</em></h1>
+                <p>Log in to save flats, build a shortlist and compare them across visits and devices.</p>
+                <div class="auth-error" id="authError" hidden></div>
+                <form id="loginForm" novalidate>
+                    <div class="form-row"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+                    <div class="form-row"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required></div>
+                    <button class="primary-btn full" id="loginBtn" type="submit">Log in →</button>
+                </form>
+                <p style="margin:20px 0 0;text-align:center">New to ResaleWise SG? <a href="register.html" style="color:var(--lime);font-weight:800">Create an account</a></p>
             </article>
         </section>
         <footer class="footer">
@@ -34,10 +36,41 @@
             <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
         <script src="assets/js/mist-background.js"></script>
-        <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
+        <script>
+        (function () {
+          // Already logged in? Go where they were headed (or home).
+          const next = new URLSearchParams(location.search).get("next") || "index.html";
+          if (Auth.isLoggedIn()) { location.href = next; return; }
+
+          const form = document.getElementById("loginForm");
+          const err  = document.getElementById("authError");
+          const btn  = document.getElementById("loginBtn");
+
+          function showError(msg) { err.textContent = msg; err.hidden = false; }
+
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            err.hidden = true;
+            const email = document.getElementById("email").value.trim();
+            const pw    = document.getElementById("password").value;
+            if (!email || !pw) { showError("Please enter your email and password."); return; }
+
+            btn.disabled = true; btn.textContent = "Signing in…";
+            try {
+              await Auth.login(email, pw);
+              location.href = next;
+            } catch (ex) {
+              showError(ex.message);
+              btn.disabled = false; btn.textContent = "Log in →";
+            }
+          });
+        })();
+        </script>
     </main>
 </body>
 

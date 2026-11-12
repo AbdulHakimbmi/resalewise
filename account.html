@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="ResaleWise SG — manage your account settings.">
+    <title>Account · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+
+        <section class="page-hero">
+            <div class="kicker">Account settings</div>
+            <h1>Manage your <em>account.</em></h1>
+            <p id="acctIntro">Update your display name or change your password.</p>
+        </section>
+
+        <section class="section" style="padding-top:26px">
+            <div class="account-grid">
+                <!-- Profile / name -->
+                <article class="card login-card" style="margin:0">
+                    <div class="small-kicker">Profile</div>
+                    <h3 style="margin:6px 0 4px">Display name</h3>
+                    <p class="side-hint" style="margin:0 0 14px">This is shown in the nav and on your reviews.</p>
+                    <div class="auth-error" id="nameErr" hidden></div>
+                    <div class="auth-ok" id="nameOk" hidden></div>
+                    <form id="nameForm" novalidate>
+                        <div class="form-row"><label for="acctEmail">Email</label><input id="acctEmail" type="email" disabled></div>
+                        <div class="form-row"><label for="acctName">Name</label><input id="acctName" type="text" autocomplete="name" placeholder="Your name" required></div>
+                        <button class="primary-btn full" id="saveName" type="submit">Save name</button>
+                    </form>
+                </article>
+
+                <!-- Password -->
+                <article class="card login-card" style="margin:0">
+                    <div class="small-kicker">Security</div>
+                    <h3 style="margin:6px 0 4px">Change password</h3>
+                    <p class="side-hint" style="margin:0 0 14px">Enter your current password to set a new one.</p>
+                    <div class="auth-error" id="pwErr" hidden></div>
+                    <div class="auth-ok" id="pwOk" hidden></div>
+                    <form id="pwForm" novalidate>
+                        <div class="form-row"><label for="curPw">Current password</label><input id="curPw" type="password" autocomplete="current-password" required></div>
+                        <div class="form-row"><label for="newPw">New password</label><input id="newPw" type="password" autocomplete="new-password" placeholder="At least 6 characters" required></div>
+                        <div class="form-row"><label for="newPw2">Confirm new password</label><input id="newPw2" type="password" autocomplete="new-password" required></div>
+                        <button class="primary-btn full" id="savePw" type="submit">Update password</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
+            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/mist-background.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script>
+        (function () {
+          // Must be logged in.
+          if (!requireAuth("account.html")) return;
+
+          const $ = id => document.getElementById(id);
+          const user = Auth.user() || {};
+          $("acctEmail").value = user.email || "";
+          $("acctName").value  = user.name || "";
+          if (user.name) $("acctIntro").textContent = `Signed in as ${user.name} (${user.email}).`;
+
+          function flash(el, msg, ok) {
+            el.textContent = msg; el.hidden = false;
+            const other = ok ? el.previousElementSibling : el.nextElementSibling;
+          }
+
+          // Save name
+          $("nameForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            $("nameErr").hidden = true; $("nameOk").hidden = true;
+            const name = $("acctName").value.trim();
+            if (!name) { $("nameErr").textContent = "Name cannot be empty."; $("nameErr").hidden = false; return; }
+            const btn = $("saveName"); btn.disabled = true; btn.textContent = "Saving…";
+            try {
+              const res = await authFetch("/api/me", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+              });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Could not save.");
+              Auth.save(Auth.token(), data.user);   // refresh stored user
+              if (window.renderAuthNav) renderAuthNav();
+              $("nameOk").textContent = "Name updated."; $("nameOk").hidden = false;
+            } catch (ex) {
+              $("nameErr").textContent = ex.message; $("nameErr").hidden = false;
+            } finally {
+              btn.disabled = false; btn.textContent = "Save name";
+            }
+          });
+
+          // Change password
+          $("pwForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            $("pwErr").hidden = true; $("pwOk").hidden = true;
+            const cur = $("curPw").value, np = $("newPw").value, np2 = $("newPw2").value;
+            if (!cur || !np) { $("pwErr").textContent = "Fill in all password fields."; $("pwErr").hidden = false; return; }
+            if (np.length < 6) { $("pwErr").textContent = "New password must be at least 6 characters."; $("pwErr").hidden = false; return; }
+            if (np !== np2) { $("pwErr").textContent = "The new passwords don't match."; $("pwErr").hidden = false; return; }
+            const btn = $("savePw"); btn.disabled = true; btn.textContent = "Updating…";
+            try {
+              const res = await authFetch("/api/me", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ current_password: cur, new_password: np })
+              });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || "Could not update password.");
+              $("pwForm").reset();
+              $("pwOk").textContent = "Password updated."; $("pwOk").hidden = false;
+            } catch (ex) {
+              $("pwErr").textContent = ex.message; $("pwErr").hidden = false;
+            } finally {
+              btn.disabled = false; btn.textContent = "Update password";
+            }
+          });
+        })();
+        </script>
+    </main>
+</body>
+
+</html>

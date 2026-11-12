@@ -1,19 +1,8 @@
 /*
-  ResaleWise SG — homepage UI polish
-  --------------------------------------------------------------
-  Progressive-enhancement extras. Everything here degrades safely:
-  if a feature's target elements are missing, that block just no-ops.
-
-  Includes:
-    1. Rotating town name in the hero headline
-    2. Scroll-reveal for [data-reveal] elements (IntersectionObserver)
-    3. Count-up animation for [data-count-to] numbers
-    4. Sticky nav that condenses on scroll
-    5. Hero search form -> search.html with clean query params
-    6. Mobile menu toggle
-
-  Respects prefers-reduced-motion: animations collapse to their
-  final state instantly instead of running.
+  ResaleWise SG — homepage UI behaviour
+  Rotating hero town name, scroll reveals, count-up stats, sticky nav,
+  hero search, mobile menu, theme toggle and the scrollytelling panel.
+  Honours prefers-reduced-motion.
 */
 (function () {
   "use strict";
@@ -213,6 +202,50 @@
       var open = links.classList.toggle("open");
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
+  })();
+
+  /* ---------- 6b. Light / dark theme toggle (sun & moon) ---------- */
+  (function themeToggle() {
+    var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+    var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+
+    function apply(theme) {
+      if (theme === "light") document.documentElement.setAttribute("data-theme", "light");
+      else document.documentElement.removeAttribute("data-theme");
+    }
+    // Applied ASAP (also set very early below to avoid a flash).
+    var saved = localStorage.getItem("rw_theme") || "dark";
+    apply(saved);
+
+    function mountButton() {
+      var nav = document.querySelector(".nav");
+      if (!nav || document.getElementById("themeToggle")) return;
+      var btn = document.createElement("button");
+      btn.id = "themeToggle";
+      btn.className = "theme-toggle";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Toggle light or dark mode");
+      function paint() {
+        var t = localStorage.getItem("rw_theme") || "dark";
+        btn.innerHTML = t === "light" ? MOON : SUN;   // show the icon you'd switch TO
+        btn.title = t === "light" ? "Switch to dark mode" : "Switch to light mode";
+      }
+      btn.addEventListener("click", function () {
+        var t = (localStorage.getItem("rw_theme") || "dark") === "light" ? "dark" : "light";
+        localStorage.setItem("rw_theme", t);
+        apply(t);
+        paint();
+      });
+      // Insert just before the mobile menu button (a direct nav child). The
+      // nav layout (below) uses margin-left:auto on .nav-links to keep the
+      // right-hand cluster tight, so this won't create a space-between gap.
+      var menu = nav.querySelector("[data-menu-toggle]");
+      if (menu) nav.insertBefore(btn, menu); else nav.appendChild(btn);
+      paint();
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", mountButton);
+    } else { mountButton(); }
   })();
 
   /* ---------- 7. Scroll progress bar ---------- */

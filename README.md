@@ -1,207 +1,182 @@
 # ResaleWise SG
 
-A Singapore HDB resale flat decision-support web app. Buyers and sellers
-search, compare, and analyse historical HDB resale prices, with value scoring,
-market insights, town profiles (with maps), and community reviews.
+ResaleWise SG helps people make sense of Singapore's HDB resale market. Instead
+of scrolling through endless listings, you can search real historical
+transactions, see how a flat is priced against others in the same town, read
+what residents say about a neighbourhood, and shortlist the flats worth a
+second look.
 
-- **Buyers:** find comparable flats, see how each is priced against its town's
-  median, and shortlist the best value.
-- **Sellers:** gauge a fair asking-price range from comparable transactions.
-
-Built on a hybrid **PostgreSQL + MongoDB** backend with a static HTML/CSS/JS
-frontend and a Flask API.
+I built this as a decision-support tool, not a listing site — every number you
+see comes from official HDB resale records.
 
 ---
 
-## ⚡ Quick start (for teammates)
+## What you can do
 
-> The cloud databases (Neon + MongoDB Atlas) are **already loaded and shared**
-> by the team. You do **not** need to load any data — just run the app.
-> You only need **Apache (for the pages)** and **Flask (for the API)** running.
+**Find a flat.** Search by town, flat type, budget, remaining lease, floor area,
+storey range and flat model. Each result is scored against the median for its
+town and flat type, so a "good value" or "premium" tag tells you at a glance how
+the price compares.
 
-### 1. Clone into XAMPP's web root
+**Understand the market.** The insights page shows median prices and price
+trends over time, and lets you compare towns side by side for any flat type.
 
-**Windows (XAMPP):**
-```bat
-cd C:\xampp\htdocs
+**Explore a town.** Open any town to see its median prices, recent transactions,
+an interactive map of the area, and reviews left by residents.
+
+**Build a shortlist.** Create a free account, save the flats you like, and
+compare them on the shortlist page — it highlights the best-value option and
+explains why.
+
+**Leave a review.** Share your take on a town (amenities, transport, atmosphere)
+to help other buyers.
+
+---
+
+## Getting the app running
+
+The databases are hosted in the cloud and shared across the team, so you don't
+need to load any data — you only need to run the two parts of the app: the web
+pages (served by Apache) and the API (Flask).
+
+### On Windows with XAMPP
+
+1. Clone the project into XAMPP's web root:
+   ```bat
+   cd C:\xampp\htdocs
+   git clone https://github.com/AbdulHakimbmi/resalewise-sg.git
+   cd resalewise-sg
+   ```
+
+2. Install the Python packages:
+   ```bat
+   pip install -r requirements.txt
+   ```
+
+3. Open the **XAMPP Control Panel** and start **Apache**. (You don't need MySQL —
+   this project uses cloud databases.)
+
+4. In a separate terminal, start the API:
+   ```bat
+   cd C:\xampp\htdocs\resalewise-sg
+   python app.py
+   ```
+   Wait until it prints `Running on http://127.0.0.1:5000`.
+
+5. Open the site in your browser:
+   ```
+   http://localhost/resalewise-sg/index.html
+   ```
+
+Both Apache and the Flask API need to be running for the data-driven pages to
+work. If you want a quick check that the API is up, open
+`http://localhost:5000/api/ping` — you should see `{"ok": true}`.
+
+### On macOS or Linux (no XAMPP)
+
+Use two terminals — one for the API, one for the pages:
+
+```bash
+# Terminal 1 — the API
 git clone https://github.com/AbdulHakimbmi/resalewise-sg.git
 cd resalewise-sg
-```
-
-### 2. Install Python dependencies
-
-```bat
 pip install -r requirements.txt
-```
-
-### 3. Start Apache
-
-Open the **XAMPP Control Panel** → click **Start** next to **Apache**.
-(Do **not** start MySQL — this project uses cloud databases.)
-
-### 4. Start the Flask API
-
-In a **separate** terminal, from the project folder:
-```bat
-cd C:\xampp\htdocs\resalewise-sg
 python app.py
-```
-Wait until you see: `Running on http://127.0.0.1:5000`
 
-### 5. Open the app
-
-```
-http://localhost/resalewise-sg/index.html
-```
-
-**Both Apache and Flask must be running** for the data-driven pages to work.
-Quick health check — open this in your browser, it should return `{"ok": true}`:
-```
-http://localhost:5000/api/ping
-```
-
----
-
-## 🍎 macOS / Linux (without XAMPP)
-
-You can serve the static files with Python's built-in server instead of Apache.
-Use **two terminals**:
-
-**Terminal 1 — the API:**
-```bash
-git clone https://github.com/AbdulHakimbmi/resalewise-sg.git
-cd resalewise-sg
-pip install -r requirements.txt
-python app.py            # serves the API on http://127.0.0.1:5000
-```
-
-**Terminal 2 — the static pages:**
-```bash
+# Terminal 2 — the web pages
 cd resalewise-sg
 python -m http.server 8080
 ```
-Then open: `http://localhost:8080/index.html`
 
-> Note: the frontend calls the API at `http://localhost:5000`. If you serve the
-> pages on a different host/port, that's fine — the API base is hard-coded to
-> `localhost:5000` in `assets/js/api.js`.
+Then open `http://localhost:8080/index.html`. The pages talk to the API at
+`http://localhost:5000` (set in `assets/js/api.js`).
+
+---
+
+## A quick tour for new users
+
+1. **Start on the home page.** Use the search box up top, or scroll to the town
+   carousel and click a town to open its profile.
+2. **Search for flats.** On "Find a flat", type a town name, pick a flat type,
+   and set any budget or lease preferences. Results and the charts update as you
+   go. Watch the value tag on each result.
+3. **Open a listing.** Click "View details" to see the full record, a map of the
+   location, and how the price compares to the town median.
+4. **Save what you like.** Log in (or create an account), then use "Add to
+   shortlist" on any listing.
+5. **Compare your shortlist.** The Compare page lines up your saved flats and
+   points out the best value, with the reasoning behind it.
+6. **Switch themes.** Use the sun/moon button in the navigation bar to toggle
+   light or dark mode — your choice is remembered.
 
 ---
 
 ## Requirements
 
-- Python 3.11+ (3.12 recommended)
-- XAMPP (Apache only) — or any static file server
-- Internet access (Neon + Atlas are cloud services)
+- Python 3.11 or newer
+- XAMPP (Apache) on Windows, or any static file server
+- An internet connection (the databases are cloud-hosted)
 
-Python packages (`requirements.txt`):
-```
-flask
-flask-cors
-psycopg2-binary
-pymongo
-pandas
-sqlalchemy
-```
+Python packages are listed in `requirements.txt`: Flask, Flask-CORS,
+psycopg2-binary, pymongo, pandas and SQLAlchemy.
 
 ---
 
-## Pages
+## For the team: loading the data (one time only)
 
-| Page | What it does |
-|---|---|
-| `index.html` | Home — hero search, town carousel, "How it works" (interactive), live stats |
-| `search.html` | Find a flat — filters, charts, value scores, load-more results |
-| `town.html` | Town profile — stats, recent transactions, map, and reviews |
-| `insights.html` | Market insights — interactive medians & trends by flat type/town/window |
-| `reviews.html` | Town reviews — read & write community reviews |
-| `compare.html` | Shortlist — saved flats scored for value with a recommended pick |
-| `details.html` | Single transaction detail + add to shortlist |
-| `login.html` | Sign-in page (accounts feature is planned) |
-
----
-
-## Flask API endpoints (port 5000)
-
-- `GET  /api/ping` — health check
-- `GET  /api/options` — towns, flat types, flat models
-- `GET  /api/search?town=&flat_type=&flat_model=&budget=&min_lease=&min_area=&max_area=&storey=&limit=&offset=`
-- `GET  /api/search-stats?...` — price distribution, scatter, median (same filters as search)
-- `GET  /api/details/<txn_id>`
-- `GET  /api/txn-value/<txn_id>` — value score vs town+type median
-- `GET  /api/insights/town-medians?flat_type=&months=`
-- `GET  /api/insights/trend?flat_type=&town=&months=`
-- `GET  /api/insights/summary?flat_type=&town=&months=`
-- `GET  /api/bookmarks?user_id=` · `POST /api/bookmarks` · `DELETE /api/bookmarks/<txn_id>?user_id=`
-- `GET  /api/reviews?town=&limit=` · `POST /api/reviews`
-
----
-
-## Loading the data (ONE-TIME — only if setting up a new database)
-
-> ⚠️ Most teammates should **skip this** — the shared cloud database is already
-> loaded. Only run this if you are creating a brand-new database from scratch.
-> **It drops and recreates all tables**, wiping existing bookmarks/reviews.
-
-`load.py` builds the full schema (reference tables, ~985k transactions, and the
-`users` / `bookmarks` / `user_profiles` tables) and seeds a default user.
-Provide the cleaned CSV path in any of these ways:
+You almost certainly do **not** need this — the shared database is already set
+up. Only run this if you're building a fresh database from scratch. Note that it
+drops and recreates every table, so it will erase existing accounts, bookmarks
+and reviews.
 
 ```bash
-python load.py path/to/resale_clean.csv        # 1. command-line argument
-set RESALE_CSV=path/to/resale_clean.csv         # 2. env var (Windows)
-export RESALE_CSV=path/to/resale_clean.csv      # 2. env var (macOS/Linux)
-# 3. or drop resale_clean.csv next to load.py and run: python load.py
+python load.py path/to/resale_clean.csv     # pass the CSV path directly
+# or set RESALE_CSV, or drop resale_clean.csv next to load.py and run: python load.py
+```
+
+Connection strings live in `app.py` and `load.py`. That's deliberate for this
+private team repo so everyone shares the same databases — please keep the repo
+private.
+
+To make sure every town has a healthy set of community reviews, you can top up
+the review collection (this only adds what's missing, so existing reviews are
+left alone):
+
+```bash
+python seed_reviews.py        # ensures at least 15 reviews per town
+python seed_reviews.py 20     # or a higher minimum
 ```
 
 ---
 
-## Databases
+## How it's built
 
-- **PostgreSQL (Neon):** towns, blocks, flat types/models, resale transactions,
-  users, bookmarks, user profiles.
-- **MongoDB (Atlas, db `hdb`):** town reviews.
-
-Connection strings live directly in `app.py` and `load.py`. This is intentional
-for this **private team repo** so all members share the same cloud databases
-without extra setup. **Do not make this repo public** with the credentials in it.
-
----
-
-## Project layout
+- **Web pages:** plain HTML, CSS and JavaScript (no framework).
+- **API:** Flask (`app.py`), talking to PostgreSQL for transactions/accounts and
+  MongoDB for town reviews.
+- **Accounts:** email + password with hashed passwords and signed tokens; each
+  account has its own shortlist.
 
 ```
 resalewise-sg/
-├── index.html  search.html  town.html  insights.html
-├── reviews.html  compare.html  details.html  login.html
-├── app.py               ← Flask API
-├── load.py              ← one-time ETL (Postgres + Mongo)
+├── index.html      home
+├── search.html     find a flat
+├── town.html       town profile + map + reviews
+├── insights.html   market insights
+├── reviews.html    town reviews
+├── compare.html    shortlist & value comparison
+├── details.html    single transaction + map
+├── login.html / register.html / account.html
+├── app.py          API
+├── load.py         one-time data loader
 ├── requirements.txt
 └── assets/
     ├── css/style.css
-    └── js/
-        ├── api.js            ← API helper + shared dropdown/town helpers
-        ├── app.js            ← toasts / small shared UI
-        ├── mist-background.js← animated WebGL background
-        ├── town-coverflow.js ← homepage town carousel
-        └── ui-polish.js      ← scroll effects, rotating town, live stats
+    └── js/  (api, auth, app, mist-background, town-coverflow, ui-polish)
 ```
 
 ---
 
-## Troubleshooting
+## Data source
 
-- **A page says "Could not load…"** → make sure **Flask is running** on port 5000
-  (`python app.py`). Apache alone can't serve the API.
-- **`/api/ping` doesn't return `{"ok": true}`** → Flask isn't running, or a
-  firewall/proxy is blocking port 5000.
-- **Dropdowns are empty / charts blank** → the API can't reach the cloud DB;
-  check your internet connection (Neon/Atlas are cloud-hosted).
-- **Changed backend code?** → restart `python app.py` to pick up new endpoints.
-
----
-
-## Datasets
-
-- HDB Resale Flat Prices (data.gov.sg)
-- HDB Property Information (data.gov.sg)
+HDB Resale Flat Prices and HDB Property Information, from data.gov.sg.
