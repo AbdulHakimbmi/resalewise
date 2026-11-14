@@ -1,0 +1,903 @@
+{
+  "generated_at": "2026-10-26T03:12:14+00:00",
+  "label": "Laptop, Docker, plugged in",
+  "environment": {
+    "postgres": "PostgreSQL 17.5 (Debian 17.5-1.pgdg110+1) on x86_64-pc-linux-gnu",
+    "postgis": "3.5.2",
+    "postgres_settings": {
+      "shared_buffers": "512MB",
+      "work_mem": "32MB",
+      "max_parallel_workers_per_gather": "2",
+      "jit": "off",
+      "effective_cache_size": "4GB"
+    },
+    "mongodb": "8.0.34",
+    "python": "3.13.14",
+    "os": "Windows 11",
+    "cpu_count": 14,
+    "machine": "AMD64",
+    "rows_postgres": 985219,
+    "docs_mongodb": 985219
+  },
+  "protocol": {
+    "runs": 300,
+    "warmup": 30,
+    "seed": 42,
+    "equivalence_sets": 20,
+    "latency": "client-observed, milliseconds",
+    "ci": "bootstrap 95 % CI of the median (2000 resamples)",
+    "order": "configurations rotate every run"
+  },
+  "workloads": [
+    {
+      "id": "W0",
+      "title": "Primary-key lookup",
+      "what": "one sale by its id (baseline)",
+      "configs": [
+        "postgres",
+        "postgres_flat",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": []
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 2.421,
+          "p50_ms": 2.359,
+          "p50_ci95": [
+            2.197,
+            2.445
+          ],
+          "p95_ms": 3.941,
+          "p99_ms": 6.303,
+          "min_ms": 1.018,
+          "max_ms": 10.883
+        },
+        "postgres_flat": {
+          "n": 300,
+          "mean_ms": 1.751,
+          "p50_ms": 1.634,
+          "p50_ci95": [
+            1.526,
+            1.728
+          ],
+          "p95_ms": 3.062,
+          "p99_ms": 4.751,
+          "min_ms": 0.707,
+          "max_ms": 6.764
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 2.832,
+          "p50_ms": 2.668,
+          "p50_ci95": [
+            2.551,
+            2.829
+          ],
+          "p95_ms": 4.516,
+          "p99_ms": 6.28,
+          "min_ms": 1.036,
+          "max_ms": 15.439
+        }
+      }
+    },
+    {
+      "id": "W1",
+      "title": "Filtered search",
+      "what": "town + flat type + budget, newest 50 (the search page)",
+      "configs": [
+        "postgres",
+        "postgres_flat",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": []
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 7.404,
+          "p50_ms": 7.121,
+          "p50_ci95": [
+            6.668,
+            7.674
+          ],
+          "p95_ms": 12.681,
+          "p99_ms": 15.29,
+          "min_ms": 2.882,
+          "max_ms": 17.567
+        },
+        "postgres_flat": {
+          "n": 300,
+          "mean_ms": 2.035,
+          "p50_ms": 1.803,
+          "p50_ci95": [
+            1.71,
+            1.929
+          ],
+          "p95_ms": 3.942,
+          "p99_ms": 4.981,
+          "min_ms": 0.754,
+          "max_ms": 6.226
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 3.407,
+          "p50_ms": 3.107,
+          "p50_ci95": [
+            2.96,
+            3.217
+          ],
+          "p95_ms": 5.987,
+          "p99_ms": 7.608,
+          "min_ms": 1.132,
+          "max_ms": 26.192
+        }
+      }
+    },
+    {
+      "id": "W2",
+      "title": "Median by town",
+      "what": "median price per town for one flat type, last 24 months",
+      "configs": [
+        "postgres",
+        "postgres_flat",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": [
+          {
+            "config": "postgres_flat",
+            "max_rel_diff_pct": 0.0
+          },
+          {
+            "config": "mongodb",
+            "max_rel_diff_pct": 0.0
+          },
+          {
+            "config": "postgres_flat",
+            "max_rel_diff_pct": 0.0
+          }
+        ]
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 17.463,
+          "p50_ms": 16.231,
+          "p50_ci95": [
+            15.434,
+            17.139
+          ],
+          "p95_ms": 28.978,
+          "p99_ms": 33.22,
+          "min_ms": 7.667,
+          "max_ms": 35.456
+        },
+        "postgres_flat": {
+          "n": 300,
+          "mean_ms": 8.422,
+          "p50_ms": 6.857,
+          "p50_ci95": [
+            6.486,
+            7.429
+          ],
+          "p95_ms": 18.3,
+          "p99_ms": 23.722,
+          "min_ms": 2.125,
+          "max_ms": 39.351
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 19.804,
+          "p50_ms": 17.673,
+          "p50_ci95": [
+            15.953,
+            21.051
+          ],
+          "p95_ms": 36.064,
+          "p99_ms": 45.614,
+          "min_ms": 5.209,
+          "max_ms": 57.605
+        }
+      }
+    },
+    {
+      "id": "W3",
+      "title": "Quarterly trend",
+      "what": "median price per quarter for one town + flat type, all years",
+      "configs": [
+        "postgres",
+        "postgres_flat",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": [
+          {
+            "config": "postgres_flat",
+            "max_rel_diff_pct": 0.0
+          },
+          {
+            "config": "mongodb",
+            "max_rel_diff_pct": 0.0
+          },
+          {
+            "config": "postgres_flat",
+            "max_rel_diff_pct": 0.0
+          }
+        ]
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 27.746,
+          "p50_ms": 25.541,
+          "p50_ci95": [
+            23.584,
+            26.536
+          ],
+          "p95_ms": 48.79,
+          "p99_ms": 62.532,
+          "min_ms": 8.805,
+          "max_ms": 111.076
+        },
+        "postgres_flat": {
+          "n": 300,
+          "mean_ms": 13.455,
+          "p50_ms": 11.599,
+          "p50_ci95": [
+            10.863,
+            12.731
+          ],
+          "p95_ms": 26.581,
+          "p99_ms": 39.414,
+          "min_ms": 2.606,
+          "max_ms": 64.768
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 32.199,
+          "p50_ms": 29.476,
+          "p50_ci95": [
+            27.54,
+            31.344
+          ],
+          "p95_ms": 60.031,
+          "p99_ms": 84.711,
+          "min_ms": 4.187,
+          "max_ms": 134.126
+        }
+      }
+    },
+    {
+      "id": "W4",
+      "title": "Nearest station",
+      "what": "nearest MRT/LRT station to a block",
+      "configs": [
+        "postgres",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": []
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 1.4,
+          "p50_ms": 1.234,
+          "p50_ci95": [
+            1.196,
+            1.288
+          ],
+          "p95_ms": 2.248,
+          "p99_ms": 4.294,
+          "min_ms": 0.648,
+          "max_ms": 6.874
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 2.789,
+          "p50_ms": 2.665,
+          "p50_ci95": [
+            2.553,
+            2.758
+          ],
+          "p95_ms": 4.329,
+          "p99_ms": 6.215,
+          "min_ms": 1.303,
+          "max_ms": 7.75
+        }
+      }
+    },
+    {
+      "id": "W5",
+      "title": "Blocks within 1 km",
+      "what": "every block within 1 km of a station",
+      "configs": [
+        "postgres",
+        "mongodb"
+      ],
+      "equivalence": {
+        "checked": 20,
+        "passed": 20,
+        "failures": [],
+        "notes": [
+          {
+            "config": "mongodb",
+            "jaccard": 1.0,
+            "only_pg": 0,
+            "only_mongo": 0
+          },
+          {
+            "config": "mongodb",
+            "jaccard": 0.9902,
+            "only_pg": 2,
+            "only_mongo": 0
+          },
+          {
+            "config": "mongodb",
+            "jaccard": 1.0,
+            "only_pg": 0,
+            "only_mongo": 0
+          }
+        ]
+      },
+      "latency": {
+        "postgres": {
+          "n": 300,
+          "mean_ms": 2.604,
+          "p50_ms": 2.547,
+          "p50_ci95": [
+            2.483,
+            2.639
+          ],
+          "p95_ms": 3.635,
+          "p99_ms": 4.303,
+          "min_ms": 1.239,
+          "max_ms": 5.451
+        },
+        "mongodb": {
+          "n": 300,
+          "mean_ms": 3.841,
+          "p50_ms": 3.355,
+          "p50_ci95": [
+            2.997,
+            3.784
+          ],
+          "p95_ms": 6.684,
+          "p99_ms": 7.243,
+          "min_ms": 1.006,
+          "max_ms": 7.534
+        }
+      }
+    }
+  ],
+  "concurrency": [
+    {
+      "workload": "W1",
+      "config": "postgres",
+      "threads": 1,
+      "ops_per_s": 118.7,
+      "p50_ms": 6.201,
+      "p95_ms": 12.037
+    },
+    {
+      "workload": "W1",
+      "config": "postgres",
+      "threads": 4,
+      "ops_per_s": 419.7,
+      "p50_ms": 4.693,
+      "p95_ms": 36.63
+    },
+    {
+      "workload": "W1",
+      "config": "postgres",
+      "threads": 8,
+      "ops_per_s": 239.6,
+      "p50_ms": 9.16,
+      "p95_ms": 83.714
+    },
+    {
+      "workload": "W1",
+      "config": "postgres_flat",
+      "threads": 1,
+      "ops_per_s": 615.6,
+      "p50_ms": 1.084,
+      "p95_ms": 2.443
+    },
+    {
+      "workload": "W1",
+      "config": "postgres_flat",
+      "threads": 4,
+      "ops_per_s": 3196.7,
+      "p50_ms": 0.844,
+      "p95_ms": 1.661
+    },
+    {
+      "workload": "W1",
+      "config": "postgres_flat",
+      "threads": 8,
+      "ops_per_s": 5767.6,
+      "p50_ms": 0.956,
+      "p95_ms": 1.861
+    },
+    {
+      "workload": "W1",
+      "config": "mongodb",
+      "threads": 1,
+      "ops_per_s": 500.1,
+      "p50_ms": 1.612,
+      "p95_ms": 4.029
+    },
+    {
+      "workload": "W1",
+      "config": "mongodb",
+      "threads": 4,
+      "ops_per_s": 2500.0,
+      "p50_ms": 1.387,
+      "p95_ms": 2.711
+    },
+    {
+      "workload": "W1",
+      "config": "mongodb",
+      "threads": 8,
+      "ops_per_s": 3042.2,
+      "p50_ms": 2.349,
+      "p95_ms": 4.376
+    },
+    {
+      "workload": "W4",
+      "config": "postgres",
+      "threads": 1,
+      "ops_per_s": 909.2,
+      "p50_ms": 0.611,
+      "p95_ms": 1.896
+    },
+    {
+      "workload": "W4",
+      "config": "postgres",
+      "threads": 4,
+      "ops_per_s": 4403.0,
+      "p50_ms": 0.626,
+      "p95_ms": 1.205
+    },
+    {
+      "workload": "W4",
+      "config": "postgres",
+      "threads": 8,
+      "ops_per_s": 7572.2,
+      "p50_ms": 0.709,
+      "p95_ms": 1.445
+    },
+    {
+      "workload": "W4",
+      "config": "mongodb",
+      "threads": 1,
+      "ops_per_s": 416.4,
+      "p50_ms": 2.162,
+      "p95_ms": 4.372
+    },
+    {
+      "workload": "W4",
+      "config": "mongodb",
+      "threads": 4,
+      "ops_per_s": 2192.7,
+      "p50_ms": 1.555,
+      "p95_ms": 2.957
+    },
+    {
+      "workload": "W4",
+      "config": "mongodb",
+      "threads": 8,
+      "ops_per_s": 1865.4,
+      "p50_ms": 2.409,
+      "p95_ms": 7.308
+    }
+  ],
+  "geo": true,
+  "median_semantics": {
+    "groups": 16083,
+    "cont_differs_from_disc": 5592,
+    "pct_groups": 34.8,
+    "max_rel_diff_pct": 53.57,
+    "note": "MongoDB's $median returned exactly PERCENTILE_DISC(0.5) in the equivalence checks; the app's PERCENTILE_CONT averages the two middle values when the count is even."
+  },
+  "bulk_load": {
+    "rows": 200000,
+    "postgres_copy": {
+      "rows_per_s_median": 511976,
+      "runs": [
+        378178,
+        511976,
+        536275
+      ]
+    },
+    "mongodb_insert_many": {
+      "rows_per_s_median": 127967,
+      "runs": [
+        127967,
+        133880,
+        126096
+      ]
+    }
+  },
+  "explain": {
+    "W1": {
+      "postgres": {
+        "top_node": "Limit",
+        "nodes": [
+          "Incremental Sort",
+          "Index Scan",
+          "Limit",
+          "Materialize",
+          "Memoize",
+          "Nested Loop",
+          "Seq Scan"
+        ],
+        "indexes": [
+          "blocks_pkey",
+          "flat_models_pkey",
+          "idx_txn_month"
+        ],
+        "execution_ms": 4.249,
+        "shared_hit_blocks": 2271,
+        "shared_read_blocks": 0
+      },
+      "postgres_flat": {
+        "top_node": "Limit",
+        "nodes": [
+          "Index Scan",
+          "Limit"
+        ],
+        "indexes": [
+          "bench_flat_town_type_month_id"
+        ],
+        "execution_ms": 0.294,
+        "shared_hit_blocks": 17,
+        "shared_read_blocks": 0
+      },
+      "mongodb": {
+        "stages": [
+          "FETCH",
+          "IXSCAN",
+          "LIMIT",
+          "PROJECTION_SIMPLE"
+        ],
+        "indexes": [
+          "town_type_month_id"
+        ],
+        "docs_examined": 66,
+        "keys_examined": 66,
+        "execution_ms": 5
+      }
+    },
+    "W2": {
+      "postgres": {
+        "top_node": "Aggregate",
+        "nodes": [
+          "Aggregate",
+          "Hash",
+          "Hash Join",
+          "Index Scan",
+          "Seq Scan",
+          "Sort"
+        ],
+        "indexes": [
+          "idx_txn_month"
+        ],
+        "execution_ms": 20.886,
+        "shared_hit_blocks": 5182,
+        "shared_read_blocks": 0
+      },
+      "mongodb": {
+        "stages": [
+          "FETCH",
+          "IXSCAN",
+          "PROJECTION_SIMPLE"
+        ],
+        "indexes": [
+          "type_month"
+        ],
+        "docs_examined": 12594,
+        "keys_examined": 12594,
+        "execution_ms": 43
+      }
+    },
+    "W4": {
+      "postgres": {
+        "top_node": "Limit",
+        "nodes": [
+          "Index Scan",
+          "Limit"
+        ],
+        "indexes": [
+          "gix_mrt_stations"
+        ],
+        "execution_ms": 0.094,
+        "shared_hit_blocks": 4,
+        "shared_read_blocks": 0
+      },
+      "mongodb": {
+        "stages": [
+          "FETCH",
+          "GEO_NEAR_2DSPHERE",
+          "IXSCAN"
+        ],
+        "indexes": [
+          "loc_2dsphere"
+        ],
+        "docs_examined": 119,
+        "keys_examined": 158,
+        "execution_ms": 2
+      }
+    }
+  },
+  "index_parity": {
+    "postgres": [
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_block",
+        "definition": "CREATE INDEX bench_flat_block ON public.bench_txn_flat USING btree (block_id)"
+      },
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_month_desc_id",
+        "definition": "CREATE INDEX bench_flat_month_desc_id ON public.bench_txn_flat USING btree (month DESC, txn_id DESC)"
+      },
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_pk",
+        "definition": "CREATE UNIQUE INDEX bench_flat_pk ON public.bench_txn_flat USING btree (txn_id)"
+      },
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_price",
+        "definition": "CREATE INDEX bench_flat_price ON public.bench_txn_flat USING btree (resale_price)"
+      },
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_town_type_month_id",
+        "definition": "CREATE INDEX bench_flat_town_type_month_id ON public.bench_txn_flat USING btree (town_name, flat_type_name, month DESC, txn_id DESC)"
+      },
+      {
+        "table": "bench_txn_flat",
+        "name": "bench_flat_type_month",
+        "definition": "CREATE INDEX bench_flat_type_month ON public.bench_txn_flat USING btree (flat_type_name, month)"
+      },
+      {
+        "table": "block_locations",
+        "name": "block_locations_pkey",
+        "definition": "CREATE UNIQUE INDEX block_locations_pkey ON public.block_locations USING btree (block_id)"
+      },
+      {
+        "table": "block_locations",
+        "name": "gix_block_locations",
+        "definition": "CREATE INDEX gix_block_locations ON public.block_locations USING gist (geog)"
+      },
+      {
+        "table": "blocks",
+        "name": "blocks_block_no_street_name_town_id_key",
+        "definition": "CREATE UNIQUE INDEX blocks_block_no_street_name_town_id_key ON public.blocks USING btree (block_no, street_name, town_id)"
+      },
+      {
+        "table": "blocks",
+        "name": "blocks_pkey",
+        "definition": "CREATE UNIQUE INDEX blocks_pkey ON public.blocks USING btree (block_id)"
+      },
+      {
+        "table": "blocks",
+        "name": "idx_blocks_town",
+        "definition": "CREATE INDEX idx_blocks_town ON public.blocks USING btree (town_id)"
+      },
+      {
+        "table": "mrt_stations",
+        "name": "gix_mrt_stations",
+        "definition": "CREATE INDEX gix_mrt_stations ON public.mrt_stations USING gist (geog)"
+      },
+      {
+        "table": "mrt_stations",
+        "name": "mrt_stations_pkey",
+        "definition": "CREATE UNIQUE INDEX mrt_stations_pkey ON public.mrt_stations USING btree (station_id)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_block",
+        "definition": "CREATE INDEX idx_txn_block ON public.resale_transactions USING btree (block_id)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_flatmodel",
+        "definition": "CREATE INDEX idx_txn_flatmodel ON public.resale_transactions USING btree (flat_model_id)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_flattype",
+        "definition": "CREATE INDEX idx_txn_flattype ON public.resale_transactions USING btree (flat_type_id)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_month",
+        "definition": "CREATE INDEX idx_txn_month ON public.resale_transactions USING btree (month)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_month_id",
+        "definition": "CREATE INDEX idx_txn_month_id ON public.resale_transactions USING btree (month DESC, txn_id DESC)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_price",
+        "definition": "CREATE INDEX idx_txn_price ON public.resale_transactions USING btree (resale_price)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "idx_txn_type_month",
+        "definition": "CREATE INDEX idx_txn_type_month ON public.resale_transactions USING btree (flat_type_id, month)"
+      },
+      {
+        "table": "resale_transactions",
+        "name": "resale_transactions_pkey",
+        "definition": "CREATE UNIQUE INDEX resale_transactions_pkey ON public.resale_transactions USING btree (txn_id)"
+      }
+    ],
+    "mongodb": [
+      {
+        "collection": "transactions",
+        "name": "_id_",
+        "key": [
+          [
+            "_id",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "transactions",
+        "name": "month_desc_id",
+        "key": [
+          [
+            "month",
+            -1
+          ],
+          [
+            "_id",
+            -1
+          ]
+        ]
+      },
+      {
+        "collection": "transactions",
+        "name": "town_type_month_id",
+        "key": [
+          [
+            "town",
+            1
+          ],
+          [
+            "flat_type",
+            1
+          ],
+          [
+            "month",
+            -1
+          ],
+          [
+            "_id",
+            -1
+          ]
+        ]
+      },
+      {
+        "collection": "transactions",
+        "name": "type_month",
+        "key": [
+          [
+            "flat_type",
+            1
+          ],
+          [
+            "month",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "transactions",
+        "name": "price",
+        "key": [
+          [
+            "price",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "transactions",
+        "name": "block",
+        "key": [
+          [
+            "block_id",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "places",
+        "name": "_id_",
+        "key": [
+          [
+            "_id",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "places",
+        "name": "loc_2dsphere",
+        "key": [
+          [
+            "loc",
+            "2dsphere"
+          ]
+        ]
+      },
+      {
+        "collection": "places",
+        "name": "codes",
+        "key": [
+          [
+            "codes",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "blocks_geo",
+        "name": "_id_",
+        "key": [
+          [
+            "_id",
+            1
+          ]
+        ]
+      },
+      {
+        "collection": "blocks_geo",
+        "name": "loc_2dsphere",
+        "key": [
+          [
+            "loc",
+            "2dsphere"
+          ]
+        ]
+      },
+      {
+        "collection": "blocks_geo",
+        "name": "town",
+        "key": [
+          [
+            "town",
+            1
+          ]
+        ]
+      }
+    ]
+  }
+}

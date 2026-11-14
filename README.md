@@ -1,182 +1,96 @@
 # ResaleWise SG
 
-ResaleWise SG helps people make sense of Singapore's HDB resale market. Instead
-of scrolling through endless listings, you can search real historical
-transactions, see how a flat is priced against others in the same town, read
-what residents say about a neighbourhood, and shortlist the flats worth a
-second look.
+ResaleWise SG helps people make sense of Singapore's HDB resale market. You can
+search 985,219 real resale transactions (January 1990 to September 2026), see how
+a flat is priced against similar flats sold in the same period, find out how far
+it is from the MRT, read what residents say about a town, and shortlist the
+flats worth a second look.
 
-I built this as a decision-support tool, not a listing site — every number you
-see comes from official HDB resale records.
+It is an INF2003 Database Systems project (Team 67) built on **two databases**:
+PostgreSQL for the relational core and MongoDB for documents and geospatial
+search, with a rigorous side-by-side comparison of the two.
+
+> **Running it:** follow the **Quick start** in [USER_MANUAL.md](USER_MANUAL.md).
+> It takes about 20 minutes from a fresh clone. The slow geocoding step (~50
+> minutes) is already done and saved in `data/geo/`, so you only load it.
 
 ---
 
 ## What you can do
 
-**Find a flat.** Search by town, flat type, budget, remaining lease, floor area,
-storey range and flat model. Each result is scored against the median for its
-town and flat type, so a "good value" or "premium" tag tells you at a glance how
-the price compares.
+- **Find a flat.** Search by town, flat type, budget, remaining lease, floor area,
+  storey range and flat model. Every result is judged against the median for the
+  same town and flat type **in the same quarter**, so a 1995 sale isn't called a
+  bargain just because prices have risen since.
+- **See one sale in context.** Each transaction page shows the block on a map
+  with its nearest MRT/LRT stations, and a **"What drives this price?"** panel:
+  how the flat compares with similar flats sold the same year, and which features
+  go with higher prices across the market (with 95% confidence intervals). These
+  are associations, not causes, and the page says so.
+- **Understand the market.** Median prices and trends, towns side by side, and a
+  league table of which towns are rising fastest (window functions).
+- **Explore a town.** Median prices, recent sales, a map of every block coloured
+  by price per sqm, and residents' reviews.
+- **Build a shortlist.** Save flats, add notes, and compare them; the account page
+  shows your recent shortlist activity and lets you delete the account.
+- **Read and write reviews.** Search them, see the rating spread and most-used
+  tags, and edit or delete your own.
+- **Look under the hood.** `benchmark.html` shows how the work is split between
+  the two databases, runs the same search on both live, and shows the benchmark
+  and geospatial validation results.
 
-**Understand the market.** The insights page shows median prices and price
-trends over time, and lets you compare towns side by side for any flat type.
+## How the two databases share the work
 
-**Explore a town.** Open any town to see its median prices, recent transactions,
-an interactive map of the area, and reviews left by residents.
+| PostgreSQL (relational) | MongoDB (documents) |
+|---|---|
+| `towns`, `flat_types`, `flat_models`, `blocks`, `resale_transactions` (normalised, 985k rows) | `reviews`: free text + tags, `$jsonSchema` validator, text index, `$facet` |
+| `users` ↔ `resale_transactions` many-to-many via `bookmarks`; `user_profiles` (1:1) | `places`: MRT/LRT stations as GeoJSON MultiPoint (one point per exit), 2dsphere |
+| CHECK constraints, NOT NULL, foreign keys with cascades | `blocks_geo`: every geocoded block as a GeoJSON Point, 2dsphere |
+| Triggers: `updated_at` stamp + an audit trail of shortlist changes | `$geoNear` computes each block's nearest station → written back to PostgreSQL |
+| Views `v_transactions`; materialized views `mv_town_quarter_stats`, `mv_quarter_stats`, `mv_window_stats` (precomputed medians); window functions, `GROUPING SETS` | `transactions`: a denormalised copy of the sales for the benchmark |
+| PostGIS: `block_locations`, `mrt_stations`, `block_features` (cross-check) | |
 
-**Build a shortlist.** Create a free account, save the flats you like, and
-compare them on the shortlist page — it highlights the best-value option and
-explains why.
+Pipeline: HDB CSV → PostgreSQL (`scripts/load.py`) → OneMap geocoding → MongoDB
+`blocks_geo` + `places` → `$geoNear` → PostgreSQL `block_features` → price-driver
+analysis. Every distance is recomputed in PostGIS and compared (checks V1–V6).
 
-**Leave a review.** Share your take on a town (amenities, transport, atmosphere)
-to help other buyers.
+## Project layout
 
----
+```
+app.py                     entry point (python app.py / gunicorn app:app)
+resalewise/                the Flask application
+  config.py                settings from .env (no secrets in code)
+  db.py                    PostgreSQL pool + lazy MongoDB client
+  web.py, auth.py          error contract, rate limiting, cache, tokens
+  benchmarks.py            "value" benchmarks: each sale vs its own period
+  geo.py                   geocode matching + distance helpers
+  mongo_setup.py           MongoDB validators and indexes
+  routes/                  one blueprint per area (search, insights, geo, reviews, ...)
+sql/                       schema_extras.sql (constraints, triggers, views), geo.sql, indexes.sql
+scripts/                   load.py (PostgreSQL from resale_clean.csv), load_mongo_transactions.py, geocoding,
+                           stations, features, validation, check_consistency.py, seed_reviews.py, photos
+data/reference/            MRT/LRT station opening years (hand-checked) used by the price-driver analysis
+analysis/price_drivers.py  matched comparisons with bootstrap confidence intervals
+bench/                     run_bench.py (SQL vs NoSQL, plus --no-index) and run_paging.py (see bench/README.md)
+tests/                     unit tests (offline) + integration tests (real databases)
+data/results/              outputs used by the site and the report
+docker-compose.yml         local PostgreSQL + PostGIS and MongoDB
+*.html, assets/            the website (design by Abdul Hakim: assets/css/home.css + site.css;
+                           our feature layer: assets/css/features.css + assets/js/features.js)
+```
 
-## Getting the app running
-
-The databases are hosted in the cloud and shared across the team, so you don't
-need to load any data — you only need to run the two parts of the app: the web
-pages (served by Apache) and the API (Flask).
-
-### On Windows with XAMPP
-
-1. Clone the project into XAMPP's web root:
-   ```bat
-   cd C:\xampp\htdocs
-   git clone https://github.com/AbdulHakimbmi/resalewise-sg.git
-   cd resalewise-sg
-   ```
-
-2. Install the Python packages:
-   ```bat
-   pip install -r requirements.txt
-   ```
-
-3. Open the **XAMPP Control Panel** and start **Apache**. (You don't need MySQL —
-   this project uses cloud databases.)
-
-4. In a separate terminal, start the API:
-   ```bat
-   cd C:\xampp\htdocs\resalewise-sg
-   python app.py
-   ```
-   Wait until it prints `Running on http://127.0.0.1:5000`.
-
-5. Open the site in your browser:
-   ```
-   http://localhost/resalewise-sg/index.html
-   ```
-
-Both Apache and the Flask API need to be running for the data-driven pages to
-work. If you want a quick check that the API is up, open
-`http://localhost:5000/api/ping` — you should see `{"ok": true}`.
-
-### On macOS or Linux (no XAMPP)
-
-Use two terminals — one for the API, one for the pages:
+## Tests
 
 ```bash
-# Terminal 1 — the API
-git clone https://github.com/AbdulHakimbmi/resalewise-sg.git
-cd resalewise-sg
-pip install -r requirements.txt
-python app.py
-
-# Terminal 2 — the web pages
-cd resalewise-sg
-python -m http.server 8080
+python -m pytest tests                       # 82 unit tests, no database or network needed
+RW_INTEGRATION=1 python -m pytest tests      # + 12 integration tests against your .env databases
 ```
 
-Then open `http://localhost:8080/index.html`. The pages talk to the API at
-`http://localhost:5000` (set in `assets/js/api.js`).
+## Data and credits
 
----
-
-## A quick tour for new users
-
-1. **Start on the home page.** Use the search box up top, or scroll to the town
-   carousel and click a town to open its profile.
-2. **Search for flats.** On "Find a flat", type a town name, pick a flat type,
-   and set any budget or lease preferences. Results and the charts update as you
-   go. Watch the value tag on each result.
-3. **Open a listing.** Click "View details" to see the full record, a map of the
-   location, and how the price compares to the town median.
-4. **Save what you like.** Log in (or create an account), then use "Add to
-   shortlist" on any listing.
-5. **Compare your shortlist.** The Compare page lines up your saved flats and
-   points out the best value, with the reasoning behind it.
-6. **Switch themes.** Use the sun/moon button in the navigation bar to toggle
-   light or dark mode — your choice is remembered.
-
----
-
-## Requirements
-
-- Python 3.11 or newer
-- XAMPP (Apache) on Windows, or any static file server
-- An internet connection (the databases are cloud-hosted)
-
-Python packages are listed in `requirements.txt`: Flask, Flask-CORS,
-psycopg2-binary, pymongo, pandas and SQLAlchemy.
-
----
-
-## For the team: loading the data (one time only)
-
-You almost certainly do **not** need this — the shared database is already set
-up. Only run this if you're building a fresh database from scratch. Note that it
-drops and recreates every table, so it will erase existing accounts, bookmarks
-and reviews.
-
-```bash
-python load.py path/to/resale_clean.csv     # pass the CSV path directly
-# or set RESALE_CSV, or drop resale_clean.csv next to load.py and run: python load.py
-```
-
-Connection strings live in `app.py` and `load.py`. That's deliberate for this
-private team repo so everyone shares the same databases — please keep the repo
-private.
-
-To make sure every town has a healthy set of community reviews, you can top up
-the review collection (this only adds what's missing, so existing reviews are
-left alone):
-
-```bash
-python seed_reviews.py        # ensures at least 15 reviews per town
-python seed_reviews.py 20     # or a higher minimum
-```
-
----
-
-## How it's built
-
-- **Web pages:** plain HTML, CSS and JavaScript (no framework).
-- **API:** Flask (`app.py`), talking to PostgreSQL for transactions/accounts and
-  MongoDB for town reviews.
-- **Accounts:** email + password with hashed passwords and signed tokens; each
-  account has its own shortlist.
-
-```
-resalewise-sg/
-├── index.html      home
-├── search.html     find a flat
-├── town.html       town profile + map + reviews
-├── insights.html   market insights
-├── reviews.html    town reviews
-├── compare.html    shortlist & value comparison
-├── details.html    single transaction + map
-├── login.html / register.html / account.html
-├── app.py          API
-├── load.py         one-time data loader
-├── requirements.txt
-└── assets/
-    ├── css/style.css
-    └── js/  (api, auth, app, mist-background, town-coverflow, ui-polish)
-```
-
----
-
-## Data source
-
-HDB Resale Flat Prices and HDB Property Information, from data.gov.sg.
+- Resale prices: [HDB Resale Flat Prices](https://data.gov.sg/dataset/resale-flat-prices), data.gov.sg
+  (Singapore Open Data Licence), merged with HDB Property Information (block attributes).
+- Geocoding and stations: [OneMap](https://www.onemap.gov.sg/) (Singapore Land Authority);
+  optional LTA MRT Station Exit file from data.gov.sg.
+- Map tiles: OneMap basemaps © Singapore Land Authority (OpenStreetMap tiles as a fallback). Map library: Leaflet (BSD-2, bundled). The map provider is set in `addTiles()` in `assets/js/features.js`.
+- Town and homepage photos: Wikimedia Commons and Flickr (Creative Commons), credited per photo in `assets/images/towns/credits.json` and `assets/images/home/credits.json`; the credits are listed on the About page. A town without a photo shows a drawn block instead.

@@ -4,18 +4,22 @@ perspectives. Tops each town up to a minimum number of reviews without
 touching any that already exist.
 
 Usage:
-    python seed_reviews.py            # top up every town to 15 reviews
-    python seed_reviews.py 20         # top up every town to 20 reviews
+    python scripts/seed_reviews.py            # top up every town to 15 reviews
+    python scripts/seed_reviews.py 20         # top up every town to 20 reviews
 """
-import sys
+import os
 import random
+import sys
 from datetime import datetime, timedelta
 
-from pymongo import MongoClient
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-MONGO = "mongodb+srv://abdulhakimbmi_db_user:x88qNSieCF08vln7@hdbresale.yteparb.mongodb.net/hdb?appName=hdbresale"
-mongo = MongoClient(MONGO)
-db = mongo["hdb"]
+from resalewise import db as dbm  # noqa: E402
+from resalewise.mongo_setup import ensure_collection  # noqa: E402
+
+# Connection settings come from .env (MONGO_URI); nothing is hard-coded.
+db = dbm.mongo()
+ensure_collection(db, "reviews")
 
 MIN_PER_TOWN = int(sys.argv[1]) if len(sys.argv) > 1 else 15
 

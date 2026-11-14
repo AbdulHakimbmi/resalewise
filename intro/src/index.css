@@ -1,0 +1,80 @@
+﻿@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource/instrument-serif/latin-400-italic.css";
+
+/* Full-screen app: no page scroll, no template styling. */
+html, body, #root { height: 100%; margin: 0; }
+html { color-scheme: dark; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body {
+  background: #14163a;
+  color: #f4ead0;
+  overflow: hidden;
+  font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  font-optical-sizing: auto;
+}
+::selection { background: #ffb02e; color: #14163a; }
+
+/* ------------------------------------------------------------------ the scenes
+   Every motion below is a function of how far into its scene it is (--ts, in seconds): the delay is
+   negative by that much, so ?t=5 can freeze any frame, and nothing is a timer in JavaScript. */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);       /* a scene arrives */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);       /* words rise */
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);         /* copy leaves */
+}
+.layer { position: absolute; inset: 0; overflow: hidden; background: #14163a; }
+.layer.enter { animation: scene-in 0.9s var(--ease-out) both; animation-delay: calc(0s - var(--ts, 0) * 1s); }
+@keyframes scene-in { from { opacity: 0; filter: blur(14px); } to { opacity: 1; filter: blur(0); } }
+
+/* the photograph: cover-fitted at its own proportions, drifting a few percent over the scene */
+.photo {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 0.5s linear;
+  animation: drift 4.4s linear both; animation-delay: calc(0s - var(--ts, 0) * 1s);
+}
+.photo.ready { opacity: 1; }
+@keyframes drift { from { transform: scale(1); } to { transform: scale(1.04); } }
+
+/* darkens the photo where the type sits, so the words read on a bright sky as well as a dark one */
+.scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgb(8 10 36 / 0.62) 0%, rgb(8 10 36 / 0.34) 45%, rgb(8 10 36 / 0) 85%),
+    linear-gradient(0deg, rgb(8 10 36 / 0.78) 0%, rgb(8 10 36 / 0) 38%),
+    linear-gradient(180deg, rgb(8 10 36 / 0.5) 0%, rgb(8 10 36 / 0) 20%);
+}
+
+/* the headline: each word rises through its own mask */
+.mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.w {
+  display: inline-block;
+  animation: rise 0.8s var(--ease-expo) both;
+  animation-delay: calc(0.3s + var(--i, 0) * 0.07s - var(--ts, 0) * 1s);
+}
+@keyframes rise { from { transform: translateY(112%); } to { transform: none; } }
+.leave .copy { animation: copy-out 0.35s var(--ease-in) both; animation-delay: calc(0s - var(--lt, 0) * 1s); }
+@keyframes copy-out { to { opacity: 0; } }
+
+.h-lead, .h-tail, .h-note { text-shadow: 0 2px 28px rgb(8 10 36 / 0.45); }
+.h-lead { font-weight: 700; letter-spacing: -0.025em; line-height: 1.02; font-size: clamp(2.4rem, 7.2vw, 6rem); text-wrap: balance; }
+.h-tail { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; line-height: 1; font-size: clamp(2.7rem, 8vw, 6.6rem); color: #ffb02e; }
+.h-note { max-width: 25rem; font-size: 0.95rem; line-height: 1.45; color: rgb(244 234 208 / 0.9); }
+
+/* the last scene: the aerial photograph seen through the letters of the name */
+.cutout {
+  font-weight: 800; letter-spacing: -0.04em; line-height: 0.95; font-size: clamp(3rem, 15vw, 15rem);
+  background-size: cover; background-position: 50% 30%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: pan 4.4s linear both; animation-delay: calc(0s - var(--ts, 0) * 1s);
+}
+@keyframes pan { from { background-position: 50% 26%; } to { background-position: 50% 40%; } }
+@supports not (background-clip: text) { .cutout { color: #f4ead0; } }
+
+.frozen *, .frozen *::before { animation-play-state: paused !important; }
+
+/* reduced motion: scenes still change, with a plain fade; nothing drifts, rises or blurs */
+@media (prefers-reduced-motion: reduce) {
+  .layer.enter { animation: fade-in 0.6s linear both; animation-delay: calc(0s - var(--ts, 0) * 1s); }
+  .photo, .w, .cutout { animation: none; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

@@ -1,0 +1,25 @@
+{
+  "csv": "resale_clean.csv",
+  "target": "localhost:5433/resalewise",
+  "rows_read": 985219,
+  "rows_rejected": {},
+  "rows_over_99y_lease": 51,
+  "blocks": 10010,
+  "blocks_without_property_info": 192,
+  "sales_without_property_info": 16016,
+  "copy_seconds": 22.0,
+  "rows_loaded": 985219,
+  "index_seconds": 2.9,
+  "extras_seconds": 3.1,
+  "table_counts": {
+    "towns": 27,
+    "flat_types": 7,
+    "flat_models": 21,
+    "blocks": 10010,
+    "resale_transactions": 985219,
+    "users": 0,
+    "bookmarks": 0,
+    "mv_town_quarter_stats": 16083
+  },
+  "total_seconds": 43.0
+}

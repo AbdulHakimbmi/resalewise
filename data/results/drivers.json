@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-10-26T03:10:45+00:00",
+  "since": "2017-01-01",
+  "sales_considered": 238611,
+  "bootstrap": 2000,
+  "seed": 2003,
+  "geo_features": true,
+  "excluded_station_not_open": 4818,
+  "outcome": "price per sqm relative to the median of the same town, flat type and quarter",
+  "drivers": [
+    {
+      "driver": "storey",
+      "contrast": "high (13+) vs low (1-6)",
+      "label": "Living on a high floor",
+      "min_group": 10,
+      "why": "Same block and flat type, so location, block age and estate are identical.",
+      "strata": [
+        "block_id",
+        "flat_type_name"
+      ],
+      "effect_pct": 9.79,
+      "ci_low": 9.29,
+      "ci_high": 10.31,
+      "naive_pct": 12.7,
+      "n_strata": 379,
+      "n_sales": 12377,
+      "share_strata_positive": 0.992,
+      "status": "ok"
+    },
+    {
+      "driver": "lease",
+      "contrast": "80+ years vs 60-70 years left",
+      "label": "Having more lease left",
+      "min_group": 30,
+      "why": "Same town, flat type and 10 sqm size band. Newer blocks also differ in design and location within the town, so this mixes lease with block age.",
+      "strata": [
+        "town_name",
+        "flat_type_name",
+        "area_band"
+      ],
+      "effect_pct": 28.89,
+      "ci_low": 24.02,
+      "ci_high": 35.09,
+      "naive_pct": 12.66,
+      "n_strata": 69,
+      "n_sales": 55330,
+      "share_strata_positive": 0.957,
+      "status": "ok"
+    },
+    {
+      "driver": "mrt",
+      "contrast": "<=500 m vs >1 km from MRT/LRT",
+      "label": "Being within 500 m of a station",
+      "min_group": 30,
+      "why": "Same town, flat type, size band and lease band. Stations sit next to town centres, so this also picks up being close to malls and hawker centres.",
+      "strata": [
+        "town_name",
+        "flat_type_name",
+        "area_band",
+        "lease_band"
+      ],
+      "effect_pct": 11.35,
+      "ci_low": 9.42,
+      "ci_high": 13.38,
+      "naive_pct": 3.77,
+      "n_strata": 106,
+      "n_sales": 41155,
+      "share_strata_positive": 0.915,
+      "status": "ok"
+    },
+    {
+      "driver": "mrt",
+      "contrast": "500 m-1 km vs >1 km from MRT/LRT",
+      "label": "Being 500 m - 1 km from a station",
+      "min_group": 30,
+      "why": "As above, for the middle distance band.",
+      "strata": [
+        "town_name",
+        "flat_type_name",
+        "area_band",
+        "lease_band"
+      ],
+      "effect_pct": 3.8,
+      "ci_low": 2.99,
+      "ci_high": 4.7,
+      "naive_pct": 0.8,
+      "n_strata": 132,
+      "n_sales": 57758,
+      "share_strata_positive": 0.803,
+      "status": "ok"
+    }
+  ],
+  "caveat": "Associations in historical sales, not causal effects."
+}

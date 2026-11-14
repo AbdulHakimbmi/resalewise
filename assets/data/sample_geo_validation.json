@@ -1,0 +1,203 @@
+{
+  "generated_at": "example",
+  "summary": {
+    "pass": 4,
+    "warn": 1,
+    "fail": 0,
+    "pending": 1
+  },
+  "checks": [
+    {
+      "id": "V1",
+      "name": "Coverage",
+      "status": "warn",
+      "criterion": ">= 95 % of blocks and >= 99 % of 2017+ sales located",
+      "metrics": {
+        "blocks": 10010,
+        "exact": 9379,
+        "fuzzy": 124,
+        "unmatched": 507,
+        "not_attempted": 0,
+        "unmatched_demolished": 10,
+        "located": 9503,
+        "pct_blocks": 94.94,
+        "pct_sales": 95.08,
+        "pct_sales_2017": 95.01,
+        "sales": 985219,
+        "sales_located": 936763,
+        "sales_2017": 240628,
+        "located_2017": 228612
+      },
+      "detail": {
+        "largest_unmatched": [
+          {
+            "block_no": "82",
+            "street_name": "COMMONWEALTH CLOSE",
+            "town_name": "QUEENSTOWN",
+            "in_property_info": true,
+            "sales": 366
+          },
+          {
+            "block_no": "504",
+            "street_name": "BEDOK NORTH STREET 3",
+            "town_name": "BEDOK",
+            "in_property_info": true,
+            "sales": 325
+          },
+          {
+            "block_no": "12",
+            "street_name": "MARSILING LANE",
+            "town_name": "WOODLANDS",
+            "in_property_info": true,
+            "sales": 304
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2",
+      "name": "Plausibility",
+      "status": "pass",
+      "criterion": "100 % inside Singapore's bounding box; town outliers (median + 3 MAD and > 2 km) <= 0.5 %",
+      "metrics": {
+        "located": 9503,
+        "outside_bbox": 0,
+        "town_outliers": 17,
+        "pct_outliers": 0.18
+      },
+      "detail": {
+        "outliers": [
+          {
+            "block_id": 4733,
+            "town": "BISHAN",
+            "block_no": "243",
+            "street": "BISHAN STREET 22",
+            "quality": "exact",
+            "km_from_town_centre": 2.4,
+            "cutoff_km": 2.3
+          },
+          {
+            "block_id": 4135,
+            "town": "TAMPINES",
+            "block_no": "111",
+            "street": "SIMEI STREET 1",
+            "quality": "exact",
+            "km_from_town_centre": 2.4,
+            "cutoff_km": 2.29
+          },
+          {
+            "block_id": 3161,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "63",
+            "street": "JALAN MA'MOR",
+            "quality": "exact",
+            "km_from_town_centre": 2.39,
+            "cutoff_km": 2.37
+          }
+        ],
+        "outside": []
+      }
+    },
+    {
+      "id": "V3",
+      "name": "Manual ground truth",
+      "status": "pending",
+      "criterion": ">= 29 of 30 sampled blocks confirmed on the map",
+      "metrics": {
+        "sampled": 30,
+        "checked": 0,
+        "correct": 0,
+        "accuracy_pct": null
+      },
+      "detail": {
+        "wrong": []
+      }
+    },
+    {
+      "id": "V4",
+      "name": "Cross-engine distances",
+      "status": "pass",
+      "criterion": "same nearest station >= 99.5 % (ties excluded); |Mongo - PostGIS sphere| <= 0.2 %; |Mongo - PostGIS spheroid| <= 1.0 % (beyond the 0.05 m storage rounding)",
+      "metrics": {
+        "blocks_compared": 9503,
+        "same_nearest_station": 9503,
+        "ties_within_1pct": 0,
+        "disagreements": 0,
+        "agreement_pct_excl_ties": 100.0,
+        "rel_diff_vs_postgis_sphere": {
+          "max_pct": 0.1113,
+          "p99_pct": 0.1112
+        },
+        "rel_diff_vs_postgis_spheroid": {
+          "max_pct": 0.6727,
+          "p99_pct": 0.6691
+        },
+        "rel_diff_vs_haversine_same_radius": {
+          "max_pct": 0.0
+        },
+        "one_km_band_flips": 23,
+        "radius_ratio_pct": 0.1113
+      },
+      "detail": {
+        "disagreement_examples": [],
+        "explanation": "MongoDB measures on a 6,378.1 km sphere; PostGIS geography on the WGS84 spheroid. 'one_km_band_flips' counts blocks whose 'within 1 km' answer differs between the two models; they are reported as a known limitation."
+      }
+    },
+    {
+      "id": "V5",
+      "name": "Edge cases",
+      "status": "pass",
+      "criterion": "every probe behaves as specified",
+      "metrics": {
+        "probes": 11,
+        "failed": 0,
+        "postgis_spheroid_boundary_flips": 2
+      },
+      "detail": {
+        "probes": [
+          {
+            "case": "999 m at bearing 0",
+            "expected_inside": true,
+            "mongo_inside": true,
+            "ok": true
+          },
+          {
+            "case": "1001 m at bearing 0",
+            "expected_inside": false,
+            "mongo_inside": false,
+            "ok": true
+          },
+          {
+            "case": "999 m at bearing 180",
+            "expected_inside": true,
+            "mongo_inside": true,
+            "ok": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "V6",
+      "name": "Idempotent rebuild",
+      "status": "pass",
+      "criterion": "re-running geocode (from cache) and feature build reproduces the stored tables exactly",
+      "metrics": {
+        "block_features_stored": "465fbfc5a13422bc",
+        "block_features_rebuilt": "465fbfc5a13422bc",
+        "block_locations_stored": "24b31ad44a438c17",
+        "block_locations_rebuilt": "24b31ad44a438c17"
+      },
+      "detail": ""
+    }
+  ],
+  "tolerances": {
+    "sphere_pct": 0.2,
+    "spheroid_pct": 1.0,
+    "tie_pct": 1.0
+  },
+  "radii_m": {
+    "mongodb": 6378100.0,
+    "postgis_sphere_and_haversine_reference": 6371008.8
+  },
+  "label": "EXAMPLE ONLY: produced by the test suite from synthetic coordinates. Run scripts/validate_geo.py for the real checks."
+}

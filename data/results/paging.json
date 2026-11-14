@@ -1,0 +1,270 @@
+{
+  "generated_at": "2026-10-26T03:27:10+00:00",
+  "label": "Laptop, Docker, plugged in",
+  "repeats": 15,
+  "page_size": 20,
+  "cases": [
+    {
+      "filter": "all sales",
+      "depth": 0,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 2.673,
+          "p95_ms": 6.74
+        },
+        "keyset": {
+          "p50_ms": 3.495,
+          "p95_ms": 5.843
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 1.677,
+          "p95_ms": 2.474
+        },
+        "keyset": {
+          "p50_ms": 2.952,
+          "p95_ms": 4.41
+        }
+      }
+    },
+    {
+      "filter": "all sales",
+      "depth": 1000,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 6.93,
+          "p95_ms": 8.266
+        },
+        "keyset": {
+          "p50_ms": 4.243,
+          "p95_ms": 7.772
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 2.267,
+          "p95_ms": 3.118
+        },
+        "keyset": {
+          "p50_ms": 1.611,
+          "p95_ms": 2.194
+        }
+      }
+    },
+    {
+      "filter": "all sales",
+      "depth": 10000,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 19.675,
+          "p95_ms": 33.829
+        },
+        "keyset": {
+          "p50_ms": 4.967,
+          "p95_ms": 11.564
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 3.638,
+          "p95_ms": 6.592
+        },
+        "keyset": {
+          "p50_ms": 1.285,
+          "p95_ms": 1.961
+        }
+      }
+    },
+    {
+      "filter": "all sales",
+      "depth": 100000,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 94.594,
+          "p95_ms": 140.314
+        },
+        "keyset": {
+          "p50_ms": 5.296,
+          "p95_ms": 8.908
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 32.358,
+          "p95_ms": 36.355
+        },
+        "keyset": {
+          "p50_ms": 1.7,
+          "p95_ms": 4.442
+        }
+      }
+    },
+    {
+      "filter": "all sales",
+      "depth": 500000,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 378.466,
+          "p95_ms": 429.706
+        },
+        "keyset": {
+          "p50_ms": 3.118,
+          "p95_ms": 5.03
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 94.333,
+          "p95_ms": 110.253
+        },
+        "keyset": {
+          "p50_ms": 1.328,
+          "p95_ms": 2.551
+        }
+      }
+    },
+    {
+      "filter": "all sales",
+      "depth": 900000,
+      "page_size": 20,
+      "postgres": {
+        "total": 985219,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 647.817,
+          "p95_ms": 677.842
+        },
+        "keyset": {
+          "p50_ms": 3.533,
+          "p95_ms": 4.65
+        }
+      },
+      "mongodb": {
+        "total": 985219,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 165.824,
+          "p95_ms": 182.178
+        },
+        "keyset": {
+          "p50_ms": 1.194,
+          "p95_ms": 1.884
+        }
+      }
+    },
+    {
+      "filter": "TAMPINES, 4 ROOM",
+      "depth": 0,
+      "page_size": 20,
+      "postgres": {
+        "total": 34672,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 5.534,
+          "p95_ms": 6.665
+        },
+        "keyset": {
+          "p50_ms": 3.426,
+          "p95_ms": 4.677
+        }
+      },
+      "mongodb": {
+        "total": 34672,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 1.108,
+          "p95_ms": 1.513
+        },
+        "keyset": {
+          "p50_ms": 0.661,
+          "p95_ms": 1.776
+        }
+      }
+    },
+    {
+      "filter": "TAMPINES, 4 ROOM",
+      "depth": 1000,
+      "page_size": 20,
+      "postgres": {
+        "total": 34672,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 69.937,
+          "p95_ms": 93.509
+        },
+        "keyset": {
+          "p50_ms": 3.549,
+          "p95_ms": 5.107
+        }
+      },
+      "mongodb": {
+        "total": 34672,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 1.791,
+          "p95_ms": 2.627
+        },
+        "keyset": {
+          "p50_ms": 1.141,
+          "p95_ms": 1.809
+        }
+      }
+    },
+    {
+      "filter": "TAMPINES, 4 ROOM",
+      "depth": 10000,
+      "page_size": 20,
+      "postgres": {
+        "total": 34672,
+        "same_rows": true,
+        "offset": {
+          "p50_ms": 72.746,
+          "p95_ms": 98.108
+        },
+        "keyset": {
+          "p50_ms": 7.136,
+          "p95_ms": 16.785
+        }
+      },
+      "mongodb": {
+        "total": 34672,
+        "same_rows": true,
+        "skip": {
+          "p50_ms": 3.767,
+          "p95_ms": 4.573
+        },
+        "keyset": {
+          "p50_ms": 1.603,
+          "p95_ms": 2.367
+        }
+      }
+    }
+  ],
+  "note": "median/p95 of client-observed milliseconds; the API exposes OFFSET paging capped at 10,000 results"
+}

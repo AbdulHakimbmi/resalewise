@@ -1,0 +1,318 @@
+/* ResaleWise SG — every page except the homepage.
+   Loaded after style.css and home.css: home.css brings the tokens, nav, buttons,
+   fields and footer; this file brings the older style.css components onto the
+   same look. Square like a window, flat, one typeface, one accent. */
+:root {
+    --panel: var(--surface);
+    --line: color-mix(in srgb, var(--ink) 13%, transparent);
+    --forest: var(--accent);
+    --lime: var(--accent);
+    --accent-strong: var(--accent-hover);
+    --orange: var(--field-3);
+    --shadow: none;
+    --r-xl: 0;
+    --r-lg: 0;
+}
+
+/* the window motif: nothing is rounded, nothing floats, nothing glows */
+*, *::before, *::after { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important }
+* { font-family: "Schibsted Grotesk", Arial, sans-serif !important }
+body::before, .mist-canvas, .page-hero::after, .home-hero::before { display: none !important }
+.card, .filter-card, .page-hero, .chart-card, .metric, .field, .combo-menu, .side-filter {
+    background-image: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
+/* small labels: plain text, not tracked-out capitals */
+.kicker, .small-kicker, .metric .label, .type, .score, .featured-label, .town-switcher label,
+.rv-field-label, .field label, .filter-group label, .value-badge, .review-tags i, .tag, .y-axis-label, .x-axis-label, .axis-tick, .hist-col span, .y-tick, .x-ticks {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+h1 em, h2 em, h3 em { font-style: normal; font-weight: inherit; color: var(--accent) }
+
+/* frame: one pair of outer margins, like the homepage */
+.shell { max-width: none; padding: 0 }
+.shell > main { padding-left: var(--m); padding-right: var(--m) }
+.section, main > .filter-card { padding-left: 0 !important; padding-right: 0 !important; margin-left: 0 !important; margin-right: 0 !important }
+main > .filter-card { padding: 20px !important }
+main { display: block }
+.section { margin-top: var(--gap) }
+p { line-height: 1.5 }
+a { text-underline-offset: 3px }
+
+/* page header: a surface with the band of windows on top, the homepage hero's card */
+.page-hero {
+    margin: 0;
+    padding: 0 !important;
+    border: 0 !important;
+    background: var(--surface) !important;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+}
+.page-hero::before {
+    content: "";
+    display: block;
+    height: 56px;
+    background: var(--band);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Crect width='28' height='56'/%3E%3C/svg%3E") repeat-x 0 0 / 56px 100%;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Crect width='28' height='56'/%3E%3C/svg%3E") repeat-x 0 0 / 56px 100%;
+}
+.page-hero > * { margin-left: clamp(20px, 4vw, 64px) !important; margin-right: clamp(20px, 4vw, 64px) !important }
+.page-hero > :last-child { margin-bottom: clamp(36px, 5vw, 72px) !important }
+.page-hero .kicker { display: none }
+.page-hero h1 {
+    margin-top: clamp(36px, 5vw, 72px) !important;
+    margin-bottom: 0 !important;
+    font-size: var(--step-display) !important;
+    font-weight: 800;
+    line-height: .95;
+    letter-spacing: -0.05em !important;
+    max-width: 16ch;
+}
+.page-hero:has(> .page-photo) h1 { font-size: clamp(2.5rem, 1rem + 3.2vw, 4.25rem) !important }
+.page-hero p { margin-top: 24px !important; max-width: 46ch; color: var(--ink) !important; font-size: var(--step-lead); line-height: 1.3 }
+
+/* page header with a picture: the photo takes the right half of the card, as on the homepage */
+.page-hero:has(> .page-photo) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start }
+.page-hero:has(> .page-photo) > :not(.page-photo), .page-hero:has(> .page-photo)::before { grid-column: 1 }
+.page-hero > .page-photo {
+    grid-column: 2;
+    grid-row: 1 / span 9;
+    position: relative;
+    min-height: 440px;
+    margin: 0 !important;
+    overflow: hidden;
+    background: var(--field-1);
+}
+.page-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+.page-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 10px 16px; background: #000; color: #fff; font-size: var(--step-small); font-weight: 600 }
+/* no photo of this town yet: draw its block, a grid of windows on the field colour */
+.page-photo.no-image img { display: none }
+.page-photo.no-image::before {
+    content: "";
+    position: absolute;
+    inset: 16% 22% 0;
+    background:
+        linear-gradient(90deg, #000 10px, transparent 0 26px, #000 0) 0 0 / 36px 36px,
+        linear-gradient(#000 10px, transparent 0 26px, #000 0) 0 0 / 36px 36px;
+}
+
+/* surfaces */
+.card, .filter-card, .side-filter {
+    background: var(--surface) !important;
+    border: 0 !important;
+}
+.card .card, .result-list .card { background: var(--bg) !important }
+.card h3, .chart-card h3 { font-size: var(--step-lead); font-weight: 800; letter-spacing: -0.03em }
+.metric strong { font-weight: 800; letter-spacing: -0.04em; color: var(--ink) }
+/* Schibsted's tabular figures set the comma wide ("$920 , 000"), so prices use its proportional ones */
+.metric strong, .price, .price strong, .price-big, strong { font-variant-numeric: normal !important }
+.metric.accent { background: var(--field-1) !important; color: var(--field-ink) }
+.metric.accent strong, .metric.accent .label, .metric.accent span { color: var(--field-ink) !important }
+.grid3 > .metric:nth-child(2) { background: var(--field-2) !important; color: var(--field-ink) }
+.grid3 > .metric:nth-child(3) { background: var(--field-3) !important; color: var(--field-ink) }
+.grid3 > .metric:nth-child(2) *, .grid3 > .metric:nth-child(3) * { color: var(--field-ink) !important }
+.notice { background: var(--bg); border: 0 }
+
+/* buttons: square, like the homepage */
+.ghost-btn, .dark-btn, .search-btn, .link-btn {
+    border: 0 !important;
+    font-weight: 600;
+    transition: background-color .18s var(--ease), color .18s var(--ease);
+}
+.ghost-btn, .dark-btn { background: var(--surface-2) !important; color: var(--ink) !important }
+.ghost-btn:hover, .dark-btn:hover { background: var(--ink) !important; color: var(--bg) !important; transform: none }
+.search-btn { min-height: 56px; background: var(--accent) !important; color: var(--accent-ink) !important }
+.search-btn:hover { background: var(--accent-hover) !important; transform: none }
+.link-btn { background: none; color: var(--accent); text-decoration: underline; padding: 0 }
+
+/* form controls */
+input, select, textarea { border-radius: 0 }
+.filter-group input, .filter-group select, .auth-card input, .auth-card select, .auth-card textarea,
+.form-field input, .form-field select, .form-field textarea, textarea {
+    background: var(--bg) !important;
+    border: 0 !important;
+    color: var(--ink);
+}
+.field { background: none !important; border: 0 !important; padding: 0 !important }
+.field label { color: var(--ink) }
+
+/* chips and badges keep their meaning but lose the pill */
+.chip, .tag, .badge, .pill { border: 0 !important }
+
+/* footer on inner pages: the homepage's columns, without the skyline */
+.footer { display: block; border: 0 }
+.footer .foot-cols { margin-top: 0 }
+.shell > .footer { padding: 0 var(--m) 32px }
+
+@media (max-width: 1080px) {
+    .page-hero:has(> .page-photo) { grid-template-columns: minmax(0, 1fr) }
+    .page-hero:has(> .page-photo) > :not(.page-photo), .page-hero:has(> .page-photo)::before { grid-column: 1 }
+    .page-hero > .page-photo { grid-column: 1; grid-row: auto; order: -1; min-height: 300px }
+}
+@media (max-width: 680px) {
+    .page-hero h1, .page-hero:has(> .page-photo) h1 { font-size: clamp(2rem, 8.4vw, 2.6rem) !important }
+    .page-hero::before { height: 40px; -webkit-mask-size: 40px 100%; mask-size: 40px 100% }
+}
+
+/* charts: solid fills from the palette, no gradients */
+.bar i, .br-track i, .score-meter i, .sv-mock-bars i { background: var(--field-1) !important }
+.hist-bar, .bar-chart [class*="bar"], .bar-chart i { background: var(--field-1) !important }
+.hist-col.is-median .hist-bar, .bar-row.focus .br-track i { background: var(--accent) !important }
+.bar-row.focus .br-label { color: var(--accent) }
+.price-compare, .recommend-banner, .rc-avatar { background: var(--surface-2) !important }
+
+/* the footer keeps the homepage's sizes, not style.css's small print */
+.footer { font-size: var(--step-body); color: var(--ink); line-height: 1.45 }
+.footer a { color: inherit; padding: 0 }
+.footer .foot-cols a { padding: 4px 0; text-decoration: none }
+.footer .btn { padding: 0 18px; color: var(--accent-ink); text-decoration: none }
+.footer .btn:hover { color: var(--accent-ink) }
+
+/* running text in panels at a readable size */
+.card > p, .chart-card > p, .metric span, .transaction p, .notice { font-size: max(15px, var(--step-small)) }
+
+/* log in / sign up: the form beside a photo of an estate */
+.page-photo { position: relative; overflow: hidden; background: var(--field-1) }
+.login { max-width: none; margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap) }
+.login > .page-photo { min-height: 600px }
+.login-card { display: flex; flex-direction: column; justify-content: center; margin: 0 !important; padding: clamp(28px, 5vw, 80px) !important }
+.login-card h1 { margin: 0 0 16px; font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spacing: -0.045em }
+.login-card p { color: var(--muted); font-size: var(--step-body) }
+.login-card .small-kicker { display: none }
+.form-row label { font-weight: 600 }
+.form-row input { min-height: 52px; font-size: var(--step-body) }
+.primary-btn.full { width: 100%; min-height: 56px }
+
+@media (max-width: 1080px) {
+    .login { grid-template-columns: minmax(0, 1fr) }
+    .login > .page-photo { min-height: 240px }
+}
+
+/* ratings: filled windows instead of stars */
+.stars { display: inline-flex; gap: 3px; vertical-align: -1px; color: var(--accent) }
+.stars i, .stars-off i { display: block; width: 10px; height: 10px; background: currentColor }
+.stars .stars-off { display: inline-flex; gap: 3px; color: var(--surface-2) }
+.star-rating .star { width: 36px; height: 36px; padding: 0; border: 0; background: var(--surface-2); color: transparent; transition: background-color .18s }
+.star-rating .star.on, .star-rating .star[aria-checked="true"] { background: var(--accent) }
+.star-rating .star:hover { background: var(--accent-hover); transform: none }
+
+/* nothing under 13px; labels in sentence case */
+.kicker, .small-kicker, .metric .label, .type, .score, .featured-label, .town-switcher label, .rv-field-label,
+.field label, .filter-group label, .axis-tick, .hist-col span, .y-tick, .x-ticks, .y-axis-label, .x-axis-label,
+.sb-code, .band-key, .rec-badge, .chip, .tag, .badge, .review-top span, .meta, small,
+.chart-tip, .chart-tip b, .chart-tip span, .details div, .details span, .float span, .legend, .rc-time, .rc-town,
+.rec-score, .review-tags i, .score-label, .spark-wrap, .stats span, .town-info p, .town-jump label, .value-badge {
+    font-size: max(13px, var(--step-small)) !important;
+}
+.field label, .filter-group label { font-weight: 600 }
+
+/* prices in the ink, not the old blue */
+.metric strong, .price strong, .price, .price-compare strong, .compare-price, .details b { color: var(--ink) }
+.metric.accent strong { color: var(--field-ink) }
+
+/* value tags: the palette's fields, black text, in both themes */
+.value-badge { border: 0 !important; color: var(--field-ink) !important }
+.value-badge.vgood { background: var(--field-2) !important }
+.value-badge.good { background: var(--field-4) !important }
+.value-badge.fair { background: var(--surface-2) !important; color: var(--ink) !important }
+.value-badge.high { background: var(--field-3) !important }
+.value-badge.vhigh { background: var(--accent) !important; color: var(--accent-ink) !important }
+
+/* review tags and the tag picker */
+.review-tags i, .tag, .tag-picker .tag { background: var(--surface-2) !important; color: var(--ink) !important; border: 0 !important; font-style: normal }
+.tag-picker .tag[aria-pressed="true"] { background: var(--accent) !important; color: var(--accent-ink) !important }
+.tag.warn, .tag-picker .tag.warn { background: var(--field-3) !important; color: var(--field-ink) !important }
+
+/* style.css's light theme sets its own blue on [data-theme="light"]; map it to the palette too */
+:root[data-theme="light"] {
+    --panel: var(--surface);
+    --line: color-mix(in srgb, var(--ink) 13%, transparent);
+    --forest: var(--accent);
+    --lime: var(--accent);
+    --accent-strong: var(--accent-hover);
+    --orange: var(--field-3);
+    --shadow: none;
+}
+:root[data-theme="light"] .footer, :root[data-theme="light"] .footer a:not(.btn) { color: var(--ink) }
+:root[data-theme="light"] .footer .btn { color: var(--accent-ink) }
+:root[data-theme="light"] .field label, :root[data-theme="light"] .filter-group label { color: var(--ink) }
+:root[data-theme="light"] .nav-actions .text-btn { color: var(--ink) }
+/* figures on a field of colour are always black, in both themes */
+.metric.accent strong, .grid3 > .metric strong, .grid3 > .metric span, .grid3 > .metric .label { color: var(--field-ink) !important }
+.photo-credits { display: grid; gap: 6px; padding: 0; list-style: none; font-size: var(--step-small) }
+
+/* search page: the Town box matches the other filter fields instead of the old bare input */
+.town-combo input#townInput {
+    min-height: 56px;
+    padding: 0 14px;
+    background: var(--bg);
+    font-size: var(--step-body);
+    font-weight: 400;
+    transition: background-color .18s;
+}
+.town-combo input#townInput:hover { background: var(--surface-2) }
+.town-combo input#townInput::placeholder { color: var(--muted); font-weight: 400 }
+.filter-grid .search-btn { font-size: var(--step-body) }
+.combo-menu { top: calc(100% + 6px) }
+
+/* filter fields take the homepage's sizes, not style.css's small print. The nav keeps the compact size set in home.css. */
+.nav-actions .text-btn { color: var(--ink); font-weight: 600 }
+.filter-grid .field { display: grid; gap: 6px; min-height: 0; justify-content: stretch; min-width: 0 }
+.filter-grid .field select, .filter-grid .field input { width: 100%; min-width: 0 }
+
+/* town picker: one filled field in the homepage's sizes, no outlined strip */
+.town-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 0; border: 0; background: none; backdrop-filter: none; margin-top: 32px }
+.town-switcher label { font: 600 var(--step-small) "Schibsted Grotesk", Arial, sans-serif; color: var(--ink) }
+.town-switcher select { min-height: 56px; min-width: min(320px, 100%); padding: 0 14px; background: var(--bg); font-size: var(--step-body); font-weight: 400; transition: background-color .18s }
+.town-switcher select:hover { background: var(--surface-2) }
+.town-switcher .text-btn { font-size: var(--step-body) }
+
+/* signed-out shortlist panel: a surface like the other cards, readable text, full-size buttons */
+.locked-shortlist { border: 0; background: var(--surface); backdrop-filter: none }
+.locked-shortlist h3 { color: var(--ink); font-size: var(--step-lead); font-weight: 800 }
+.locked-shortlist p { font-size: var(--step-body); line-height: 1.5 }
+.locked-shortlist .primary-btn, .locked-shortlist .ghost-btn { min-height: 48px; padding: 0 20px; font-size: var(--step-body) }
+
+/* buttons in forms and toolbars: no smaller than body text on the homepage */
+.primary-btn, .ghost-btn, .dark-btn { font-size: max(15px, var(--step-small)) }
+.primary-btn.full { font-size: var(--step-body) }
+.form-row label { font-size: max(14px, var(--step-small)) !important }
+
+/* touch and keyboard: 44px targets, a press state on every button, 8px between neighbours */
+.star-rating { display: flex; gap: 8px }
+.star-rating .star { width: 44px; height: 44px }
+.text-btn, .nav-links a { display: inline-flex; align-items: center; min-height: 44px }
+.footer .foot-cols a { display: flex; align-items: center; min-height: 44px }
+.nav-links a { padding: 0 2px }
+.menu { min-height: 44px; min-width: 44px }
+.result-toolbar, .toolbar-actions { gap: 8px }
+.btn:active, .primary-btn:active, .ghost-btn:active, .dark-btn:active, .search-btn:active { transform: translateY(1px); transition-duration: .06s }
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
+.primary-btn:focus-visible, .search-btn:focus-visible, .btn:focus-visible { outline-color: var(--ink) }
+@media (prefers-reduced-motion: reduce) {
+    .btn:active, .primary-btn:active, .ghost-btn:active, .dark-btn:active, .search-btn:active { transform: none }
+}
+
+/* the wall opens: each header photo starts behind an HDB wall of window cut-outs; the frames open until the photo is clean */
+@property --bar { syntax: "<length>"; inherits: false; initial-value: 0px }
+.page-photo:not(.no-image)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, var(--surface) var(--bar), transparent 0),
+        linear-gradient(var(--surface) var(--bar), transparent 0);
+    background-size: 56px 56px;
+    animation: wall-opens 1.6s .2s var(--ease) both;
+}
+.page-photo figcaption { z-index: 2 }
+@keyframes wall-opens { from { --bar: 28px } to { --bar: 0px } }
+@media (prefers-reduced-motion: reduce) { .page-photo::after { animation: none } }
+
+/* empty states: no emoji standing in for icons */
+.sb-ico, .empty-reviews .er-ico { display: none }

@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-11-03T06:52:33+00:00",
+  "written_by": "mongo",
+  "seconds": {
+    "mongo": 25.31,
+    "postgis": 53.48
+  },
+  "rows": 58590,
+  "per_kind": {
+    "childcare": {
+      "blocks": 9765,
+      "median_nearest_m": 118.4,
+      "share_within_500m": 99.9,
+      "share_within_1km": 100.0
+    },
+    "gym": {
+      "blocks": 9765,
+      "median_nearest_m": 1008.8,
+      "share_within_500m": 15.1,
+      "share_within_1km": 49.5
+    },
+    "hawker": {
+      "blocks": 9765,
+      "median_nearest_m": 640.9,
+      "share_within_500m": 38.2,
+      "share_within_1km": 75.0
+    },
+    "park": {
+      "blocks": 9765,
+      "median_nearest_m": 468.1,
+      "share_within_500m": 53.9,
+      "share_within_1km": 93.0
+    },
+    "primary_school": {
+      "blocks": 9765,
+      "median_nearest_m": 365.1,
+      "share_within_500m": 71.2,
+      "share_within_1km": 97.2
+    },
+    "secondary_school": {
+      "blocks": 9765,
+      "median_nearest_m": 459.2,
+      "share_within_500m": 55.8,
+      "share_within_1km": 91.1
+    }
+  },
+  "agreement": {
+    "pairs_compared": 58590,
+    "only_in_first": 0,
+    "only_in_second": 0,
+    "nearest_distance_agree": 58590,
+    "nearest_distance_agree_pct": 100.0,
+    "max_abs_diff_m": 29.5,
+    "mean_abs_diff_m": 1.86,
+    "counts_identical": 52068,
+    "counts_identical_pct": 88.87
+  }
+}

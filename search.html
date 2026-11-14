@@ -5,19 +5,46 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="ResaleWise SG — search historical Singapore HDB resale transactions with charts and value scoring.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Find a Flat · ResaleWise SG">
+    <meta property="og:description" content="ResaleWise SG — search historical Singapore HDB resale transactions with charts and value scoring.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Find a Flat · ResaleWise SG">
+    <meta name="twitter:description" content="ResaleWise SG — search historical Singapore HDB resale transactions with charts and value scoring.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
     <title>Find a Flat · ResaleWise SG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
 </head>
 
 <body>
-    <main class="shell">
-        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
-            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
-            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html" class="active" aria-current="page">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
         <section class="page-hero">
+            <figure class="page-photo"><img src="assets/images/towns/jurong-west.jpg" alt="Tall HDB blocks around Jurong West Central"><figcaption>Jurong West</figcaption></figure>
             <div class="kicker">Resale record explorer</div>
             <h1>Find comparable <em>transactions.</em></h1>
             <p>Use the filters to explore historical HDB resale records. Results are drawn live from official transaction data and update as you refine your criteria.</p>
@@ -38,7 +65,8 @@
         <section class="section">
             <div class="results-layout">
                 <aside class="card side-filter">
-                    <h3>Refine results</h3>
+                    <h3><button type="button" class="refine-toggle" id="refineToggle" aria-expanded="true" aria-controls="refineBody"><span>Refine results</span><span class="chev" aria-hidden="true">▾</span></button></h3>
+                    <div id="refineBody">
                     <p class="side-hint">Narrow the results further — updates instantly.</p>
                     <div class="filter-group"><label for="fMinArea">Floor area (sqm)</label>
                         <div class="range"><input id="fMinArea" inputmode="numeric" placeholder="Min"><input id="fMaxArea" inputmode="numeric" placeholder="Max"></div>
@@ -53,12 +81,19 @@
                     </select></div>
                     <div class="filter-group"><label for="fModel">Flat model</label><select id="fModel"><option value="">Any model</option></select></div>
                     <button class="dark-btn" style="width:100%;margin-bottom:8px" id="applyRefine" type="button">Apply refinements →</button>
-                    <button class="ghost-btn" style="width:100%" id="resetFilters" type="button">Reset all filters</button></aside>
+                    <button class="ghost-btn" style="width:100%" id="resetFilters" type="button">Reset all filters</button>
+                    </div></aside>
                 <div>
+                    <div class="print-only print-header">ResaleWise SG · Resale transaction search · <span data-print-date></span></div>
                     <div class="result-toolbar">
-                        <div><strong id="resultCount">Loading…</strong><br><span id="resultSub">Historical HDB resale transactions</span></div>
-                        <button class="ghost-btn" data-toast="Sorted by most recent transaction.">Sort: Most recent ↓</button>
+                        <div aria-live="polite" aria-atomic="true"><strong id="resultCount">Loading…</strong><br><span id="resultSub">Historical HDB resale transactions</span></div>
+                        <div class="toolbar-actions no-print">
+                            <a class="ghost-btn" id="csvBtn" href="#" download aria-disabled="true">Download CSV ↓</a>
+                            <button class="ghost-btn" id="printBtn" type="button">Print</button>
+                            <button class="ghost-btn" data-toast="Sorted by most recent transaction.">Sort: Most recent ↓</button>
+                        </div>
                     </div>
+                    <div id="statsError"></div>
 
                     <!-- Analytics for the current filter set -->
                     <div class="dash search-charts" id="searchCharts" hidden>
@@ -77,36 +112,52 @@
                             <p id="scatterSub">Each dot is one sold flat: its size vs its price.</p>
                             <div class="chart-body">
                                 <div class="y-axis-label">Price →</div>
-                                <div class="scatter-wrap"><svg id="scatterChart" viewBox="0 0 340 220" preserveAspectRatio="none"></svg></div>
+                                <div class="scatter-wrap"><div class="skel" id="scatterSkel" hidden style="height:100%;min-height:200px"></div><svg id="scatterChart" viewBox="0 0 340 220" preserveAspectRatio="none" role="img" aria-label="Scatter plot of floor area against resale price"></svg></div>
                             </div>
                             <div class="x-axis-label">Floor area (sqm) →</div>
                             <div class="chart-insight" id="scatterInsight"></div>
                         </article>
                     </div>
 
-                    <div class="result-list" id="resultList"></div>
-                    <div class="load-more-row" id="loadMoreRow" hidden>
-                        <button class="ghost-btn" id="loadMoreBtn" type="button">Load more results ↓</button>
+                    <div class="result-list" id="resultList" tabindex="-1"></div>
+                    <div class="pager-wrap no-print" id="pagerWrap" hidden>
+                        <nav class="pager" id="pager" aria-label="Search result pages"></nav>
+                        <p class="pager-note" id="pagerNote"></p>
                     </div>
                 </div>
             </div>
         </section>
+        </main>
         <footer class="footer">
-            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
-            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
         <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
-        <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
         <script>
         (async function () {
           const form   = document.querySelector(".filter-card");
           const listEl = document.getElementById("resultList");
           const cntEl  = document.getElementById("resultCount");
+          const subEl  = document.getElementById("resultSub");
+          const statsErrEl = document.getElementById("statsError");
+          const csvBtn   = document.getElementById("csvBtn");
+          const printBtn = document.getElementById("printBtn");
 
           // Explicit control references (robust to DOM order changes).
           const typeSel     = document.getElementById("typeSel");
@@ -117,73 +168,100 @@
           const townInput   = document.getElementById("townInput");
           const townValue   = document.getElementById("townValue");
           const townMenu    = document.getElementById("townMenu");
-
-          function fmtMoney(n) {
-            return "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
-          }
-            function fmtMonth(iso) {
-                const s = String(iso);
-                const d = new Date(s.length === 7 ? s + "-01" : s);
-                return d.toLocaleString("en-SG", { month: "short", year: "numeric" });
-            }
-          function leaseYears(m) { return Math.floor((m || 0) / 12); }
-
-          const subEl      = document.getElementById("resultSub");
-          const loadMoreRow = document.getElementById("loadMoreRow");
-          const loadMoreBtn = document.getElementById("loadMoreBtn");
-          const PAGE_SIZE   = 30;
-
-          // Pagination state for the CURRENT filter set.
-          let state = { offset: 0, total: 0, loading: false, median: null };
-
-          // Value score: how a price compares to the median of the current
-          // result set. Below median = better value.
-          function valueBadge(price) {
-            if (!state.median) return "";
-            const pct = ((price - state.median) / state.median) * 100;
-            let cls, label;
-            if (pct <= -8)      { cls = "vgood";  label = `${Math.abs(pct).toFixed(0)}% below median · Great value`; }
-            else if (pct < -2)  { cls = "good";   label = `${Math.abs(pct).toFixed(0)}% below median · Good value`; }
-            else if (pct <= 2)  { cls = "fair";   label = `Around the median price`; }
-            else if (pct <= 8)  { cls = "high";   label = `${pct.toFixed(0)}% above median`; }
-            else                { cls = "vhigh";  label = `${pct.toFixed(0)}% above median · Premium`; }
-            return `<span class="value-badge ${cls}">${label}</span>`;
-          }
-
-          function cardHtml(r) {
-            return `
-              <article class="card transaction">
-                <div>
-                  <div class="type">${r.flat_type_name} · ${r.town_name}</div>
-                  <h3>${r.block_no} ${r.street_name}</h3>
-                  <p>Historical transaction · ${fmtMonth(r.month)} · Storey ${String(r.storey_low).padStart(2,"0")} to ${String(r.storey_high).padStart(2,"0")}</p>
-                  ${valueBadge(r.resale_price)}
-                </div>
-                <div class="details">
-                  <div><b>${Math.round(r.floor_area_sqm)} sqm</b>Floor area</div>
-                  <div><b>${leaseYears(r.remaining_lease_months)} years</b>Lease remaining</div>
-                  <div><b>${r.flat_model_name}</b>Flat model</div>
-                </div>
-                <div class="price">
-                  <strong>${fmtMoney(r.resale_price)}</strong>
-                  <br>
-                  <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${r.txn_id}">View details →</a>
-                </div>
-              </article>`;
-          }
-
           // Side-panel refine controls (read by id, not index).
           const fMinArea = document.getElementById("fMinArea");
           const fMaxArea = document.getElementById("fMaxArea");
           const fStorey  = document.getElementById("fStorey");
           const fModel   = document.getElementById("fModel");
 
+          const pagerWrap   = document.getElementById("pagerWrap");
+          const pagerEl     = document.getElementById("pager");
+          const pagerNote   = document.getElementById("pagerNote");
+          const chartsWrap  = document.getElementById("searchCharts");
+          const histEl      = document.getElementById("histChart");
+          const scatterSvg  = document.getElementById("scatterChart");
+          const scatterSkel = document.getElementById("scatterSkel");
+          const PAGE_SIZE   = 20;
+
+          function fmtMoney(n) {
+            return "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
+          }
+          function fmtMonth(iso) { return RW.formatMonth(iso); }
+          function leaseYears(m) { return Math.floor((m || 0) / 12); }
+          const shortK = n => "$" + Math.round(Number(n) / 1000) + "k";
+          const isAny  = v => !v || /^any /i.test(String(v));
+
+          // Paging + request state for the CURRENT filter set.
+          //   reqSeq bumps on every request; a response that arrives after a
+          //   newer one has started is simply ignored (no stale results, and a
+          //   filter change made mid-load is never dropped).
+          //   Changing a filter goes back to page 1 and reloads the charts; moving
+          //   between pages of the same search reloads only the list.
+          let state = { page: 1, pages: 1, shown: 0, total: 0, median: null, params: {},
+                        lastKey: null, filterKey: null, statsOk: false };
+          let reqSeq = 0;
+          const sparkCache = new Map();
+
+          // Value tag: the server compares each sale with the median for the SAME
+          // town + flat type in the SAME period (e.g. "Bedok 4 Room, Q3 2019"), so a
+          // 1995 sale is never called a bargain just because prices have risen since.
+          const VERDICT_CLASS = {
+            "Great value": "vgood", "Good value": "good", "Around market rate": "fair",
+            "Above market rate": "high", "Premium": "vhigh"
+          };
+          function valueBadge(r) {
+            if (r.price_diff_pct == null || !r.benchmark_label) return "";
+            const pct = Number(r.price_diff_pct);
+            const diff = Math.abs(pct) < 0.5 ? "At the median"
+              : (pct < 0 ? Math.abs(pct).toFixed(0) + "% below median" : pct.toFixed(0) + "% above median");
+            const tip = "Compared with the median of " + r.benchmark_n.toLocaleString("en-SG") +
+              " sales: " + r.benchmark_label + " (" + fmtMoney(r.benchmark_median) + ")";
+            return `<span class="value-badge ${VERDICT_CLASS[r.verdict] || "fair"}" title="${escapeHtml(tip)}">${escapeHtml(diff)} · ${escapeHtml(r.verdict)}</span>` +
+                   `<div class="bench-note">vs ${escapeHtml(r.benchmark_label)}</div>`;
+          }
+
+          function cardHtml(r) {
+            const e = escapeHtml;
+            return `
+              <article class="card transaction">
+                <div>
+                  <div class="type">${e(r.flat_type_name)} · ${e(r.town_name)}</div>
+                  <h3>${e(r.block_no)} ${e(r.street_name)}</h3>
+                  <p>Sold ${fmtMonth(r.month)} · Storey ${String(r.storey_low).padStart(2,"0")} to ${String(r.storey_high).padStart(2,"0")}</p>
+                  ${valueBadge(r)}
+                  <div class="spark-slot" data-pair="${e(r.town_name + "|" + r.flat_type_name)}"></div>
+                </div>
+                <div class="details">
+                  <div><b>${Math.round(r.floor_area_sqm)} sqm</b>Floor area</div>
+                  <div><b>${leaseYears(r.remaining_lease_months)} years</b>Lease remaining</div>
+                  <div><b>${e(r.flat_model_name)}</b>Flat model</div>
+                </div>
+                <div class="price">
+                  <strong>${fmtMoney(r.resale_price)}</strong>
+                  <br>
+                  <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${encodeURIComponent(r.txn_id)}">View details →</a>
+                </div>
+              </article>`;
+          }
+
+          // The picture beside the title follows the town you are searching, so
+          // its caption never names a different place. With no town chosen it
+          // keeps the default photo.
+          const heroFigure = document.querySelector(".page-photo");
+          let heroTown = "";
+          function syncHeroPhoto(town) {
+            if (!heroFigure || town === heroTown) return;
+            heroTown = town;
+            if (town) RW.townPhoto(heroFigure, town);
+            else RW.townPhoto(heroFigure, "JURONG WEST");
+          }
+
           function currentParams() {
-            // "Any …" options have empty values, so they contribute no filter
-            // and the backend returns the varied (non-clustered) result mix.
+            syncHeroPhoto(townValue?.value || "");
+            // "Any …" options have empty values, so they contribute no filter.
             const p = {
               town:      townValue?.value || "",
-              flat_type: typeSel?.value,
+              flat_type: isAny(typeSel?.value) ? "" : typeSel.value,
               budget:    (budgetInput?.value || "").replace(/[^0-9]/g, ""),
               min_lease: (leaseSel?.value || "").replace(/[^0-9]/g, ""),
               min_area:  (areaSel?.value || "").replace(/[^0-9.]/g, ""),
@@ -194,29 +272,72 @@
             if (sideMin) p.min_area = sideMin;   // side panel overrides the top min-area
             if (sideMax) p.max_area = sideMax;
             if (fStorey?.value) p.storey = fStorey.value;
-            if (fModel?.value)  p.flat_model = fModel.value;
+            if (fModel?.value && !isAny(fModel.value))  p.flat_model = fModel.value;
             return p;
           }
 
+          // The filters as they appear in the address bar:
+          //   search.html?town=TAMPINES&flat_type=4+ROOM&budget=600000 ...
+          function urlStateFrom(p) {
+            return {
+              town: p.town || "",
+              flat_type: p.flat_type ? String(p.flat_type).toUpperCase() : "",
+              budget: p.budget || "",
+              min_lease: p.min_lease || "",
+              min_area: p.min_area || "",
+              max_area: p.max_area || "",
+              storey: p.storey || "",
+              flat_model: p.flat_model || "",
+            };
+          }
+
+          // Build a human scope label from the active filters, e.g.
+          // "4 Room flats in Tampines" or "all flats across every town".
+          function scopeLabel(p) {
+            const town = p.town ? titleCase(p.town) : null;
+            const type = p.flat_type ? titleCase(p.flat_type) + " flats" : "flats";
+            if (town) return `${type} in ${town}`;
+            return `${type} across all of Singapore`;
+          }
+          function isFiltered(p) {
+            return !!(p.town || p.flat_type || p.flat_model || p.budget ||
+                      p.min_lease || p.min_area || p.max_area || p.storey);
+          }
+          function updateTitle(p) {
+            const s = scopeLabel(p);
+            document.title = (isFiltered(p) ? s.charAt(0).toUpperCase() + s.slice(1) : "Find a Flat") + " · ResaleWise SG";
+          }
+
           function updateToolbar() {
-            const shown = listEl.children.length;
-            const total = state.total.toLocaleString("en-SG");
+            const nf = n => Number(n).toLocaleString("en-SG");
             if (state.total === 0) {
               cntEl.textContent = "No matches";
               subEl.textContent = "Try widening your filters";
             } else {
-              cntEl.textContent = shown.toLocaleString("en-SG") + " of " + total;
-              subEl.textContent = "matching resale transactions";
+              const from = (state.page - 1) * PAGE_SIZE + 1;
+              cntEl.textContent = nf(from) + "–" + nf(from + state.shown - 1) + " of " + nf(state.total);
+              subEl.textContent = "matching resale transactions, newest first";
             }
           }
 
+          function renderPager(data) {
+            RW.pager(pagerEl, { page: state.page, pages: state.pages, onPage: n => run({ page: n, scroll: true }) });
+            pagerWrap.hidden = state.pages < 2;
+            pagerNote.textContent = data.capped
+              ? "Showing the newest " + Number(data.window).toLocaleString("en-SG") + " of " +
+                Number(data.total).toLocaleString("en-SG") + " matches. Use the filters to narrow the search, or download the CSV."
+              : "";
+          }
+
+          // CSV export always reflects the filters of the search on screen.
+          function setExportEnabled(enabled, p) {
+            csvBtn.setAttribute("aria-disabled", enabled ? "false" : "true");
+            csvBtn.href = enabled ? API_BASE + apiUrl("/api/search.csv", p) : "#";
+          }
+          csvBtn.addEventListener("click", e => { if (csvBtn.getAttribute("aria-disabled") === "true") e.preventDefault(); });
+          printBtn.addEventListener("click", () => window.print());
+
           // ---- Charts for the current filter set ----
-          const chartsWrap = document.getElementById("searchCharts");
-          const histEl     = document.getElementById("histChart");
-          const scatterSvg = document.getElementById("scatterChart");
-
-          const shortK = n => "$" + Math.round(Number(n) / 1000) + "k";
-
           function renderHistogram(buckets, median) {
             if (!buckets || !buckets.length) { histEl.innerHTML = ""; return; }
             const max = Math.max(...buckets.map(b => b.count), 1);
@@ -230,6 +351,10 @@
                         <span>${shortK(b.low)}</span>
                       </div>`;
             }).join("");
+            histEl.setAttribute("role", "img");
+            histEl.setAttribute("aria-label",
+              `Histogram of resale prices from ${shortK(buckets[0].low)} to ${shortK(buckets[buckets.length - 1].high)}` +
+              (median != null ? `, median ${fmtMoney(median)}` : ""));
           }
 
           function renderScatter(points, median) {
@@ -242,7 +367,7 @@
             const y = p => padT + (1 - (p - pMin) / Math.max(pMax - pMin, 1)) * (H - padT - padB);
 
             // Axis ticks (min/mid/max) for both axes
-            const aMid = Math.round((aMin + aMax) / 2), pMid = Math.round((pMin + pMax) / 2);
+            const aMid = Math.round((aMin + aMax) / 2);
             const axis = `
               <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>
               <line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--line)" stroke-width="1"/>
@@ -259,27 +384,30 @@
             if (median) {
               const my = y(median).toFixed(1);
               medLine = `<line x1="${padL}" y1="${my}" x2="${W-padR}" y2="${my}" stroke="var(--lime)" stroke-width="1.5" stroke-dasharray="4 3"/>
-                         <text x="${W-padR}" y="${(+my)-4}" text-anchor="end" class="axis-tick" fill="var(--lime)">median ${shortK(median)}</text>`;
+                         <text x="${W-padR}" y="${(+my)-5}" text-anchor="end" class="axis-tick" fill="var(--lime)" stroke="var(--bg)" stroke-width="3" paint-order="stroke" style="font-weight:700">median ${shortK(median)}</text>`;
             }
             scatterSvg.innerHTML = axis + dots + medLine;
+            scatterSvg.setAttribute("aria-label",
+              `Scatter plot of ${points.length} flats: floor area ${aMin} to ${aMax} sqm against price ${shortK(pMin)} to ${shortK(pMax)}`);
           }
 
-          // Build a human scope label from the active filters, e.g.
-          // "4 Room flats in Tampines" or "all flats across every town".
-          function scopeLabel(p) {
-            const town = p.town ? titleCase(p.town) : null;
-            const type = p.flat_type ? titleCase(p.flat_type) + " flats" : "flats";
-            if (town) return `${type} in ${town}`;
-            return `${type} across all of Singapore`;
-          }
-          function isFiltered(p) {
-            return !!(p.town || p.flat_type || p.flat_model || p.budget ||
-                      p.min_lease || p.min_area || p.max_area || p.storey);
+          function setChartsLoading() {
+            chartsWrap.hidden = false;
+            histEl.removeAttribute("role"); histEl.removeAttribute("aria-label");
+            histEl.innerHTML = RW.skeleton.bars(12);
+            scatterSvg.style.display = "none";
+            scatterSkel.hidden = false;
+            document.getElementById("histSub").textContent = "Loading price data…";
+            document.getElementById("scatterSub").textContent = "Loading price data…";
+            document.getElementById("histInsight").textContent = "";
+            document.getElementById("scatterInsight").textContent = "";
           }
 
           function renderCharts(stats, params) {
             if (!stats || !stats.n) { chartsWrap.hidden = true; return; }
             chartsWrap.hidden = false;
+            scatterSkel.hidden = true;
+            scatterSvg.style.display = "";
 
             const scope = scopeLabel(params);
             const filtered = isFiltered(params);
@@ -295,7 +423,7 @@
             const histInsight = document.getElementById("histInsight");
             if (peak && peak.count) {
               histInsight.innerHTML =
-                `💡 Most ${scope} sold for <b>${shortK(peak.low)}–${shortK(peak.high)}</b>. ` +
+                `Most ${scope} sold for <b>${shortK(peak.low)}–${shortK(peak.high)}</b>. ` +
                 `The highlighted bar marks the median (${fmtMoney(stats.median_price)}).` + prompt;
             } else { histInsight.textContent = ""; }
 
@@ -303,87 +431,169 @@
             document.getElementById("scatterSub").textContent =
               `Median ${fmtMoney(stats.median_psm)} per sqm · ${scope}.`;
             document.getElementById("scatterInsight").innerHTML =
-              `💡 Each dot is one sold flat (${scope}). Dots rising to the right mean larger flats cost more; ` +
-              `the dashed line is the median price — dots below it are relatively better value.` + prompt;
+              `Each dot is one sold flat (${scope}). Dots rising to the right mean larger flats cost more; ` +
+              `the dashed line is the median of these sales. Sales from different years aren\u2019t directly comparable, ` +
+              `so judge each flat by its own value tag, which compares it with sales from the same period.` + prompt;
 
             renderHistogram(stats.buckets, stats.median_price);
             renderScatter(stats.scatter, stats.median_price);
           }
 
-          async function loadStats() {
-            const params = currentParams();
-            try {
-              const stats = await apiGet("/api/search-stats", params);
-              state.median = stats.median_price || null;
-              renderCharts(stats, params);
-            } catch (e) {
-              chartsWrap.hidden = true;
-              state.median = null;
-            }
+          // ---- Empty state: say WHY and offer concrete next steps ----
+          function filterHints(p) {
+            const h = [];
+            if (p.town) h.push(titleCase(p.town));
+            if (p.flat_type) h.push(titleCase(p.flat_type));
+            if (p.flat_model) h.push(titleCase(p.flat_model) + " model");
+            if (p.budget) h.push("Up to " + fmtMoney(p.budget));
+            if (p.min_lease) h.push(p.min_lease + "+ years lease");
+            if (p.min_area) h.push("From " + p.min_area + " sqm");
+            if (p.max_area) h.push("Up to " + p.max_area + " sqm");
+            if (p.storey) h.push("Storey " + p.storey.replace(/-$/, "+"));
+            return h;
           }
-
-          // fresh = true clears the list and resets pagination (new search).
-          // fresh = false appends the next page (Load more).
-          async function load(fresh) {
-            if (state.loading) return;
-            state.loading = true;
-
-            if (fresh) {
-              state.offset = 0;
-              listEl.innerHTML = "";
-              cntEl.textContent = "Loading…";
-              subEl.textContent = "Searching…";
-              loadMoreRow.hidden = true;
-              // Fetch stats first so the median is ready for value badges + charts.
-              await loadStats();
-            } else {
-              loadMoreBtn.textContent = "Loading…";
-              loadMoreBtn.disabled = true;
+          function renderEmpty(p) {
+            let text = "Try a different town or flat type.";
+            if (p.budget) text = "Try widening your budget, or relaxing the lease and size limits.";
+            else if (p.min_lease || p.min_area || p.max_area || p.storey || p.flat_model)
+              text = "Try loosening the lease, size, storey or model filters.";
+            const actions = [{ label: "Reset all filters", primary: true, onClick: () => resetBtn.click() }];
+            if (p.budget) {
+              actions.push({ label: "Raise budget by 10%", onClick: () => {
+                budgetInput.value = String(Math.round(Number(p.budget) * 1.1 / 1000) * 1000);
+                run();
+              } });
             }
-
-            const params = Object.assign(currentParams(), {
-              limit: PAGE_SIZE,
-              offset: state.offset
+            RW.renderEmpty(listEl, {
+              title: "No flats match these filters",
+              text, hints: filterHints(p), actions,
             });
-
-            try {
-              const data = await apiGet("/api/search", params);
-              const rows = data.rows || [];
-              state.total = data.total || 0;
-
-              if (fresh && rows.length === 0) {
-                listEl.innerHTML =
-                  '<article class="card transaction"><div><h3>No matching transactions</h3><p>Try widening your filters.</p></div></article>';
-              } else {
-                listEl.insertAdjacentHTML("beforeend", rows.map(cardHtml).join(""));
-              }
-
-              state.offset += rows.length;
-              updateToolbar();
-
-              loadMoreRow.hidden = !data.has_more;
-              loadMoreBtn.textContent = "Load more results ↓";
-              loadMoreBtn.disabled = false;
-            } catch (e) {
-              if (fresh) {
-                cntEl.textContent = "Error";
-                subEl.textContent = "";
-                listEl.innerHTML =
-                  `<article class="card transaction"><div><h3>Could not load results</h3><p>${e.message}</p></div></article>`;
-              } else {
-                loadMoreBtn.textContent = "Retry ↓";
-                loadMoreBtn.disabled = false;
-              }
-            } finally {
-              state.loading = false;
-            }
           }
 
-          function run() { load(true); }
-          loadMoreBtn.addEventListener("click", () => load(false));
+          // ---- Sparklines: one batched request for the cards on screen ----
+          async function loadSparklines() {
+            const slots = [...listEl.querySelectorAll(".spark-slot:not([data-done])")];
+            if (!slots.length) return;
+            const need = [...new Set(slots.map(s => s.dataset.pair))].filter(p => !sparkCache.has(p)).slice(0, 40);
+            if (need.length) {
+              try {
+                const qs = need.map(p => "pair=" + encodeURIComponent(p)).join("&");
+                const data = await apiRequest("/api/insights/sparklines?" + qs);
+                Object.entries(data.series || {}).forEach(([k, v]) => sparkCache.set(k, v));
+              } catch (e) { return; }   // decorative extra: fail quietly
+            }
+            slots.forEach(el => {
+              if (!el.isConnected) return;
+              const series = sparkCache.get(el.dataset.pair);
+              if (!series) return;
+              const [town, type] = el.dataset.pair.split("|");
+              el.innerHTML = RW.sparkline(series, "Median " + titleCase(type) + " price in " + titleCase(town));
+              el.setAttribute("data-done", "1");
+            });
+          }
 
-          const resetBtn = document.getElementById("resetFilters");
-          if (resetBtn) resetBtn.addEventListener("click", () => {
+          // ---- Load one page of a search ----
+          //   rowsOnly: same filters, different page -> keep the charts as they are.
+          async function load(p, page, rowsOnly) {
+            const seq = ++reqSeq;
+            state.params = p; state.page = page; state.total = 0; state.shown = 0;
+
+            // Skeletons straight away, so there is never a blank gap.
+            cntEl.textContent = "Loading…";
+            subEl.textContent = rowsOnly ? "Loading page " + page + "…" : "Searching…";
+            pagerWrap.hidden = true;
+            listEl.innerHTML = RW.skeleton.resultCards(5) + RW.skeleton.label("Loading results…");
+            RW.setBusy(listEl, true);
+            setExportEnabled(false, p);
+            if (!rowsOnly) {
+              state.statsOk = false; state.median = null;
+              statsErrEl.innerHTML = "";
+              setChartsLoading();
+            }
+
+            // Stats and results are independent, so fetch them in parallel.
+            const [statsRes, rowsRes] = await Promise.allSettled([
+              rowsOnly ? null : apiGet("/api/search-stats", p),
+              apiGet("/api/search", Object.assign({}, p, { limit: PAGE_SIZE, page })),
+            ]);
+            if (seq !== reqSeq) return;   // superseded by a newer request
+
+            // Charts (+ the median that powers the value badges)
+            if (!rowsOnly) {
+              if (statsRes.status === "fulfilled") {
+                state.statsOk = true;
+                state.median = statsRes.value.median_price || null;
+                renderCharts(statsRes.value, p);
+              } else {
+                chartsWrap.hidden = true;
+                RW.renderError(statsErrEl, statsRes.reason, {
+                  what: "the price charts", compact: true, onRetry: () => load(state.params, state.page, false),
+                });
+              }
+            }
+
+            // Results
+            RW.setBusy(listEl, false);
+            if (rowsRes.status === "rejected") {
+              cntEl.textContent = "Couldn’t load results";
+              subEl.textContent = "";
+              RW.renderError(listEl, rowsRes.reason, { what: "results", onRetry: () => load(state.params, state.page, rowsOnly) });
+              return;
+            }
+            const data = rowsRes.value;
+            const rows = data.rows || [];
+            state.total = data.total || 0;
+            state.pages = data.pages || 1;
+
+            if (!rows.length) {
+              renderEmpty(p);
+              updateToolbar();
+              return;
+            }
+            // The server shows the last page when asked for one past the end
+            // (an old link): make the address bar say so.
+            if (data.page !== page) {
+              state.page = data.page;
+              state.lastKey = state.filterKey + "#" + data.page;
+              RW.url.sync(Object.assign({}, urlStateFrom(p), { page: data.page > 1 ? data.page : "" }), { replace: true });
+            }
+            state.shown = rows.length;
+            listEl.innerHTML = rows.map(cardHtml).join("");
+            updateToolbar();
+            setExportEnabled(true, p);
+            renderPager(data);
+            loadSparklines();
+          }
+
+          // The page number in the address bar (search.html?...&page=3).
+          function urlPage() {
+            const n = parseInt(RW.url.params().get("page"), 10);
+            return n > 0 ? n : 1;
+          }
+
+          // run(): read the controls, put them in the URL, search. Skips work when
+          // nothing actually changed (e.g. a budget field blurring unchanged).
+          //   run()               a filter changed -> page 1
+          //   run({page: n})      a page button -> same filters, page n
+          //   run({fromHistory})  Back / Forward or first load -> page from the URL
+          function run(opts) {
+            opts = opts || {};
+            const p = currentParams();
+            const filters = urlStateFrom(p);
+            const fkey = JSON.stringify(filters);
+            const page = opts.page != null ? opts.page : (opts.fromHistory || opts.initial ? urlPage() : 1);
+            const key = fkey + "#" + page;
+            if (!opts.force && key === state.lastKey) return;
+            const rowsOnly = fkey === state.filterKey && state.statsOk;
+            state.lastKey = key; state.filterKey = fkey;
+            if (!opts.fromHistory) RW.url.sync(Object.assign({}, filters, { page: page > 1 ? page : "" }), { replace: !!opts.replace });
+            updateTitle(p);
+            if (opts.scroll) listEl.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+            load(p, page, rowsOnly);
+            if (opts.scroll) listEl.focus({ preventScroll: true });
+          }
+
+          function resetControls() {
             if (townInput) townInput.value = "";
             if (townValue) townValue.value = "";
             if (typeSel)   typeSel.selectedIndex = 0;
@@ -394,21 +604,23 @@
             if (fMaxArea) fMaxArea.value = "";
             if (fStorey)  fStorey.selectedIndex = 0;
             if (fModel)   fModel.selectedIndex = 0;
-            run();
-          });
+          }
+
+          const resetBtn = document.getElementById("resetFilters");
+          if (resetBtn) resetBtn.addEventListener("click", () => { resetControls(); run(); });
 
           // "Apply refinements" re-runs the search with the side-panel filters.
           const applyBtn = document.getElementById("applyRefine");
-          if (applyBtn) applyBtn.addEventListener("click", run);
+          if (applyBtn) applyBtn.addEventListener("click", () => run());
 
           // Top filters apply on change; budget on Enter/blur.
-          [typeSel, leaseSel, areaSel].forEach(el => el && el.addEventListener("change", run));
+          [typeSel, leaseSel, areaSel].forEach(el => el && el.addEventListener("change", () => run()));
           if (budgetInput) {
             budgetInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
-            budgetInput.addEventListener("blur", run);
+            budgetInput.addEventListener("blur", () => run());
           }
           // Side-panel: storey/model on change, area on Enter.
-          [fStorey, fModel].forEach(el => el && el.addEventListener("change", run));
+          [fStorey, fModel].forEach(el => el && el.addEventListener("change", () => run()));
           [fMinArea, fMaxArea].forEach(el => el && el.addEventListener("keydown", e => {
             if (e.key === "Enter") { e.preventDefault(); run(); }
           }));
@@ -416,8 +628,8 @@
           // Populate the Town and Flat type dropdowns with the FULL list from
           // the database (shared helper in api.js), so every town is selectable.
           // Both include an "Any" option selected by default — so a fresh page
-          // load sends NO filters, which triggers the varied (non-clustered)
-          // result ordering on the backend instead of defaulting to one town.
+          // load sends NO filters and shows the newest sales across Singapore
+          // instead of defaulting to one town.
           async function populateOptions() {
             await Promise.all([
               populateFlatTypes(typeSel, { includeAny: true, anyLabel: "Any flat type" }),
@@ -442,16 +654,19 @@
             function openMenu(items) {
               if (!items.length) { closeMenu(); return; }
               townMenu.innerHTML = items.map((name, i) =>
-                `<li role="option" class="combo-item${i === comboActive ? ' active' : ''}" data-name="${name}">${name}</li>`
+                `<li role="option" id="townOpt-${i}" aria-selected="${i === comboActive}" class="combo-item${i === comboActive ? ' active' : ''}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</li>`
               ).join("");
               townMenu.hidden = false;
               townInput.setAttribute("aria-expanded", "true");
+              if (comboActive >= 0) townInput.setAttribute("aria-activedescendant", "townOpt-" + comboActive);
+              else townInput.removeAttribute("aria-activedescendant");
             }
             function closeMenu() {
               townMenu.hidden = true;
               townMenu.innerHTML = "";
               comboActive = -1;
               townInput.setAttribute("aria-expanded", "false");
+              townInput.removeAttribute("aria-activedescendant");
             }
             function filtered() {
               const q = townInput.value.trim().toLowerCase();
@@ -502,48 +717,83 @@
             });
           }
 
-          // Pre-fill the filter form from URL params (e.g. arriving from the
-          // homepage hero search: search.html?town=TAMPINES&flat_type=4+ROOM...).
+          // Pre-fill the controls from the URL — a refresh, a shared link, the
+          // Back button, or the homepage hero search all land here:
+          //   search.html?town=TAMPINES&flat_type=4+ROOM&budget=600000&min_lease=70
           function hydrateFromUrl() {
-            const qp = new URLSearchParams(location.search);
-            if (![...qp.keys()].length) return;
+            const qp = RW.url.params();
 
-            function setSelect(sel, wanted, { numeric = false } = {}) {
-              if (!sel || wanted == null || wanted === "") return;
+            function setSelect(sel, wanted, by) {
+              if (!sel || wanted == null || wanted === "") return false;
               const want = String(wanted).trim().toUpperCase();
               for (const opt of sel.options) {
-                const optVal = numeric
-                  ? opt.value.replace(/[^0-9]/g, "")
-                  : opt.textContent.trim().toUpperCase();
-                if (optVal === (numeric ? String(wanted).replace(/[^0-9]/g, "") : want)) {
-                  sel.value = opt.value;
-                  return;
-                }
+                const have = (by === "value" ? opt.value : opt.textContent).trim().toUpperCase();
+                if (have === want) { sel.value = opt.value; return true; }
               }
+              return false;
             }
+            const digits = v => String(v || "").replace(/[^0-9.]/g, "");
 
             // Town: set both the visible input and the hidden value.
-            const t = qp.get("town");
+            const t = (qp.get("town") || "").trim();
             if (t && townInput && townValue) {
               townInput.value = titleCase(t);
               townValue.value = t.toUpperCase();
             }
-            setSelect(typeSel, qp.get("flat_type"));                  // Flat type
-            if (qp.get("budget") && budgetInput) budgetInput.value = qp.get("budget");
-            setSelect(leaseSel, qp.get("min_lease"), { numeric: true }); // Min lease
-            setSelect(areaSel,  qp.get("min_area"), { numeric: true });  // Min area
+            setSelect(typeSel, qp.get("flat_type"), "text");
+            if (digits(qp.get("budget")) && budgetInput) budgetInput.value = digits(qp.get("budget")).split(".")[0];
+
+            // The lease dropdown only offers 60/70/80 — keep any other value from a link.
+            const lease = digits(qp.get("min_lease")).split(".")[0];
+            if (lease && !setSelect(leaseSel, lease, "value")) {
+              const o = document.createElement("option");
+              o.value = lease; o.textContent = lease + " years";
+              leaseSel.appendChild(o); leaseSel.value = lease;
+            }
+            // Same idea for area: a value the dropdown lacks goes to the side-panel box.
+            const minArea = digits(qp.get("min_area"));
+            if (minArea && !setSelect(areaSel, minArea, "value")) fMinArea.value = minArea;
+            if (digits(qp.get("max_area"))) fMaxArea.value = digits(qp.get("max_area"));
+            setSelect(fStorey, qp.get("storey"), "value");
+            setSelect(fModel, qp.get("flat_model"), "text");
           }
 
           form.addEventListener("submit", ev => { ev.preventDefault(); run(); });
 
+          // On phones the "Refine results" panel starts collapsed so results appear
+          // sooner; it opens by itself when one of its filters is active.
+          const refineBtn = document.getElementById("refineToggle");
+          const refineBody = document.getElementById("refineBody");
+          const narrow = window.matchMedia("(max-width: 1050px)");
+          function setRefine(open) {
+            refineBtn.setAttribute("aria-expanded", String(open));
+            refineBody.hidden = narrow.matches ? !open : false;
+          }
+          function expandRefineIfActive() {
+            if (narrow.matches && (fMinArea.value || fMaxArea.value || fStorey.value || (fModel.value && !isAny(fModel.value)))) setRefine(true);
+          }
+          refineBtn.addEventListener("click", () => {
+            if (narrow.matches) setRefine(refineBtn.getAttribute("aria-expanded") !== "true");
+          });
+          narrow.addEventListener("change", () => setRefine(!narrow.matches));
+          setRefine(!narrow.matches);
+
+          // Back / Forward: restore that search's filters and re-run it (no new history entry).
+          RW.url.onChange(() => {
+            resetControls();
+            hydrateFromUrl();
+            run({ fromHistory: true, force: true });
+          });
+
           // Load the full town/flat-type lists first, THEN honor URL params,
-          // THEN run the initial search.
+          // THEN run the initial search (replacing, not adding, a history entry).
           await populateOptions();
           hydrateFromUrl();
-          run();
+          expandRefineIfActive();
+          run({ replace: true, force: true, initial: true });
         })();
         </script>
-    </main>
+    </div>
 </body>
 
 </html>

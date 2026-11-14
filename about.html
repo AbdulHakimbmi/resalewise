@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Where ResaleWise SG gets its HDB resale data, how the value labels and score are calculated, and what they can't tell you.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="About &amp; methodology · ResaleWise SG">
+    <meta property="og:description" content="Where ResaleWise SG gets its HDB resale data, how the value labels and score are calculated, and what they can't tell you.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About &amp; methodology · ResaleWise SG">
+    <meta name="twitter:description" content="Where ResaleWise SG gets its HDB resale data, how the value labels and score are calculated, and what they can't tell you.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
+    <title>About &amp; methodology · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
+        <section class="page-hero">
+            <figure class="page-photo"><img src="assets/images/towns/toa-payoh.jpg" alt="HDB blocks in Toa Payoh, one of Singapore's first new towns"><figcaption>Toa Payoh</figcaption></figure>
+            <div class="kicker">About &amp; methodology</div>
+            <h1>Where the numbers <em>come from.</em></h1>
+            <p>ResaleWise SG turns Singapore&rsquo;s public HDB resale records into something easier to read. Here is exactly what data we use, how we calculate the &ldquo;value&rdquo; labels, and what they can and can&rsquo;t tell you.</p>
+        </section>
+        <section class="section" style="padding-top:10px">
+            <div class="prose">
+                <h2>The data</h2>
+                <p>Every price on this site comes from <a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">Resale Flat Prices</a>, published by the Housing &amp; Development Board (HDB) on Singapore&rsquo;s open-data portal, data.gov.sg. It records resale transactions of HDB flats: the town, flat type, block and street, storey range, floor area, flat model, lease start year, remaining lease and the resale price.</p>
+                <p>HDB publishes the records as several files. The older ones (1990 to February 2012) are based on the <b>approval date</b> of the resale application, while the newer ones (March 2012 onward) are based on the <b>registration date</b>. We treat both as the &ldquo;month&rdquo; of the sale, so the timing of the oldest records is slightly different in meaning. The data is released under the Singapore Open Data Licence; please check data.gov.sg for the current terms.</p>
+                <div class="fact-grid" id="coverage" aria-live="polite">
+                    <div class="card"><b id="covFrom">&hellip;</b><span>Earliest month in our data</span></div>
+                    <div class="card"><b id="covTo">&hellip;</b><span>Latest month in our data</span></div>
+                    <div class="card"><b id="covCount">&hellip;</b><span>Transactions loaded</span></div>
+                </div>
+                <p id="covNote" class="side-hint">We show &ldquo;transactions up to&rdquo; the latest month in our database. That is the newest record we have loaded, not necessarily the newest one HDB has published. The database is refreshed by re-running our import script on a newer HDB file.</p>
+
+                <h2>How we judge &ldquo;value&rdquo;</h2>
+                <p>HDB prices have risen a lot over the decades, so a flat sold in 1995 will always look &ldquo;cheap&rdquo; next to one sold today. Comparing across years would be meaningless. So every sale is judged <b>only against sales from its own period</b>. The comparison point is the <b>median</b> (the middle price: half of comparable flats sold for less, half for more). We use the median rather than the average because a few very expensive flats would otherwise pull the average up.</p>
+
+                <h3>What a sale is compared with</h3>
+                <p>For each sale we look for the median price of the <b>same flat type, in the same town, in the same quarter</b> (a three-month period). We need at least 5 sales to trust a median. If the quarter is too thin we widen the comparison, one step at a time, and always tell you which one was used:</p>
+                <table>
+                    <thead><tr><th>Step</th><th>Compared with</th><th>Example label</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Same town and flat type, same quarter</td><td>Tampines 4 Room, Q3 2026</td></tr>
+                        <tr><td>2</td><td>Same town and flat type, same calendar year</td><td>Bedok 4 Room, 1995</td></tr>
+                        <tr><td>3</td><td>Same flat type in all towns, same quarter</td><td>4 Room in all towns, Q2 1998</td></tr>
+                    </tbody>
+                </table>
+                <p>If even step 3 has fewer than 5 sales, we show no value label rather than guess.</p>
+
+                <h3>The value tag on search results</h3>
+                <p>On the <a href="search.html">search page</a>, each result shows how far its price is from that comparison median, and a label:</p>
+                <table>
+                    <thead><tr><th>Price vs the median</th><th>Label</th></tr></thead>
+                    <tbody>
+                        <tr><td>8% or more below</td><td>Great value</td></tr>
+                        <tr><td>More than 2% and less than 8% below</td><td>Good value</td></tr>
+                        <tr><td>Within 2% either side</td><td>Around market rate</td></tr>
+                        <tr><td>More than 2% up to 8% above</td><td>Above market rate</td></tr>
+                        <tr><td>More than 8% above</td><td>Premium</td></tr>
+                    </tbody>
+                </table>
+                <p>Because each result is judged against its own period, the tags do not change when you change a filter, and old and new sales are treated alike. Hover over a tag to see exactly which sales it was compared with.</p>
+
+                <h3>The value score on your shortlist</h3>
+                <p>On the <a href="compare.html">compare page</a>, each saved flat also gets a 0 to 100 score, using the same comparison median and a bonus or penalty for remaining lease relative to <b>other flats sold in that period</b> (the median remaining lease of the same comparison group):</p>
+                <div class="formula">price_diff_pct = (price &minus; period_median) &divide; period_median &times; 100<br>
+lease_adjustment = clamp((remaining_lease_years &minus; peer_median_lease_years) &times; 0.4, &minus;12, +12)<br>
+score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)</div>
+                <p>A flat priced exactly at its period&rsquo;s median, with a typical lease for its peers, scores 50. Every 1% below the median adds 1.6 points; every 1% above subtracts 1.6. Having more lease left than its peers adds up to 12 points; less takes up to 12 away. The score is only shown when there is a comparison median. Because it is relative to the period, it lets you compare a 2019 sale and a 2026 sale on equal terms.</p>
+
+                <p>The charts on the search page (price histogram and the scatter plot) simply describe the sales you filtered. If your results span many years, their prices are not comparable with each other; use each flat&rsquo;s tag for that.</p>
+
+                <h2 id="drivers">What drives a price?</h2>
+                <p>Each transaction page compares the sale with <b>similar flats sold the same year</b>: the same flat type, the same 10&nbsp;sqm size band and the same 10-year band of remaining lease. Below that it lists features that go with higher prices across the whole market, each estimated the same way:</p>
+                <ol>
+                    <li><b>Remove time and town.</b> A sale&rsquo;s price per sqm is divided by the median for its own town, flat type and quarter, so 1.00 means &ldquo;typical for then and there&rdquo;.</li>
+                    <li><b>Compare like with like.</b> High and low floors are compared inside the <i>same block</i>; more or less remaining lease inside the same town, flat type and size band; distance to MRT inside the same town, flat type, size band and lease band. A group counts only with enough sales on both sides (10 per side within a block, 30 otherwise).</li>
+                    <li><b>Say how sure we are.</b> The 95% range comes from resampling the matched groups 2,000 times (a bootstrap). We also show the unmatched gap, so you can see how much the matching changes the answer.</li>
+                </ol>
+                <p class="side-hint"><b>These are associations, not causes.</b> A high floor or a short walk to the MRT tends to come with other things the records don&rsquo;t include, such as views, renovation or being next to a mall. The numbers describe past sales; they don&rsquo;t say what changing one feature would do to a price.</p>
+
+                <h2 id="amenities">What&rsquo;s nearby, and the &ldquo;Best fit&rdquo; page</h2>
+                <p>For every block we measure the straight-line distance to the nearest MRT/LRT station, park, hawker centre, gym, childcare centre, primary school and secondary school, and count how many are within 500&nbsp;m, 1&nbsp;km and 2&nbsp;km. Each kind gets a closeness score from 0 to 100: 100 when the nearest one is very close, falling evenly to 0 at a longer distance (for primary schools, 1&nbsp;km and 2&nbsp;km, the distances used in MOE&rsquo;s Primary&nbsp;1 registration). The <a href="match.html">Best fit</a> page averages those scores using the weights you set, so it sorts blocks by <i>your</i> priorities. Walking time assumes about 80&nbsp;m a minute with a 30% detour.</p>
+                <p>Separately, a gradient-boosted model is trained on older sales to predict each sale&rsquo;s price relative to the market, and tested on the most recent months it has never seen. The &ldquo;location&rdquo; figure on a transaction page is how far above or below a typical block the model puts this block&rsquo;s surroundings, holding flat features fixed.</p>
+                <p class="side-hint"><b>Associations, not causes.</b> Closeness is not quality, and a park or school next door is a convenience for one buyer and noise for another. Locations are as of each file&rsquo;s last update, not the map on the sale date (the gym list was last updated between 2016 and 2018 and the childcare list in December 2021, so newer places are missing), and park distances are measured to the boundary to within about 50&nbsp;m.</p>
+
+                <h2 id="validation">How the map data is checked</h2>
+                <p>Blocks are placed on the map with OneMap, Singapore&rsquo;s official geocoder, and a location is kept only if the block number <i>and</i> the street match. Distances to stations are computed in MongoDB and checked again in PostgreSQL (PostGIS). Six checks run on every rebuild:</p>
+                <div id="rwxValidation" aria-live="polite"><p class="side-hint">Loading the latest checks&hellip;</p></div>
+
+                <h2>Two databases, one site</h2>
+                <p>Transactions, blocks and accounts live in <b>PostgreSQL</b>, where joins, constraints and window functions do the work. Reviews, station locations and block points live in <b>MongoDB</b>, where flexible documents and geospatial indexes fit better. A copy of the transactions sits in both, so the same questions can be timed on each. <a href="benchmark.html">See the comparison under the hood &rarr;</a></p>
+
+                <h2>What this is not</h2>
+                <ul>
+                    <li><b>Not a valuation or financial advice.</b> The records don&rsquo;t include renovation condition, view, noise, exact floor, or whether a sale was between relatives. Two flats with the same numbers can be worth very different amounts.</li>
+                    <li><b>Not current listings.</b> These are completed past sales, not flats for sale today.</li>
+                    <li><b>Small samples are noisy.</b> A median based on a handful of sales can move a lot. We hide town comparisons that have fewer than 5 transactions.</li>
+                    <li><b>The comparison is simple.</b> It adjusts only for town, flat type, period and remaining lease. Size, floor, view, renovation and exact location also affect price and are not included.</li>
+                </ul>
+
+                <h2>Reviews</h2>
+                <p>Town reviews are written by visitors to this site. They are not verified, and we don&rsquo;t endorse them. Ratings are summarised with a database aggregation over all reviews, so the headline numbers on the <a href="reviews.html">reviews page</a> count every review, not just the ones displayed.</p>
+
+                <h2>Questions or corrections</h2>
+                <p>This is a student project (INF2003 Database Systems). If you spot a number that looks wrong, compare it with the original dataset on <a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">data.gov.sg</a> first, as that is the source of truth.</p>
+                <h2 id="photo-credits">Photo credits</h2>
+                <p>The photographs of HDB estates on this site come from Wikimedia Commons and Flickr, used under the licences listed here.</p>
+                <ul class="photo-credits" id="photoCredits"><li>Loading credits…</li></ul>
+            </div>
+        </section>
+        </main>
+        <footer class="footer">
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
+        <script>
+        // every photo credit, read from the credits.json files beside the pictures
+        Promise.all(["assets/images/home/credits.json", "assets/images/towns/credits.json"].map(u =>
+          fetch(u).then(r => r.json()).catch(() => [])))
+          .then(lists => {
+            const items = lists.flat().map(e =>
+              `<li><a href="${escapeHtml(e.page)}">“${escapeHtml(e.title)}”</a> by ${escapeHtml(e.creator)}, ` +
+              (e.licenseUrl ? `<a href="${escapeHtml(e.licenseUrl)}">${escapeHtml(e.license)}</a>` : escapeHtml(e.license)) +
+              `, via ${escapeHtml(e.via)}</li>`);
+            document.getElementById("photoCredits").innerHTML = items.join("") || "<li>Credits could not be loaded.</li>";
+          });
+        </script>
+        <script>
+        (function () {
+          const $ = id => document.getElementById(id);
+          RW.loadMeta().then(m => {
+            $("covFrom").textContent = m.earliest_month ? RW.formatMonth(m.earliest_month) : "n/a";
+            $("covTo").textContent = m.latest_month ? RW.formatMonth(m.latest_month) : "n/a";
+            $("covCount").textContent = m.record_count != null ? Number(m.record_count).toLocaleString("en-SG") : "n/a";
+          }).catch(() => {
+            ["covFrom", "covTo", "covCount"].forEach(id => { $(id).textContent = "n/a"; });
+            $("covNote").textContent = "We couldn\u2019t load the live coverage figures right now. " + $("covNote").textContent;
+          });
+        })();
+        </script>
+    </div>
+</body>
+
+</html>

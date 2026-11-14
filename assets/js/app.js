@@ -20,6 +20,6 @@ document.querySelectorAll('.rate').forEach(b => b.addEventListener('click', () =
 document.querySelectorAll('[data-save]').forEach(b => b.addEventListener('click', () => {
     const saved = !b.dataset.saved;
     b.dataset.saved = saved ? '1' : '';
-    b.textContent = saved ? '♥ Saved' : '♡ Save';
+    b.textContent = saved ? 'Saved' : 'Save';
     showToast(saved ? 'Saved to your shortlist.' : 'Removed from shortlist.')
 }));

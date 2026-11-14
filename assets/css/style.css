@@ -4,12 +4,19 @@
     --muted: #a7a9ad;
     --line: rgba(224, 226, 232, .14);
     --panel: rgba(22, 24, 28, .74);
-    --forest: #4f7fd6;
-    --lime: #6f9bff;
-    --orange: #d8a26a;
-    --shadow: 0 25px 60px rgba(0, 0, 0, .38);
-    --r-xl: 30px;
-    --r-lg: 22px
+    /* One intentional accent: a single refined corporate blue used for both
+       (the old --forest/--lime were already both blue). --accent-strong is the
+       deeper shade for gradients/hovers. --orange kept as a sparing muted amber. */
+    --forest: #4176d8;
+    --lime: #4176d8;
+    --accent-strong: #2b56ad;
+    --orange: #c9975f;
+    /* Restrained shadow: shorter throw + lower opacity reads as composed rather
+       than floating. */
+    --shadow: 0 12px 32px rgba(0, 0, 0, .22);
+    /* Tighter container radii for a crisp, corporate feel (pills stay 999px). */
+    --r-xl: 16px;
+    --r-lg: 12px
 }
 
 /* Light mode — bone/graphite inverted to a clean paper look with navy accent */
@@ -21,8 +28,9 @@
     --panel: rgba(255, 255, 255, .82);
     --forest: #2f5bbf;
     --lime: #2f5bbf;
-    --orange: #b06a2e;
-    --shadow: 0 22px 50px rgba(30, 40, 70, .14);
+    --accent-strong: #244a9c;
+    --orange: #a9682f;
+    --shadow: 0 10px 26px rgba(30, 40, 70, .10);
 }
 
 * {
@@ -216,8 +224,8 @@ button {
 
 .primary-btn {
     color: #f7f9ff;
-    background: linear-gradient(135deg, #4f79cf, #274b8f);
-    box-shadow: 0 11px 28px rgba(40, 70, 140, .28)
+    background: linear-gradient(135deg, var(--forest), var(--accent-strong));
+    box-shadow: 0 6px 16px rgba(40, 70, 140, .20)
 }
 
 .ghost-btn {
@@ -242,8 +250,8 @@ button {
 .ghost-btn:hover,
 .dark-btn:hover,
 .search-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 28px rgba(0, 0, 0, .28)
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .20)
 }
 
 .menu {
@@ -478,8 +486,7 @@ h2 em {
     border: 1px solid rgba(224, 227, 234, .13);
     border-radius: 21px;
     background: rgba(24, 26, 30, .82);
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(15px)
+    box-shadow: var(--shadow)
 }
 
 .filter-grid {
@@ -550,8 +557,9 @@ h2 em {
     border: 1px solid var(--line);
     border-radius: var(--r-lg);
     background: var(--panel);
-    box-shadow: 0 15px 36px rgba(0, 0, 0, .18);
-    backdrop-filter: blur(15px)
+    box-shadow: 0 15px 36px rgba(0, 0, 0, .18)
+    /* No backdrop-filter here: dozens of cards re-blurring a moving WebGL
+       background every frame is what made the site laggy. */
 }
 
 .grid3 {
@@ -1447,7 +1455,7 @@ h2 em {
     .home-hero,
     .page-hero {
         padding: 42px 23px;
-        border-radius: 23px
+        border-radius: 16px
     }
     .home-hero {
         min-height: 640px
@@ -1601,7 +1609,7 @@ h2 em {
     height: 590px;
     max-width: 1660px;
     margin: 0 auto;
-    border-radius: 36px;
+    border-radius: 20px;
     perspective: 1450px;
     background: radial-gradient(circle at 50% 35%, rgba(84, 112, 180, .20), transparent 38%), linear-gradient(135deg, rgba(15, 16, 21, .92), rgba(20, 26, 44, .70))
 }
@@ -1916,7 +1924,7 @@ h2 em {
     }
     .coverflow-shell {
         height: 445px;
-        border-radius: 25px
+        border-radius: 20px
     }
     .coverflow-stage {
         height: 370px
@@ -2061,9 +2069,13 @@ select option {
     position: sticky;
     top: 0;
     z-index: 50;
+    /* NB: backdrop-filter is intentionally NOT transitioned — animating a blur
+       radius forces the browser to re-blur whatever is behind the nav every
+       frame of the .28s tween (here, the live WebGL mist), which caused the
+       scroll-triggered .nav-scrolled toggle to stutter. The blur still changes,
+       it just snaps instead of animating, which is visually imperceptible. */
     transition: min-height .28s ease, background .28s ease,
-                box-shadow .28s ease, backdrop-filter .28s ease,
-                border-color .28s ease;
+                box-shadow .28s ease, border-color .28s ease;
 }
 
 /* Full-bleed background layer: spans the whole viewport width (independent of
@@ -2083,8 +2095,9 @@ select option {
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(224, 227, 234, .07);
+    /* backdrop-filter omitted from the transition on purpose — see .nav above. */
     transition: background .28s ease, box-shadow .28s ease,
-                backdrop-filter .28s ease, border-color .28s ease;
+                border-color .28s ease;
 }
 
 .nav.nav-scrolled {
@@ -2094,8 +2107,12 @@ select option {
 .nav.nav-scrolled::before {
     background: rgba(12, 14, 17, .92);
     box-shadow: 0 8px 28px rgba(0, 0, 0, .3);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    /* The scrolled bar is already 92% opaque, so a heavy blur+saturate here is
+       costly work you can barely see through it. A lighter blur (and no
+       saturate) keeps the frosted look while cutting the per-scroll-frame GPU
+       cost of re-sampling the animated background behind the sticky nav. */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom-color: rgba(224, 227, 234, .12);
 }
 
@@ -3030,6 +3047,17 @@ a.sv-link.active:hover {
 :root[data-theme="light"] .field input,
 :root[data-theme="light"] .town-combo input#townInput { color: var(--ink); }
 
+/* Side-panel filter inputs (e.g. Floor area Min/Max) were dark-theme only:
+   dark box + near-white text/placeholder, invisible on the light background.
+   Match the .field treatment: light surface, ink text, readable placeholder. */
+:root[data-theme="light"] .filter-group select,
+:root[data-theme="light"] .filter-group input {
+    background: rgba(255, 255, 255, .9);
+    color: var(--ink);
+}
+:root[data-theme="light"] .filter-group input::placeholder { color: #7c7f86; }
+:root[data-theme="light"] .filter-group label { color: #4a5db0; }
+
 :root[data-theme="light"] .theme-toggle {
     background: rgba(20, 24, 34, .04);
 }
@@ -3071,6 +3099,7 @@ a.sv-link.active:hover {
 :root[data-theme="light"] .review-top span,
 :root[data-theme="light"] .float span,
 :root[data-theme="light"] .footer,
+:root[data-theme="light"] .details div,
 :root[data-theme="light"] .chart-insight {
     color: #4a4d54 !important;   /* dark grey */
 }
@@ -3083,8 +3112,26 @@ a.sv-link.active:hover {
 :root[data-theme="light"] .compare-price,
 :root[data-theme="light"] .property h2,
 :root[data-theme="light"] .score-label b,
+:root[data-theme="light"] .details b,
+:root[data-theme="light"] .stats b,
 :root[data-theme="light"] .review p {
     color: var(--ink) !important;
+}
+
+/* Light-mode audit: elements that were dark-theme-only and sit on surfaces
+   that turn light. Values -> ink (above); labels/body -> dark grey; and the
+   translucent-dark tint boxes are re-tinted so text stays readable on them. */
+:root[data-theme="light"] .stats span,
+:root[data-theme="light"] .price-compare p,
+:root[data-theme="light"] .reason {
+    color: #4a4d54;
+}
+:root[data-theme="light"] .stats {
+    background: rgba(20, 24, 34, .04);
+}
+:root[data-theme="light"] .reason {
+    background: rgba(80, 110, 190, .08);
+    border-color: rgba(60, 100, 190, .25);
 }
 
 /* Metric big numbers + accent text stay navy for contrast */
@@ -3563,4 +3610,346 @@ a.sv-link.active:hover {
 @media (max-width: 900px) {
     .dash-grid { grid-template-columns: 1fr; }
     .dash-tile.dash-wide { grid-column: auto; }
+}
+
+
+/* ============================================================
+   UX polish: loading / empty / error states, accessibility,
+   sparklines, footer attribution, print, About + 404 pages
+   ============================================================ */
+
+/* ---------- Accessibility ---------- */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: 12px;
+    top: -60px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--lime);
+    color: #0e1013;
+    font-weight: 800;
+    font-size: .82rem;
+    transition: top .15s;
+}
+.skip-link:focus { top: 12px; }
+
+/* A clear keyboard focus ring everywhere. !important because many controls
+   in this stylesheet set `outline: 0` on themselves. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--lime) !important;
+    outline-offset: 2px !important;
+}
+/* The skip-link target is focused programmatically; no ring needed on it.
+   (#main is more specific than the [tabindex] rule above, so it wins.) */
+#main:focus, #main:focus-visible { outline: none !important; }
+
+/* ---------- Skeleton loading (shimmer) ---------- */
+.skel {
+    display: block;
+    border-radius: 8px;
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, .06) 25%, rgba(255, 255, 255, .15) 37%, rgba(255, 255, 255, .06) 63%);
+    background-size: 400% 100%;
+    animation: skel-shimmer 1.4s ease infinite;
+}
+:root[data-theme="light"] .skel {
+    background-image: linear-gradient(90deg, rgba(20, 24, 34, .07) 25%, rgba(20, 24, 34, .15) 37%, rgba(20, 24, 34, .07) 63%);
+}
+@keyframes skel-shimmer {
+    0%   { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+.skel-line  { height: 11px; margin: 0 0 9px; }
+.skel-line.sm    { height: 9px; }
+.skel-line.lg    { height: 14px; }
+.skel-line.title { height: 17px; margin: 9px 0 10px; }
+.skel-line.bar   { height: 10px; border-radius: 999px; margin: 0; }
+.skel-pill   { height: 22px; width: 150px; border-radius: 999px; margin-top: 6px; }
+.skel-price  { height: 24px; width: 110px; margin: 0 0 12px auto; }
+.skel-btn    { height: 34px; width: 108px; border-radius: 999px; margin-left: auto; }
+.skel-avatar { width: 40px; height: 40px; border-radius: 50%; flex: none; }
+.skel-metric { height: 34px; width: 55%; margin: 4px 0; }
+.skel-bars   { display: flex; align-items: flex-end; gap: 6px; height: 100%; min-height: 150px; }
+.skel-bar    { flex: 1; border-radius: 6px 6px 2px 2px; }
+.skel-row    { display: grid; grid-template-columns: 92px 1fr 56px; gap: 12px; align-items: center; margin: 12px 0; }
+.skel-card   { pointer-events: none; }
+.skel-card:hover { transform: none; box-shadow: none; }
+.review-card.skel-card { display: flex; gap: 14px; padding: 16px 4px; }
+
+/* ---------- Empty + error states ---------- */
+.state-block {
+    text-align: center;
+    padding: 40px 24px;
+    border: 1px dashed var(--line);
+    border-radius: var(--r-lg);
+    background: var(--panel);
+}
+.state-block.compact { padding: 22px 16px; }
+.state-block .sb-ico { font-size: 2rem; line-height: 1; }
+.state-block h4 { margin: 12px 0 6px; font-size: 1.05rem; color: var(--ink); }
+.state-block p {
+    margin: 0 auto 16px;
+    max-width: 48ch;
+    font-size: .82rem;
+    line-height: 1.65;
+    color: var(--muted);
+}
+.state-block .sb-hints {
+    list-style: none;
+    margin: 0 auto 18px;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.state-block .sb-hints li {
+    padding: 6px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: .72rem;
+    color: var(--muted);
+}
+.state-block .sb-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.state-block .sb-code {
+    display: block;
+    margin-top: 14px;
+    font: 500 .64rem "DM Mono", monospace;
+    letter-spacing: .04em;
+    color: var(--muted);
+}
+.state-block.is-error { border-color: rgba(232, 120, 90, .5); }
+.state-block button:disabled { opacity: .65; cursor: progress; }
+.chart-card .state-block, .dash-tile .state-block { background: transparent; }
+
+/* ---------- Search toolbar actions ---------- */
+.toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* ---------- Review form: keyboard-reachable tag chips ---------- */
+button.tag {
+    appearance: none;
+    font-family: inherit;
+    border: 1px solid transparent;
+    cursor: pointer;
+    margin-top: 0;
+}
+.tag-picker .tag { padding: 7px 11px; font-size: .68rem; transition: background .15s, border-color .15s; }
+.tag-picker .tag[aria-pressed="true"] {
+    background: var(--lime);
+    color: #0e1013;
+    border-color: var(--lime);
+}
+:root[data-theme="light"] .tag-picker .tag[aria-pressed="true"] { color: #fff; }
+.tag-picker .tag.warn[aria-pressed="true"] { background: #ffd192; border-color: #ffd192; color: #2a1a05; }
+.star-rating .star[aria-checked="true"] { color: var(--lime); }
+label.rv-field-label { display: block; }
+
+/* ---------- Dashboard tiles: keyboard-movable grip ---------- */
+button.tile-grip {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    cursor: grab;
+    color: inherit;
+}
+
+/* ---------- Sparkline on result cards ---------- */
+.spark-slot { min-height: 30px; margin-top: 8px; }
+.spark-wrap { display: flex; align-items: center; gap: 8px; font-size: .66rem; color: var(--muted); }
+.spark { display: block; overflow: visible; }
+.spark-line { fill: none; stroke: var(--lime); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.spark-area { fill: rgba(111, 155, 255, .14); stroke: none; }
+.spark-dot  { fill: var(--lime); }
+.spark-delta { font-weight: 800; letter-spacing: .01em; }
+.spark-delta.up   { color: #e8c39a; }
+.spark-delta.down { color: #bfe6c8; }
+:root[data-theme="light"] .spark-delta.up   { color: #8a5320; }
+:root[data-theme="light"] .spark-delta.down { color: #2f6b45; }
+
+/* ---------- Footer: attribution ---------- */
+.footer { flex-wrap: wrap; align-items: flex-start; }
+.footer-main { display: grid; gap: 6px; }
+.footer a { text-decoration: underline; text-underline-offset: 2px; }
+.footer a:hover { color: var(--lime); }
+.footer-links { flex-wrap: wrap; }
+:root[data-theme="light"] .footer { color: var(--muted); }
+/* Footer link colours are hardcoded pale grey for the dark background (see the
+   .footer a rule further down); in light mode that's near-invisible on the
+   paper background, so override to the readable accent + ink. */
+:root[data-theme="light"] .footer a { color: var(--accent-strong); }
+:root[data-theme="light"] .footer a:hover { color: var(--ink); }
+
+/* ---------- About / methodology page ---------- */
+.prose { max-width: 780px; margin: 0 auto; line-height: 1.75; font-size: .92rem; color: var(--ink); }
+.prose h2 { margin: 42px 0 10px; font-size: 1.45rem; letter-spacing: -.03em; }
+.prose h3 { margin: 26px 0 6px; font-size: 1.05rem; }
+.prose p, .prose ul, .prose ol { margin: 0 0 14px; color: var(--muted); }
+.prose li { margin-bottom: 6px; }
+.prose strong, .prose b { color: var(--ink); }
+.prose a { color: var(--lime); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.prose code {
+    font: 500 .82em "DM Mono", monospace;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(120, 140, 200, .16);
+    color: var(--ink);
+}
+.prose .formula {
+    margin: 12px 0 18px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    font: 500 .8rem/1.8 "DM Mono", monospace;
+    color: var(--ink);
+    overflow-x: auto;
+}
+.prose table { width: 100%; border-collapse: collapse; margin: 6px 0 18px; font-size: .82rem; }
+.prose th, .prose td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.prose th { color: var(--ink); font-weight: 800; }
+.prose td { color: var(--muted); }
+.fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 18px 0 8px; }
+.fact-grid .card { padding: 18px; }
+.fact-grid .card b { display: block; font-size: 1.2rem; letter-spacing: -.03em; color: var(--ink); }
+.fact-grid .card span { font-size: .72rem; color: var(--muted); }
+
+/* ---------- 404 page ---------- */
+.not-found-code {
+    font: 800 clamp(4.5rem, 16vw, 9rem) / 1 "Playfair Display", serif;
+    letter-spacing: -.05em;
+    color: var(--lime);
+    opacity: .9;
+}
+
+/* ---------- Print: clean report ---------- */
+.print-only { display: none; }
+@media print {
+    .print-only { display: block; }
+    .mist-canvas, .nav, .scroll-progress, .toast, .theme-toggle, .menu, .no-print,
+    .footer-links, .filter-card, .side-filter, .load-more-row, .skip-link,
+    .state-block .sb-actions, .map-card, .coverflow-shell { display: none !important; }
+    html, body, .shell, .card, .section, .page-hero {
+        background: #fff !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+    .shell *, .shell { color: #111 !important; text-shadow: none !important; }
+    .card { border: 1px solid #bbb !important; break-inside: avoid; }
+    .page-hero { padding: 0 0 12px !important; }
+    .page-hero p { display: none; }
+    a { text-decoration: none; }
+    .print-header { font: 700 .8rem "Manrope", sans-serif; padding: 0 0 10px; border-bottom: 2px solid #111; margin-bottom: 14px; }
+    .footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #bbb; }
+}
+
+/* ---------- Reduced motion: switch ALL decorative motion off ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .skel { animation: none !important; }
+    .transaction:hover, .card.metric:hover { transform: none !important; }
+    .primary-btn:hover, .ghost-btn:hover, .dark-btn:hover, .search-btn:hover { transform: none !important; }
+}
+
+/* Inline text-style button (e.g. "Try again" inside a metric caption) */
+.link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--lime); font-weight: 800; text-decoration: underline; cursor: pointer; }
+
+/* The `hidden` attribute must always win over component display rules. */
+.skel[hidden], .state-block[hidden], .print-only[hidden] { display: none !important; }
+
+.bench-note { margin-top: 6px; font-size: .7rem; color: var(--muted); }
+
+/* Carousel caption: town name above its description, with breathing room */
+.town-caption [data-town-caption] { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.town-caption [data-town-caption] strong { display: block; line-height: 1.25; }
+.town-caption [data-town-caption] span { display: block; line-height: 1.4; }
+
+/* ---------- UI polish pass ---------- */
+
+/* Search charts: both cards grow to the same height, so the charts fill the
+   card instead of leaving a big empty gap under the shorter one. */
+.search-charts .chart-card { display: flex; flex-direction: column; }
+.search-charts .chart-body { flex: 1; }
+.search-charts .bar-chart { height: auto; min-height: 150px; }
+.search-charts .scatter-wrap { height: auto; flex: 1; min-height: 200px; }
+
+/* Chart text was 8px: too small to read comfortably. */
+.axis-tick { font-size: 10px; }
+.hist-col span { font-size: .62rem; color: #a3a6ad; }
+.hist-col span { bottom: -18px; }
+
+/* Insights trend chart: readable axis values (HTML overlay so the text doesn't
+   stretch with the SVG). */
+.line-chart .y-tick {
+    position: absolute; left: 8px; z-index: 1;
+    font: 500 .62rem "DM Mono", monospace; color: #b4b7bf;
+    padding: 1px 6px; border-radius: 6px; background: rgba(12, 13, 16, .7);
+    pointer-events: none;
+}
+.line-chart .y-max { top: calc(7.7% - 9px); }
+.line-chart .y-min { bottom: calc(11.5% - 9px); }
+.x-ticks {
+    display: flex; justify-content: space-between; margin-top: 8px;
+    font: 500 .62rem "DM Mono", monospace; color: #a3a6ad;
+}
+
+/* Home "how it works" steps: the inactive ones were too faint to read. */
+.scrolly-step { opacity: .62; }
+.scrolly-step.active { opacity: 1; }
+
+/* Footer: slightly larger and higher contrast, links easier to hit. */
+.footer { font-size: .76rem; color: #aeb1b8; line-height: 1.7; }
+.footer a { color: #cfd3dc; padding: 4px 2px; }
+.footer a:hover { color: #fff; }
+.footer-links { flex-wrap: wrap; gap: 6px 18px; }
+@media (max-width: 720px) {
+    .footer { flex-direction: column; }
+}
+
+/* Make the filter/action buttons in toolbars the same height and wrap neatly on narrow screens. */
+.toolbar-actions { flex-wrap: wrap; justify-content: flex-end; }
+.result-toolbar { flex-wrap: wrap; gap: 12px; }
+
+/* "Refine results" toggle: a plain heading on desktop, a collapsible header on phones/tablets. */
+.refine-toggle {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    margin: 0; padding: 0; border: 0; background: none; color: inherit;
+    font: inherit; letter-spacing: inherit; text-align: left; cursor: default;
+}
+.refine-toggle .chev { display: none; transition: transform .2s ease; }
+@media (max-width: 1050px) {
+    .refine-toggle { cursor: pointer; padding: 4px 0; }
+    .refine-toggle .chev { display: inline; }
+    .refine-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+    #refineBody { margin-top: 10px; }
+}
+
+/* Phones: the decorative hero art sat on top of the headline and paragraph and
+   made them hard to read, so it is hidden on small screens. */
+@media (max-width: 720px) {
+    .home-hero .art { display: none; }
+    .home-hero { min-height: 0; padding-bottom: 125px; }
 }

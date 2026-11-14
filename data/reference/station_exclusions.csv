@@ -1,0 +1,11 @@
+name,kind,reason
+Burger King Woodlands,mrt,restaurant at Woodlands MRT that OneMap returns for "MRT STATION"
+Khun Thai Woodlands,mrt,restaurant at Woodlands MRT that OneMap returns for "MRT STATION"
+Popeyes Woodlands,mrt,restaurant at Woodlands MRT that OneMap returns for "MRT STATION"
+Prommenade,mrt,shop or building name (misspelling of Promenade) that OneMap returns for "MRT STATION"
+Bukit Brown,mrt,CC18: Circle Line station announced but not built
+Marina South,mrt,TE21: Thomson-East Coast Line station announced but not built
+Mount Pleasant,mrt,TE10: Thomson-East Coast Line station announced but not built
+Defu,mrt,CR07: Cross Island Line station not built (line not yet open)
+Teck Ghee,mrt,CR12: Cross Island Line station not built (line not yet open)
+Pasir Ris East,mrt,CR4: Cross Island Line station not built (line not yet open)

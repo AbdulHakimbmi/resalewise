@@ -5,20 +5,47 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="ResaleWise SG — explore an HDB town: median resale prices, recent transactions and an interactive map of the area.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Town · ResaleWise SG">
+    <meta property="og:description" content="ResaleWise SG — explore an HDB town: median resale prices, recent transactions and an interactive map of the area.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Town · ResaleWise SG">
+    <meta name="twitter:description" content="ResaleWise SG — explore an HDB town: median resale prices, recent transactions and an interactive map of the area.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
     <title>Town · ResaleWise SG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
 </head>
 
 <body>
-    <main class="shell">
-        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
-            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
-            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html" class="active" aria-current="page">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
 
         <section class="page-hero">
+            <figure class="page-photo" id="townPhoto"><img alt=""><figcaption>&nbsp;</figcaption></figure>
             <div class="kicker">Town profile</div>
             <h1 id="townTitle">Loading <em>town…</em></h1>
             <p id="townIntro">Median resale prices, recent transactions and where this town sits on the map.</p>
@@ -46,19 +73,22 @@
                     <h3>Recent transactions</h3>
                     <p id="recentSub">Most recent resale records in this town.</p>
                     <div class="result-list" id="recentList" style="margin-top:14px"><div class="notice">Loading…</div></div>
+                    <div class="pager-wrap" id="recentPagerWrap" hidden>
+                        <nav class="pager" id="recentPager" aria-label="Recent transaction pages"></nav>
+                    </div>
                     <div style="margin-top:16px"><a class="ghost-btn" id="seeAllBtn" href="#">See all in search →</a></div>
                 </article>
                 <aside class="card chart-card map-card" data-reveal>
                     <h3>On the map</h3>
                     <p>Interactive view of the area. Drag, zoom and explore.</p>
                     <div class="map-wrap">
-                        <iframe id="townMap" title="Map of the town" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                        <iframe id="townMap" title="Map showing the location of the town" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                     </div>
                 </aside>
             </div>
 
             <!-- What residents say (town reviews) -->
-            <article class="card chart-card" data-reveal style="margin-top:18px">
+            <article class="card chart-card" id="townReviewsCard" data-reveal style="margin-top:18px">
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
                     <div>
                         <h3 id="reviewsHeading">What residents say</h3>
@@ -67,22 +97,33 @@
                     <a class="ghost-btn" id="addReviewBtn" href="reviews.html">Write a review →</a>
                 </div>
                 <div id="townReviews" style="margin-top:16px"><div class="notice">Loading reviews…</div></div>
-                <div style="margin-top:14px" hidden id="moreReviewsRow">
-                    <button class="ghost-btn" id="moreReviewsBtn" type="button">View more reviews ↓</button>
+                <div class="pager-wrap" id="townReviewsPagerWrap" hidden>
+                    <nav class="pager" id="townReviewsPager" aria-label="Review pages"></nav>
                 </div>
             </article>
         </section>
 
+        </main>
         <footer class="footer">
-            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
-            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
         <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
-        <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
         <script>
         (async function () {
           const $ = id => document.getElementById(id);
@@ -90,11 +131,7 @@
           const townParam = (params.get("town") || "").trim();
 
           const fmtMoney = n => "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
-          const fmtMonth = iso => {
-            const s = String(iso);
-            const d = new Date(s.length === 7 ? s + "-01" : s);
-            return d.toLocaleString("en-SG", { month: "short", year: "numeric" });
-          };
+          const fmtMonth = iso => RW.formatMonth(iso);
           const leaseYears = m => Math.floor((m || 0) / 12);
 
           // ---- Town switcher: ALWAYS populate (even with no town selected),
@@ -119,12 +156,21 @@
             // Hide the empty stat/detail sections until a town is chosen.
             const sec = document.querySelector(".section");
             if (sec) sec.style.display = "none";
+            $("townPhoto").remove();
+            // Fill the page with every town and its recent 4-room median instead.
+            const picker = document.createElement("section");
+            picker.className = "section";
+            picker.style.paddingTop = "26px";
+            picker.innerHTML = '<article class="card chart-card" id="townPicker"></article>';
+            document.querySelector(".page-hero").after(picker);
+            if (window.RWFeatures) RWFeatures.townPicker(document.getElementById("townPicker"));
             return;
           }
 
           const townTitle = titleCase(townParam);
+          RW.townPhoto($("townPhoto"), townParam);
           document.title = townTitle + " · ResaleWise SG";
-          $("townTitle").innerHTML = `Living in <em>${townTitle}.</em>`;
+          $("townTitle").innerHTML = `Living in <em>${escapeHtml(townTitle)}.</em>`;
           $("townIntro").textContent =
             `Median resale prices, recent transactions and where ${townTitle} sits on the map — all from official HDB records.`;
           $("seeAllBtn").href = "search.html?town=" + encodeURIComponent(townParam);
@@ -132,9 +178,13 @@
           // ---- Interactive map (keyless Google Maps embed, no API key needed) ----
           const query = encodeURIComponent(townTitle + ", Singapore");
           $("townMap").src = "https://www.google.com/maps?q=" + query + "&z=14&output=embed";
+          // Replaced by a map of every geocoded block (coloured by price) once the geospatial data exists.
+          if (window.RWFeatures) RWFeatures.townMap(townParam);
 
           // ---- Stats (reuse the insights summary endpoint) ----
-          (async function loadStats() {
+          async function loadStats() {
+            ["tMedian", "tCount", "tPsm"].forEach(id => { $(id).innerHTML = RW.skeleton.metric(); });
+            $("tMedianSub").textContent = "Loading…";
             try {
               const s = await apiGet("/api/insights/summary", { flat_type: "4 ROOM", town: townParam, months: 24 });
               const sm = s.summary || {};
@@ -145,102 +195,117 @@
               $("tCount").textContent = (sm.txn_count || 0).toLocaleString("en-SG");
               $("tPsm").textContent = sm.median_psm ? fmtMoney(sm.median_psm) : "–";
             } catch (e) {
-              $("tMedian").textContent = "Error";
-              $("tMedianSub").textContent = e.message;
+              ["tMedian", "tCount", "tPsm"].forEach(id => { $(id).textContent = "–"; });
+              const d = RW.describeError(e, "these figures");
+              $("tMedianSub").innerHTML = escapeHtml(d.title) + ' · <button type="button" class="link-btn" id="tRetry">Try again</button>';
+              $("tRetry").addEventListener("click", loadStats);
             }
-          })();
+          }
+          loadStats();
 
-          // ---- Recent transactions in this town ----
-          (async function loadRecent() {
+          // ---- Recent transactions in this town: 6 a page, newest first ----
+          // Only the first few pages are offered here (30 sales); the search page has
+          // the full history for the town.
+          const RECENT_PER_PAGE = 6, RECENT_MAX_PAGES = 5;
+          async function loadRecent(page) {
+            page = page || 1;
             const listEl = $("recentList");
+            const wrap = $("recentPagerWrap");
+            listEl.innerHTML = RW.skeleton.resultCards(3) + RW.skeleton.label("Loading transactions…");
+            RW.setBusy(listEl, true);
+            wrap.hidden = true;
             try {
-              const data = await apiGet("/api/search", { town: townParam, limit: 6 });
+              const data = await apiGet("/api/search", { town: townParam, limit: RECENT_PER_PAGE, page });
               const rows = data.rows || [];
-              if (!rows.length) { listEl.innerHTML = '<div class="notice">No transactions found for this town.</div>'; return; }
+              RW.setBusy(listEl, false);
+              if (!rows.length) {
+                RW.renderEmpty(listEl, { compact: true, title: "No transactions found for " + townTitle,
+                  text: "Check the spelling, or pick another town from the list above.",
+                  actions: [{ label: "Browse all flats", href: "search.html", primary: true }] });
+                return;
+              }
+              $("recentSub").textContent = "Most recent resale records in this town (" +
+                Number(data.total).toLocaleString("en-SG") + " sales in all).";
+              $("seeAllBtn").textContent = "See all " + Number(data.total).toLocaleString("en-SG") + " in search →";
               listEl.innerHTML = rows.map(r => `
                 <article class="card transaction">
                   <div>
-                    <div class="type">${r.flat_type_name} · ${titleCase(r.town_name)}</div>
-                    <h3>${r.block_no} ${r.street_name}</h3>
+                    <div class="type">${escapeHtml(r.flat_type_name)} · ${escapeHtml(titleCase(r.town_name))}</div>
+                    <h3>${escapeHtml(r.block_no)} ${escapeHtml(r.street_name)}</h3>
                     <p>${fmtMonth(r.month)} · ${Math.round(r.floor_area_sqm)} sqm · ${leaseYears(r.remaining_lease_months)} yrs lease</p>
                   </div>
                   <div class="price">
                     <strong>${fmtMoney(r.resale_price)}</strong><br>
-                    <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${r.txn_id}">Details →</a>
+                    <a class="ghost-btn" style="margin-top:10px;padding:8px 11px" href="details.html?id=${encodeURIComponent(r.txn_id)}">Details →</a>
                   </div>
                 </article>`).join("");
+              RW.pager($("recentPager"), { page: data.page, pages: Math.min(data.pages, RECENT_MAX_PAGES),
+                onPage: n => { loadRecent(n); listEl.scrollIntoView({ behavior: "smooth", block: "nearest" }); } });
+              wrap.hidden = data.pages < 2;
             } catch (e) {
-              listEl.innerHTML = `<div class="notice">Could not load transactions: ${e.message}</div>`;
+              RW.setBusy(listEl, false);
+              RW.renderError(listEl, e, { what: "transactions", compact: true, onRetry: () => loadRecent(page) });
             }
-          })();
+          }
+          loadRecent();
 
-          // ---- Town reviews (first 5, with "view more") ----
-          (async function loadReviews() {
+          // ---- Town reviews: 5 a page, MongoDB does the paging ----
+          const REV_PER_PAGE = 5;
+          async function loadReviews(page) {
+            page = page || 1;
             const box  = $("townReviews");
-            const heading = $("reviewsHeading");
             const sub = $("reviewsSub");
-            const moreRow = $("moreReviewsRow");
-            const moreBtn = $("moreReviewsBtn");
+            const wrap = $("townReviewsPagerWrap");
             $("addReviewBtn").href = "reviews.html";
-
-            heading.textContent = `What residents say about ${townTitle}`;
+            $("reviewsHeading").textContent = `What residents say about ${townTitle}`;
 
             const ago = iso => {
-              const d = new Date(iso), s = Math.floor((Date.now() - d.getTime()) / 1000);
+              const d = new Date(/(Z|[+-]\d\d:?\d\d)$/.test(String(iso)) ? iso : iso + "Z"), s = Math.floor((Date.now() - d.getTime()) / 1000);
               if (s < 3600) return Math.max(1, Math.floor(s/60)) + " min ago";
               if (s < 86400) return Math.floor(s/3600) + " h ago";
               if (s < 604800) return Math.floor(s/86400) + " days ago";
               return d.toLocaleDateString("en-SG", { day:"numeric", month:"short", year:"numeric" });
             };
-            const stars = n => "★".repeat(n) + "☆".repeat(5 - n);
+            const stars = n => '<span class="stars">' + "<i></i>".repeat(n) + '<span class="stars-off">' + "<i></i>".repeat(5-n) + "</span></span>";
             const reviewHtml = r => `
               <div class="review">
                 <div class="review-top">
-                  <b>${r.author || "Anonymous"}</b>
-                  <span>${stars(r.rating)} · ${ago(r.created_at)}</span>
+                  <span><b>${escapeHtml(r.author || "Anonymous")}</b> ${r.seeded ? `<span class="rwx-badge sample" title="Example review generated by scripts/seed_reviews.py so the page is not empty">Sample</span>` : ""}</span>
+                  <span aria-label="Rated ${Number(r.rating) || 0} out of 5">${stars(Math.max(0, Math.min(5, Number(r.rating) || 0)))} · ${escapeHtml(ago(r.created_at))}</span>
                 </div>
-                <p>${r.comment}</p>
-                <div class="review-tags">${(r.tags || []).map(t => `<i>${t}</i>`).join("")}</div>
+                <p>${escapeHtml(r.comment)}</p>
+                <div class="review-tags">${(r.tags || []).map(t => `<i>${escapeHtml(t)}</i>`).join("")}</div>
               </div>`;
 
+            box.innerHTML = RW.skeleton.reviews(2) + RW.skeleton.label("Loading reviews…");
+            wrap.hidden = true;
             try {
-              const rows = await apiGet("/api/reviews", { town: townParam, limit: 50 });
-              if (!rows.length) {
+              // The average covers every review of the town (one MongoDB aggregation), not just this page.
+              const [data, st] = await Promise.all([
+                apiGet("/api/reviews", { town: townParam, limit: REV_PER_PAGE, page }),
+                apiGet("/api/reviews/stats", { town: townParam }).catch(() => null),
+              ]);
+              const rows = data.rows || [];
+              if (!data.total) {
                 sub.textContent = "No reviews yet for this town.";
-                box.innerHTML = `<div class="notice">Be the first to share what it's like living in ${townTitle}. <a href="reviews.html" style="color:var(--lime);font-weight:800">Write a review →</a></div>`;
+                box.innerHTML = `<div class="notice">Be the first to share what it's like living in ${escapeHtml(townTitle)}. <a href="reviews.html" style="color:var(--lime);font-weight:800">Write a review →</a></div>`;
                 return;
               }
-              const avg = (rows.reduce((s, r) => s + (r.rating || 0), 0) / rows.length).toFixed(1);
-              sub.textContent = `${rows.length} review${rows.length === 1 ? "" : "s"} · average ${avg}/5`;
-
-              const FIRST = 5;
-              const first = rows.slice(0, FIRST);
-              const rest  = rows.slice(FIRST);
-              box.innerHTML = first.map(reviewHtml).join("");
-
-              if (rest.length) {
-                moreRow.hidden = false;
-                let expanded = false;
-                moreBtn.addEventListener("click", () => {
-                  expanded = !expanded;
-                  if (expanded) {
-                    box.insertAdjacentHTML("beforeend", rest.map(reviewHtml).join(""));
-                    moreBtn.textContent = "Show fewer reviews ↑";
-                  } else {
-                    box.innerHTML = first.map(reviewHtml).join("");
-                    moreBtn.textContent = `View ${rest.length} more review${rest.length === 1 ? "" : "s"} ↓`;
-                    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                  }
-                });
-                moreBtn.textContent = `View ${rest.length} more review${rest.length === 1 ? "" : "s"} ↓`;
-              }
+              const avg = st && st.overall && st.overall.avg_rating != null ? ` · average ${Number(st.overall.avg_rating).toFixed(1)}/5` : "";
+              sub.textContent = `${data.total.toLocaleString("en-SG")} review${data.total === 1 ? "" : "s"}${avg}`;
+              box.innerHTML = rows.map(reviewHtml).join("");
+              RW.pager($("townReviewsPager"), { page: data.page, pages: data.pages,
+                onPage: n => { loadReviews(n); $("townReviewsCard").scrollIntoView({ behavior: "smooth", block: "start" }); } });
+              wrap.hidden = data.pages < 2;
             } catch (e) {
-              box.innerHTML = `<div class="notice">Could not load reviews: ${e.message}</div>`;
+              sub.textContent = "";
+              RW.renderError(box, e, { what: "reviews", compact: true, onRetry: () => loadReviews(page) });
             }
-          })();
+          }
+          loadReviews();
         })();
         </script>
-    </main>
+    </div>
 </body>
 
 </html>

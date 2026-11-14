@@ -5,51 +5,93 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="ResaleWise SG — compare your shortlisted HDB resale transactions side by side.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Compare Records · ResaleWise SG">
+    <meta property="og:description" content="ResaleWise SG — compare your shortlisted HDB resale transactions side by side.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Compare Records · ResaleWise SG">
+    <meta name="twitter:description" content="ResaleWise SG — compare your shortlisted HDB resale transactions side by side.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
     <title>Compare Records · ResaleWise SG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
 </head>
 
 <body>
-    <main class="shell">
-        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
-            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
-            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html" class="active" aria-current="page">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
         <section class="page-hero">
+            <figure class="page-photo"><img src="assets/images/towns/bishan.jpg" alt="HDB block 501 in Bishan"><figcaption>Bishan</figcaption></figure>
             <div class="kicker">Your shortlist</div>
             <h1>Which flat is the <em>better buy?</em></h1>
             <p>Add flats to your shortlist from any listing, then compare them here — we score each one against what similar flats in its town actually sell for.</p>
         </section>
         <section class="section">
-            <div class="notice" id="compareNotice" style="margin-bottom:16px">Loading your shortlist…</div>
+            <div class="print-only print-header">ResaleWise SG · Shortlist comparison · <span data-print-date></span></div>
+            <div class="result-toolbar no-print" id="compareTools" hidden>
+                <div></div>
+                <div class="toolbar-actions">
+                    <button class="ghost-btn" id="csvBtn" type="button">Download CSV ↓</button>
+                    <button class="ghost-btn" id="printBtn" type="button">Print</button>
+                </div>
+            </div>
+            <div class="notice" id="compareNotice" style="margin-bottom:16px" role="status">Loading your shortlist…</div>
             <!-- Recommended pick verdict -->
             <div class="recommend-banner" id="recommendBanner" hidden></div>
             <div class="compare-grid" id="compareGrid"></div>
         </section>
+        </main>
         <footer class="footer">
-            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
-            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
         <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
-        <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
         <script>
         (async function () {
           const grid   = document.getElementById("compareGrid");
           const notice = document.getElementById("compareNotice");
 
           const fmtMoney = n => "$" + Number(n).toLocaleString("en-SG", { maximumFractionDigits: 0 });
-          const fmtMonth = iso => {
-            const s = String(iso);
-            const d = new Date(s.length === 7 ? s + "-01" : s);
-            return d.toLocaleString("en-SG", { month: "short", year: "numeric" });
-          };
+          const fmtMonth = iso => RW.formatMonth(iso);
           const leaseYears = m => Math.floor((m || 0) / 12);
 
           const banner = document.getElementById("recommendBanner");
@@ -59,39 +101,65 @@
             "Above market rate": "high", "Premium": "vhigh"
           })[v] || "fair";
 
+          let current = [];   // merged rows currently on screen (for CSV export)
+          const tools = document.getElementById("compareTools");
+          document.getElementById("printBtn").addEventListener("click", () => window.print());
+          document.getElementById("csvBtn").addEventListener("click", () => {
+            const head = ["Town","Block","Street","Flat type","Month","Price","Floor area (sqm)","Lease remaining (years)",
+                          "Storey low","Storey high","Flat model","Price per sqm","Median for same period","Compared with","Value score","Verdict"];
+            const body = current.map(r => {
+              const v = r.value || {};
+              return [titleCase(r.town_name), r.block_no, r.street_name, r.flat_type_name, String(r.month).slice(0,7),
+                      r.resale_price, Math.round(r.floor_area_sqm), leaseYears(r.remaining_lease_months),
+                      r.storey_low, r.storey_high, r.flat_model_name,
+                      v.price_per_sqm != null ? v.price_per_sqm : "", v.median_price != null ? v.median_price : "",
+                      v.benchmark_label || "", v.value_score != null ? v.value_score : "", v.verdict || ""];
+            });
+            RW.downloadCsv("resalewise-shortlist.csv", [head].concat(body));
+          });
+
           async function render(rows) {
             if (!rows.length) {
-              notice.innerHTML = `No flats in your shortlist yet. Browse <a href="search.html" style="color:var(--lime);font-weight:800">Find a flat</a>, open any listing, and tap <b>♡ Save</b> to add it here.`;
+              tools.hidden = true; current = [];
+              notice.innerHTML = `No flats in your shortlist yet. Browse <a href="search.html" style="color:var(--lime);font-weight:800">Find a flat</a>, open any listing, and tap <b>Save</b> to add it here.`;
               banner.hidden = true;
               grid.innerHTML = "";
               return;
             }
-            notice.textContent = `${rows.length} flat${rows.length === 1 ? "" : "s"} in your shortlist · scored against recent sales in each town.`;
+            notice.textContent = `${rows.length} flat${rows.length === 1 ? "" : "s"} in your shortlist · each scored against sales of the same type in the same town and period.`;
+            tools.hidden = true;
+            grid.innerHTML = RW.skeleton.resultCards(Math.min(rows.length, 3)) + RW.skeleton.label("Scoring your shortlist…");
+            RW.setBusy(grid, true);
 
             // Fetch value context for each saved flat (price vs town+type median).
             const vals = await Promise.all(rows.map(r =>
               apiGet("/api/txn-value/" + r.txn_id).catch(() => null)
             ));
             const merged = rows.map((r, i) => Object.assign({}, r, { value: vals[i] }));
+            RW.setBusy(grid, false);
+            current = merged; tools.hidden = false;
+            if (vals.some(v => v === null)) {
+              notice.textContent += " Some value scores couldn\u2019t be loaded.";
+            }
 
             // Best value = highest value_score (falls back to lowest price).
             let best = null;
             merged.forEach(m => {
-              const sc = m.value ? m.value.value_score : -1;
-              if (!best || sc > (best.value ? best.value.value_score : -1)) best = m;
+              const sc = (m.value && m.value.value_score != null) ? m.value.value_score : -1;
+              if (!best || sc > ((best.value && best.value.value_score != null) ? best.value.value_score : -1)) best = m;
             });
 
             // Recommendation banner
-            if (best && best.value && rows.length > 1) {
+            if (best && best.value && best.value.value_score != null && rows.length > 1) {
               const v = best.value;
               const cheaper = v.price_diff_pct != null && v.price_diff_pct < 0
-                ? `${Math.abs(v.price_diff_pct)}% below the ${titleCase(v.town_name)} ${titleCase(v.flat_type_name)} median`
-                : `competitively priced for ${titleCase(v.town_name)}`;
+                ? `${Math.abs(v.price_diff_pct)}% below the median for ${escapeHtml(v.benchmark_label || (titleCase(v.town_name) + " " + titleCase(v.flat_type_name)))}`
+                : `competitively priced for ${escapeHtml(titleCase(v.town_name))} at the time`;
               banner.hidden = false;
               banner.innerHTML = `
-                <div class="rec-badge">★ Recommended pick</div>
+                <div class="rec-badge">Recommended pick</div>
                 <div class="rec-body">
-                  <b>${best.block_no} ${best.street_name}</b> looks like the best value —
+                  <b>${escapeHtml(best.block_no)} ${escapeHtml(best.street_name)}</b> looks like the best value —
                   ${cheaper}, with ${v.lease_years} years of lease remaining.
                   <span class="rec-score">Value score ${v.value_score}/100</span>
                 </div>`;
@@ -108,23 +176,24 @@
                 : "—";
               return `
                 <article class="card compare${isBest ? " featured" : ""}">
-                  ${isBest ? '<span class="featured-label">★ BEST VALUE</span>' : ""}
-                  <div class="small-kicker">${titleCase(r.town_name)}</div>
-                  <h3>${r.block_no} ${r.street_name}</h3>
-                  <p>${r.flat_type_name} · ${fmtMonth(r.month)}</p>
+                  ${isBest ? '<span class="featured-label">Best value</span>' : ""}
+                  <div class="small-kicker">${escapeHtml(titleCase(r.town_name))}</div>
+                  <h3>${escapeHtml(r.block_no)} ${escapeHtml(r.street_name)}</h3>
+                  <p>${escapeHtml(r.flat_type_name)} · ${fmtMonth(r.month)}</p>
                   <div class="compare-price">${fmtMoney(r.resale_price)}</div>
                   ${v ? `<span class="value-badge ${vcls}">${v.verdict} · ${diff}</span>` : ""}
-                  ${v ? `<div class="score-meter" title="Value score ${v.value_score}/100"><i style="width:${v.value_score}%"></i></div>
+                  ${v && v.value_score != null ? `<div class="score-meter" title="Value score ${v.value_score}/100"><i style="width:${v.value_score}%"></i></div>
                          <div class="score-label">Value score <b>${v.value_score}</b>/100</div>` : ""}
                   <div class="compare-line"><span>Price / sqm</span><b>${v && v.price_per_sqm ? fmtMoney(v.price_per_sqm) : "—"}</b></div>
-                  <div class="compare-line"><span>Town median</span><b>${v && v.median_price ? fmtMoney(v.median_price) : "—"}</b></div>
+                  <div class="compare-line"><span>Median that period</span><b>${v && v.median_price ? fmtMoney(v.median_price) : "—"}</b></div>
+                  ${v && v.benchmark_label ? `<div class="bench-note">${escapeHtml(v.benchmark_label)} · ${v.benchmark_n.toLocaleString("en-SG")} sales</div>` : ""}
                   <div class="compare-line"><span>Floor area</span><b>${Math.round(r.floor_area_sqm)} sqm</b></div>
                   <div class="compare-line"><span>Lease remaining</span><b>${leaseYears(r.remaining_lease_months)} years</b></div>
                   <div class="compare-line"><span>Storey range</span><b>${String(r.storey_low).padStart(2,"0")}–${String(r.storey_high).padStart(2,"0")}</b></div>
-                  <div class="compare-line"><span>Flat model</span><b>${r.flat_model_name}</b></div>
+                  <div class="compare-line"><span>Flat model</span><b>${escapeHtml(r.flat_model_name)}</b></div>
                   <div style="display:flex;gap:8px;margin-top:20px">
-                    <a class="ghost-btn" style="flex:1;text-align:center" href="details.html?id=${r.txn_id}">View →</a>
-                    <button class="ghost-btn" style="flex:1" data-remove="${r.txn_id}">Remove</button>
+                    <a class="ghost-btn" style="flex:1;text-align:center" href="details.html?id=${encodeURIComponent(r.txn_id)}">View →</a>
+                    <button class="ghost-btn no-print" style="flex:1" data-remove="${escapeHtml(r.txn_id)}">Remove</button>
                   </div>
                 </article>
               `;
@@ -134,15 +203,29 @@
               btn.addEventListener("click", async () => {
                 const txn_id = btn.getAttribute("data-remove");
                 try {
-                  const res = await authFetch(`/api/bookmarks/${txn_id}`, { method: "DELETE" });
+                  btn.disabled = true;
+                  const res = await authFetch(`/api/bookmarks/${encodeURIComponent(txn_id)}`, { method: "DELETE" });
                   if (!res.ok) throw new Error("API " + res.status);
-                  const fresh = await (await authFetch("/api/bookmarks")).json();
+                  const fresh = await fetchShortlist();
                   render(fresh);
                 } catch (e) {
-                  notice.textContent = "Could not remove: " + e.message;
+                  btn.disabled = false;
+                  showToast("Couldn\u2019t remove that flat. Please try again.");
                 }
               });
             });
+          }
+
+          async function fetchShortlist() {
+            let res;
+            try { res = await authFetch("/api/bookmarks"); }
+            catch (_) { throw new ApiError("Can't reach the server.", { code: "network_error" }); }
+            if (res.status === 401) { Auth.logout && Auth.logout(); throw new ApiError("Your session has expired. Please log in again.", { status: 401, code: "unauthorized" }); }
+            if (!res.ok) {
+              let d = null; try { d = await res.json(); } catch (_) {}
+              throw new ApiError((d && d.error) || "Request failed", { status: res.status, code: (d && d.code) || "http_" + res.status });
+            }
+            return res.json();
           }
 
           // Logged OUT: show a limited, non-persistent state — no saved shortlist
@@ -152,7 +235,6 @@
             grid.innerHTML = "";
             notice.innerHTML =
               `<div class="locked-shortlist">
-                 <div class="lock-ico">🔒</div>
                  <h3>Log in to build your shortlist</h3>
                  <p>Saving flats and comparing them for value is a free account feature — your shortlist stays with you across visits and devices. Guests can browse and search freely, but shortlists aren't saved.</p>
                  <div class="lock-actions">
@@ -163,17 +245,25 @@
             return;
           }
 
-          try {
-            const res = await authFetch("/api/bookmarks");
-            if (!res.ok) throw new Error("API " + res.status);
-            const rows = await res.json();
-            render(rows);
-          } catch (e) {
-            notice.textContent = "Could not load your shortlist: " + e.message;
+          async function start() {
+            notice.textContent = "Loading your shortlist…";
+            grid.innerHTML = RW.skeleton.resultCards(3) + RW.skeleton.label("Loading your shortlist…");
+            try {
+              render(await fetchShortlist());
+            } catch (e) {
+              grid.innerHTML = "";
+              if (e.status === 401) {
+                notice.innerHTML = 'Your session has expired. <a href="login.html?next=compare.html" style="color:var(--lime);font-weight:800">Log in again →</a>';
+              } else {
+                notice.textContent = "";
+                RW.renderError(grid, e, { what: "your shortlist", onRetry: start });
+              }
+            }
           }
+          start();
         })();
         </script>
-    </main>
+    </div>
 </body>
 
 </html>

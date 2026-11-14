@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e1013"/>
+      <stop offset="1" stop-color="#16233f"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b4379"/>
+      <stop offset="1" stop-color="#0c1526"/>
+    </linearGradient>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6f9bff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#6f9bff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- decorative trend line (not real data) -->
+  <path d="M620 585 L700 568 L780 576 L860 545 L940 553 L1020 515 L1100 524 L1160 488 L1160 630 L620 630 Z" fill="url(#area)"/>
+  <path d="M620 585 L700 568 L780 576 L860 545 L940 553 L1020 515 L1100 524 L1160 488" fill="none" stroke="#6f9bff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1160" cy="488" r="9" fill="#6f9bff"/>
+
+  <rect x="80" y="76" width="76" height="76" rx="20" fill="url(#mark)"/>
+  <path d="M104 134V105a4 4 0 0 1 4-4h24a4 4 0 0 1 4 4v29" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M114 114h14M114 124h14" stroke="#6f9bff" stroke-width="4.5" stroke-linecap="round"/>
+  <text x="176" y="128" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-weight="700" font-size="40" fill="#f2efe9">ResaleWise <tspan fill="#6f9bff">SG</tspan></text>
+
+  <text x="80" y="298" font-family="DejaVu Serif, Georgia, serif" font-weight="700" font-size="76" fill="#f2efe9">Singapore HDB resale</text>
+  <text x="80" y="386" font-family="DejaVu Serif, Georgia, serif" font-weight="700" font-size="76" fill="#6f9bff">prices, made clearer.</text>
+
+  <text x="80" y="462" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="30" fill="#a7a9ad">Search real transactions · value scores · town insights</text>
+  <text x="80" y="560" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="24" fill="#a7a9ad">Data: HDB Resale Flat Prices, data.gov.sg</text>
+</svg>

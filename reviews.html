@@ -5,23 +5,50 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="ResaleWise SG — resident reviews and lived context for Singapore HDB towns.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Town Reviews · ResaleWise SG">
+    <meta property="og:description" content="ResaleWise SG — resident reviews and lived context for Singapore HDB towns.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Town Reviews · ResaleWise SG">
+    <meta name="twitter:description" content="ResaleWise SG — resident reviews and lived context for Singapore HDB towns.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
     <title>Town Reviews · ResaleWise SG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
 </head>
 
 <body>
-    <main class="shell">
-        <nav class="nav"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
-            <div class="nav-links"><a href="index.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</a><a href="search.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>Find a flat</a><a href="town.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Towns</a><a href="insights.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Market insights</a><a href="reviews.html" class="active"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>Town reviews</a><a href="compare.html"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="6" height="14" rx="1"/><rect x="14" y="5" width="6" height="10" rx="1"/></svg>Compare</a></div>
-            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="search.html">Explore homes →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">☰</button></nav>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html" class="active" aria-current="page">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
         <section class="page-hero reviews-hero">
+            <figure class="page-photo"><img src="assets/images/home/void-deck-on-the-ground-floor-of.jpg" alt="The open void deck on the ground floor of an HDB block"><figcaption>A void deck, where neighbours meet</figcaption></figure>
             <div class="kicker">Community perspective</div>
-            <h1>The neighbourhood, in <em>residents' words.</em></h1>
+            <h1>What it's like to <em>live there.</em></h1>
             <p>Prices tell you what a flat costs. Reviews tell you what it's like to actually live there — the hawker you'll miss, the commute you'll do daily, the park downstairs. Share yours and help the next buyer.</p>
-            <div class="review-stats" id="reviewStats">
+            <div class="review-stats" id="reviewStats" aria-live="polite">
                 <div class="rv-stat"><strong id="rsTotal">—</strong><span>Resident reviews</span></div>
                 <div class="rv-stat"><strong id="rsTowns">—</strong><span>Towns covered</span></div>
                 <div class="rv-stat"><strong id="rsAvg">—</strong><span>Average rating</span></div>
@@ -40,32 +67,32 @@
                         <select id="reviewTown"><option value="">Select a town</option></select>
                     </div>
 
-                    <div class="rv-field-label">Your name</div>
-                    <input class="rv-input" id="reviewAuthor" type="text" placeholder="e.g. Wei Ming" style="margin-bottom:16px">
+                    <label class="rv-field-label" for="reviewAuthor">Your name</label>
+                    <input class="rv-input" id="reviewAuthor" type="text" maxlength="60" autocomplete="name" placeholder="e.g. Wei Ming" style="margin-bottom:16px">
 
-                    <div class="rv-field-label">Overall rating</div>
-                    <div class="star-rating" id="starRating" role="radiogroup" aria-label="Rating">
-                        <button type="button" class="star" data-r="1" aria-label="1 star">★</button>
-                        <button type="button" class="star" data-r="2" aria-label="2 stars">★</button>
-                        <button type="button" class="star" data-r="3" aria-label="3 stars">★</button>
-                        <button type="button" class="star" data-r="4" aria-label="4 stars">★</button>
-                        <button type="button" class="star" data-r="5" aria-label="5 stars">★</button>
-                        <span class="star-caption" id="starCaption">Tap to rate</span>
+                    <div class="rv-field-label" id="ratingLabel">Overall rating</div>
+                    <div class="star-rating" id="starRating" role="radiogroup" aria-labelledby="ratingLabel">
+                        <button type="button" class="star" data-r="1" role="radio" aria-checked="false" tabindex="0" aria-label="1 star"></button>
+                        <button type="button" class="star" data-r="2" role="radio" aria-checked="false" tabindex="-1" aria-label="2 stars"></button>
+                        <button type="button" class="star" data-r="3" role="radio" aria-checked="false" tabindex="-1" aria-label="3 stars"></button>
+                        <button type="button" class="star" data-r="4" role="radio" aria-checked="false" tabindex="-1" aria-label="4 stars"></button>
+                        <button type="button" class="star" data-r="5" role="radio" aria-checked="false" tabindex="-1" aria-label="5 stars"></button>
+                        <span class="star-caption" id="starCaption" aria-live="polite">Tap to rate</span>
                     </div>
 
-                    <div class="rv-field-label" style="margin-top:16px">Your review</div>
-                    <textarea id="reviewComment" placeholder="What's daily life like here? Think amenities, transport, food, noise, community…"></textarea>
+                    <label class="rv-field-label" for="reviewComment" style="margin-top:16px;display:block">Your review</label>
+                    <textarea id="reviewComment" maxlength="1000" placeholder="What's daily life like here? Think amenities, transport, food, noise, community…"></textarea>
 
                     <div class="rv-field-label" style="margin-top:14px">What stands out? (optional)</div>
-                    <div class="tag-picker">
-                        <span class="tag" data-tag="near-food">Near food</span>
-                        <span class="tag" data-tag="great-hawkers">Great hawkers</span>
-                        <span class="tag" data-tag="family-friendly">Family-friendly</span>
-                        <span class="tag" data-tag="near-transport">Near transport</span>
-                        <span class="tag" data-tag="quiet">Quiet</span>
-                        <span class="tag" data-tag="green-spaces">Green spaces</span>
-                        <span class="tag" data-tag="good-schools">Good schools</span>
-                        <span class="tag warn" data-tag="busy-peak-hours">Busy at peak</span>
+                    <div class="tag-picker" role="group" aria-label="What stands out?">
+                        <button type="button" class="tag" data-tag="near-food" aria-pressed="false">Near food</button>
+                        <button type="button" class="tag" data-tag="great-hawkers" aria-pressed="false">Great hawkers</button>
+                        <button type="button" class="tag" data-tag="family-friendly" aria-pressed="false">Family-friendly</button>
+                        <button type="button" class="tag" data-tag="near-transport" aria-pressed="false">Near transport</button>
+                        <button type="button" class="tag" data-tag="quiet" aria-pressed="false">Quiet</button>
+                        <button type="button" class="tag" data-tag="green-spaces" aria-pressed="false">Green spaces</button>
+                        <button type="button" class="tag" data-tag="good-schools" aria-pressed="false">Good schools</button>
+                        <button type="button" class="tag warn" data-tag="busy-peak-hours" aria-pressed="false">Busy at peak</button>
                     </div>
 
                     <button class="primary-btn full" type="submit" style="margin-top:18px">Post my review →</button>
@@ -73,7 +100,7 @@
                 </form>
 
                 <!-- Read reviews -->
-                <article class="card reviews-panel">
+                <article class="card reviews-panel" id="reviewsPanel">
                     <div class="reviews-toolbar">
                         <div>
                             <h3 style="margin:0">What residents say</h3>
@@ -88,21 +115,40 @@
                             </select>
                         </div>
                     </div>
-                    <div id="reviewsList"><div class="notice">Loading…</div></div>
+                    <form class="rwx-search" id="reviewSearchForm" role="search">
+                        <input id="reviewSearch" type="search" maxlength="80" placeholder="Search reviews, e.g. hawker, MRT, quiet" aria-label="Search reviews">
+                        <button class="ghost-btn" type="submit">Search</button>
+                    </form>
+                    <div class="rwx-rv-insights" id="reviewInsights" hidden></div>
+                    <div id="reviewsList" aria-live="polite"></div>
+                    <div class="pager-wrap" id="reviewsPagerWrap" hidden>
+                        <nav class="pager" id="reviewsPager" aria-label="Review pages"></nav>
+                    </div>
                 </article>
             </div>
         </section>
+        </main>
         <footer class="footer">
-            <div>© 2026 ResaleWise SG · Historical HDB resale insights from official data.gov.sg records</div>
-            <div class="footer-links"><a href="index.html">Home</a><a href="insights.html">Insights</a><a href="reviews.html">Town reviews</a></div>
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
         </footer>
         <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
         <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
         <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
-        <script src="assets/js/mist-background.js"></script>
         <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
         <script>
         (async function () {
           const $ = id => document.getElementById(id);
@@ -119,19 +165,21 @@
 
           const RATING_WORDS = { 1: "Poor", 2: "Fair", 3: "Good", 4: "Great", 5: "Excellent" };
           let selectedRating = 0;
-          let allReviews = [];
 
           // Prefill author from the logged-in account, if any.
           const me = (typeof Auth !== "undefined") ? Auth.user() : null;
           if (me && me.name) { authorEl.value = me.name; }
           else { $("signinNote").hidden = false; }
 
-          // Populate both town dropdowns from the DB.
-          populateTowns(townSel, { includeAny: true, anyLabel: "Select a town" });
-          populateTowns(filterTown, { includeAny: true, anyLabel: "All towns" });
+          // Populate both town dropdowns from the DB (the filter must be ready
+          // before the address bar can select a town in it).
+          await Promise.all([
+            populateTowns(townSel, { includeAny: true, anyLabel: "Select a town" }),
+            populateTowns(filterTown, { includeAny: true, anyLabel: "All towns" }),
+          ]);
 
           function ago(iso) {
-            const d = new Date(iso), s = Math.floor((Date.now() - d.getTime()) / 1000);
+            const d = new Date(/(Z|[+-]\d\d:?\d\d)$/.test(String(iso)) ? iso : iso + "Z"), s = Math.floor((Date.now() - d.getTime()) / 1000);
             if (s < 60)     return "just now";
             if (s < 3600)   return Math.floor(s/60) + " min ago";
             if (s < 86400)  return Math.floor(s/3600) + " h ago";
@@ -139,55 +187,139 @@
             return d.toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" });
           }
           const initials = name => (name || "A").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
-          const stars = n => '<span class="stars">' + "★".repeat(n) + '<span class="stars-off">' + "★".repeat(5-n) + "</span></span>";
+          const stars = n => '<span class="stars">' + "<i></i>".repeat(n) + '<span class="stars-off">' + "<i></i>".repeat(5-n) + "</span></span>";
 
-          function updateStats(rows) {
-            const towns = new Set(rows.map(r => r.town));
-            const avg = rows.length ? (rows.reduce((s,r)=>s+(r.rating||0),0)/rows.length) : 0;
-            $("rsTotal").textContent = rows.length.toLocaleString("en-SG");
-            $("rsTowns").textContent = towns.size;
-            $("rsAvg").textContent = rows.length ? avg.toFixed(1) + " ★" : "—";
+          // Headline numbers come from the server-side MongoDB aggregation
+          // (/api/reviews/stats), so they cover EVERY review, not just the page on screen.
+          async function loadStats() {
+            ["rsTotal", "rsTowns", "rsAvg"].forEach(id => { $(id).innerHTML = RW.skeleton.metric(); });
+            try {
+              const st = await apiGet("/api/reviews/stats");
+              const o = st.overall || {};
+              $("rsTotal").textContent = (o.count || 0).toLocaleString("en-SG");
+              $("rsTowns").textContent = (o.towns || 0).toLocaleString("en-SG");
+              $("rsAvg").textContent = o.avg_rating != null ? Number(o.avg_rating).toFixed(1) + " / 5" : "—";
+            } catch (e) {
+              ["rsTotal", "rsTowns", "rsAvg"].forEach(id => { $(id).textContent = "—"; });
+            }
           }
 
-          function applyView() {
-            let rows = allReviews.slice();
-            const t = filterTown.value;
-            if (t) rows = rows.filter(r => (r.town || "").toUpperCase() === t.toUpperCase());
-            if (sortBy.value === "high") rows.sort((a,b) => b.rating - a.rating);
-            else if (sortBy.value === "low") rows.sort((a,b) => a.rating - b.rating);
-            else rows.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+          // ---- The list: MongoDB filters, sorts and pages; the browser shows 10 ----
+          const PER_PAGE = 10;
+          const view = { page: 1 };
+          let reqSeq = 0, statsLoaded = false, insightsFor = null;
+          const nf = n => Number(n).toLocaleString("en-SG");
+          const pagerWrap = $("reviewsPagerWrap"), pagerEl = $("reviewsPager");
+          const searchEl = $("reviewSearch");
 
-            $("reviewsCount").textContent =
-              rows.length + " review" + (rows.length === 1 ? "" : "s") + (t ? " in " + titleCase(t) : " across all towns");
+          // The dropdown shows "Ang Mo Kio"; the API and the address bar use "ANG MO KIO".
+          const townParam = () => (filterTown.value || "").toUpperCase();
 
-            if (!rows.length) {
-              listEl.innerHTML = '<div class="empty-reviews"><div class="er-ico">✍️</div><h4>No reviews here yet</h4><p>Be the first to share what it\u2019s like living in this town.</p></div>';
-              return;
-            }
-            listEl.innerHTML = rows.map(r => `
-              <div class="review-card">
-                <div class="rc-avatar">${initials(r.author)}</div>
+          // Address bar <-> controls:  reviews.html?town=BEDOK&sort=high&q=hawker&page=2
+          function syncUrl(replace) {
+            RW.url.sync({
+              town: townParam(),
+              sort: sortBy.value === "recent" ? "" : sortBy.value,
+              q: searchEl.value.trim(),
+              page: view.page > 1 ? view.page : "",
+            }, { replace: !!replace });
+          }
+          function readUrl() {
+            const qp = RW.url.params();
+            const t = (qp.get("town") || "").trim().toUpperCase();
+            filterTown.value = "";
+            if (t) for (const o of filterTown.options) if (o.textContent.trim().toUpperCase() === t) { filterTown.value = o.value; break; }
+            const sort = qp.get("sort");
+            sortBy.value = ["recent", "high", "low"].includes(sort) ? sort : "recent";
+            searchEl.value = (qp.get("q") || "").slice(0, 80);
+            const n = parseInt(qp.get("page"), 10);
+            view.page = n > 0 ? n : 1;
+          }
+
+          function cardHtml(r) {
+            return `
+              <div class="review-card" data-review-id="${escapeHtml(r.id || "")}" data-rating="${Number(r.rating) || 0}">
+                <div class="rc-avatar" aria-hidden="true">${escapeHtml(initials(r.author))}</div>
                 <div class="rc-body">
                   <div class="rc-head">
-                    <b>${r.author || "Anonymous"}</b>
-                    <span class="rc-town">${titleCase(r.town)}</span>
-                    <span class="rc-time">${ago(r.created_at)}</span>
+                    <b>${escapeHtml(r.author || "Anonymous")}</b>
+                    ${r.seeded ? `<span class="rwx-badge sample" title="Example review generated by scripts/seed_reviews.py so the page is not empty">Sample</span>` : ""}
+                    <span class="rc-town">${escapeHtml(titleCase(r.town))}</span>
+                    <span class="rc-time">${escapeHtml(ago(r.created_at))}</span>
                   </div>
-                  ${stars(r.rating)}
-                  <p class="rc-text">${r.comment}</p>
-                  <div class="review-tags">${(r.tags || []).map(t => `<i>${t}</i>`).join("")}</div>
+                  <span role="img" aria-label="Rated ${Number(r.rating) || 0} out of 5">${stars(Math.max(0, Math.min(5, Number(r.rating) || 0)))}</span>
+                  <p class="rc-text">${escapeHtml(r.comment)}</p>
+                  <div class="review-tags">${(r.tags || []).map(t => `<i>${escapeHtml(t)}</i>`).join("")}</div>
+                  ${r.mine ? `<div class="rwx-owner"><button type="button" data-act="edit">Edit</button><button type="button" class="danger" data-act="delete">Delete</button></div>` : ""}
                 </div>
-              </div>
-            `).join("");
+              </div>`;
           }
 
-          async function load() {
+          function render(data) {
+            const t = townParam(), q = searchEl.value.trim();
+            const rows = data.rows || [];
+            const scope = t ? " in " + titleCase(t) : " across all towns";
+            if (!rows.length) {
+              $("reviewsCount").textContent = "No reviews" + scope;
+              pagerWrap.hidden = true;
+              RW.renderEmpty(listEl, q ? {
+                icon: "🔍", title: "No reviews match \u201c" + q + "\u201d",
+                text: "Try a shorter word, such as \u201chawker\u201d or \u201cquiet\u201d.",
+                actions: [{ label: "Clear search", onClick: () => { searchEl.value = ""; view.page = 1; load(); } }],
+              } : {
+                icon: "✍️",
+                title: t ? "No reviews for " + titleCase(t) + " yet" : "No reviews yet",
+                text: "Be the first to share what it\u2019s like living here.",
+                actions: t ? [{ label: "Show all towns", onClick: () => { filterTown.value = ""; view.page = 1; load(); } }] : [],
+              });
+              return;
+            }
+            const from = (data.page - 1) * data.limit + 1;
+            $("reviewsCount").textContent = nf(data.total) + " review" + (data.total === 1 ? "" : "s") + scope +
+              (data.pages > 1 ? " \u00b7 showing " + nf(from) + "\u2013" + nf(from + rows.length - 1) : "") +
+              (q ? " \u00b7 best match first" : "");
+            listEl.innerHTML = rows.map(cardHtml).join("");
+            RW.pager(pagerEl, { page: data.page, pages: data.pages, onPage: n => { view.page = n; load({ scroll: true }); } });
+            pagerWrap.hidden = data.pages < 2;
+          }
+
+          // load(): fetch the page described by the controls.
+          //   (nothing)       a filter / search / sort changed or a page was picked
+          //   {replace:true}  first load, or the same page again: no new history entry
+          //   {fromHistory}   Back / Forward: the address bar is already right
+          async function load(opts) {
+            opts = opts || {};
+            const seq = ++reqSeq;
+            const q = searchEl.value.trim();
+            sortBy.disabled = !!q;                      // search results are ordered by relevance
+            sortBy.title = q ? "Search results are ordered by best match" : "";
+            listEl.innerHTML = RW.skeleton.reviews(3) + RW.skeleton.label("Loading reviews…");
+            RW.setBusy(listEl, true);
+            pagerWrap.hidden = true;
+            $("reviewsCount").textContent = "Loading…";
+            if (opts.scroll) $("reviewsPanel").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
             try {
-              allReviews = await apiGet("/api/reviews", { limit: 200 });
-              updateStats(allReviews);
-              applyView();
+              const params = { page: view.page, limit: PER_PAGE, sort: sortBy.value };
+              if (townParam()) params.town = townParam();
+              if (q) params.q = q;
+              const [data] = await Promise.all([apiGet("/api/reviews", params), statsLoaded ? null : loadStats()]);
+              if (seq !== reqSeq) return;               // a newer request has started
+              statsLoaded = true;
+              RW.setBusy(listEl, false);
+              const clamped = data.page !== view.page;  // asked for a page past the end
+              view.page = data.page;
+              if (!opts.fromHistory) syncUrl(opts.replace || clamped);
+              render(data);
+              // The rating / tag summary depends on the town only, not on the page.
+              if (window.RWFeatures && insightsFor !== townParam()) {
+                insightsFor = townParam();
+                RWFeatures.reviewInsights($("reviewInsights"), filterTown.value);
+              }
             } catch (e) {
-              listEl.innerHTML = `<div class="notice">Could not load reviews: ${e.message}</div>`;
+              if (seq !== reqSeq) return;
+              RW.setBusy(listEl, false);
+              $("reviewsCount").textContent = "Couldn\u2019t load";
+              RW.renderError(listEl, e, { what: "reviews", onRetry: () => load(opts) });
             }
           }
 
@@ -196,60 +328,87 @@
           function paintStars(n) {
             starBtns.forEach((b,i) => b.classList.toggle("on", i < n));
           }
+          function setRating(val) {
+            selectedRating = val; paintStars(val);
+            starCap.textContent = val ? RATING_WORDS[val] + " \u00b7 " + val + "/5" : "Tap to rate";
+            starBtns.forEach((x, i) => {
+              x.setAttribute("aria-checked", String(i + 1 === val));
+              x.tabIndex = (val ? i + 1 === val : i === 0) ? 0 : -1;
+            });
+          }
+          // Radio-group keyboard behaviour: arrows move + select.
+          starEl.addEventListener("keydown", e => {
+            const i = starBtns.indexOf(document.activeElement);
+            if (i < 0) return;
+            let j = i;
+            if (e.key === "ArrowRight" || e.key === "ArrowUp") j = Math.min(4, i + 1);
+            else if (e.key === "ArrowLeft" || e.key === "ArrowDown") j = Math.max(0, i - 1);
+            else return;
+            e.preventDefault();
+            setRating(j + 1); starBtns[j].focus();
+          });
           starBtns.forEach(b => {
             const val = Number(b.dataset.r);
             b.addEventListener("mouseenter", () => { paintStars(val); starCap.textContent = RATING_WORDS[val]; });
-            b.addEventListener("click", () => {
-              selectedRating = val; paintStars(val); starCap.textContent = RATING_WORDS[val] + " · " + val + "/5";
-            });
+            b.addEventListener("click", () => setRating(val));
           });
           starEl.addEventListener("mouseleave", () => {
             paintStars(selectedRating);
             starCap.textContent = selectedRating ? RATING_WORDS[selectedRating] + " · " + selectedRating + "/5" : "Tap to rate";
           });
 
-          tagEls.forEach(t => t.addEventListener("click", () => t.classList.toggle("active")));
-          filterTown.addEventListener("change", applyView);
-          sortBy.addEventListener("change", applyView);
+          tagEls.forEach(t => t.addEventListener("click", () => {
+            const on = t.getAttribute("aria-pressed") !== "true";
+            t.setAttribute("aria-pressed", String(on));
+            t.classList.toggle("active", on);
+          }));
+          filterTown.addEventListener("change", () => { view.page = 1; load(); });
+          sortBy.addEventListener("change", () => { view.page = 1; load(); });
 
           form.addEventListener("submit", async ev => {
             ev.preventDefault();
             const town = townSel.value;
             const text = comment.value.trim();
             const author = authorEl.value.trim() || "Anonymous";
-            if (!town) return showToast ? showToast("Please choose a town.") : alert("Please choose a town.");
-            if (!selectedRating) return showToast ? showToast("Please pick a star rating.") : alert("Please pick a star rating.");
-            if (!text) return showToast ? showToast("Please write a short review.") : alert("Please write a short review.");
+            if (!town) { townSel.focus(); return showToast("Please choose a town."); }
+            if (!selectedRating) { starBtns[0].focus(); return showToast("Please pick a star rating."); }
+            if (!text) { comment.focus(); return showToast("Please write a short review."); }
 
-            const tags = [...tagEls].filter(t => t.classList.contains("active")).map(t => t.getAttribute("data-tag"));
+            const tags = [...tagEls].filter(t => t.getAttribute("aria-pressed") === "true").map(t => t.getAttribute("data-tag"));
             const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true; btn.textContent = "Posting…";
             try {
-              const res = await fetch(API_BASE + "/api/reviews", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ town, rating: selectedRating, comment: text, tags, author })
-              });
-              if (!res.ok) throw new Error("API " + res.status);
+              await apiPost("/api/reviews", { town, rating: selectedRating, comment: text, tags, author });
               comment.value = "";
-              selectedRating = 0; paintStars(0); starCap.textContent = "Tap to rate";
-              tagEls.forEach(t => t.classList.remove("active"));
-              if (typeof showToast === "function") showToast("Thanks! Your review is live.");
-              // Show the town they just reviewed.
+              setRating(0);
+              tagEls.forEach(t => { t.classList.remove("active"); t.setAttribute("aria-pressed", "false"); });
+              showToast("Thanks! Your review is live.");
+              // Show the town they just reviewed, newest first, so their review is on top.
               filterTown.value = [...filterTown.options].find(o => o.textContent.toUpperCase() === titleCase(town).toUpperCase())?.value || "";
+              searchEl.value = ""; sortBy.value = "recent"; view.page = 1; statsLoaded = false;
               await load();
             } catch (e) {
-              if (typeof showToast === "function") showToast("Could not submit: " + e.message);
-              else alert("Could not submit review: " + e.message);
+              // 429 = posting too fast; 400 = the server's own validation message.
+              const msg = (e instanceof ApiError && e.code === "rate_limited")
+                ? "You\u2019re posting too fast. Please wait a moment and try again."
+                : (e instanceof ApiError && e.status >= 400 && e.status < 500) ? e.message
+                : RW.describeError(e, "your review").title + ". Your text is still here \u2014 please try again.";
+              showToast(msg);
             } finally {
               btn.disabled = false; btn.textContent = "Post my review →";
             }
           });
 
-          load();
+          // Search (MongoDB text index), owner edit/delete, and the $facet summary per town.
+          $("reviewSearchForm").addEventListener("submit", ev => { ev.preventDefault(); view.page = 1; load(); });
+          // After an edit or delete: reload this page (the server shows the last page if it emptied).
+          if (window.RWFeatures) RWFeatures.wireReviewOwner(listEl, () => { statsLoaded = false; load({ replace: true }); });
+          RW.url.onChange(() => { readUrl(); load({ fromHistory: true }); });
+          readUrl();
+          load({ replace: true });
         })();
         </script>
-    </main>
+    </div>
 </body>
 
 </html>

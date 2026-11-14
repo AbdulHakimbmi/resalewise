@@ -1,0 +1,54 @@
+# Local databases for development and for the SQL-vs-NoSQL benchmark.
+#   docker compose up -d        start (first run downloads the images)
+#   docker compose ps           both should say "healthy"
+#   docker compose down         stop (data is kept in the named volumes)
+#   docker compose down -v      stop AND delete the data
+#
+# Host ports 5433 / 27018 avoid clashing with a PostgreSQL or MongoDB that
+# may already be installed on your computer (5432 / 27017).
+services:
+  postgres:
+    image: postgis/postgis:17-3.5          # PostgreSQL 17 + PostGIS 3.5
+    container_name: resalewise-postgres
+    environment:
+      POSTGRES_USER: resalewise
+      POSTGRES_PASSWORD: resalewise
+      POSTGRES_DB: resalewise
+    ports:
+      - "127.0.0.1:5433:5432"
+    shm_size: 1g                           # parallel query workers need more than Docker's 64 MB default
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Same settings for every benchmark run (documented in bench/README.md).
+    command: >
+      postgres -c shared_buffers=512MB -c work_mem=32MB
+               -c max_parallel_workers_per_gather=2 -c jit=off
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resalewise -d resalewise"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    deploy:
+      resources:
+        limits: {cpus: "2", memory: 2g}
+
+  mongo:
+    image: mongo:8.0
+    container_name: resalewise-mongo
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongodata:/data/db
+    command: ["--wiredTigerCacheSizeGB", "0.5"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    deploy:
+      resources:
+        limits: {cpus: "2", memory: 2g}
+
+volumes:
+  pgdata:
+  mongodata:

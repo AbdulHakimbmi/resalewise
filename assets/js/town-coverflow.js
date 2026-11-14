@@ -29,8 +29,9 @@
     }
 
     const stage = root.querySelector(".coverflow-stage");
-    const slides = [...root.querySelectorAll(".town-slide")];
-    const dots = [...root.querySelectorAll(".dot")];
+    let slides = [...root.querySelectorAll(".town-slide")];
+    let dots = [...root.querySelectorAll(".dot")];
+    const dotRow = root.querySelector(".dots");
     const caption = root.querySelector("[data-town-caption]");
     const previousButton = root.querySelector(".prev");
     const nextButton = root.querySelector(".next");
@@ -41,7 +42,7 @@
     let drag = null;
     let animationFrame = null;
 
-    const count = slides.length;
+    let count = slides.length;
 
     if (!stage || count === 0) {
         return;
@@ -98,7 +99,7 @@
 
         const path = imagePathForTown(town);
 
-        image.alt = "HDB estate view of " + town;
+        image.alt = "HDB estate view of " + town.toLowerCase().replace(/\b\w/g, function(c) { return c.toUpperCase(); });
         image.loading = "eager";
         image.decoding = "async";
 
@@ -110,6 +111,7 @@
         image.addEventListener("error", function() {
             image.remove();
             slide.classList.remove("has-image");
+            slide.classList.add("no-image");
             console.warn("[town-coverflow] FAILED to load:", path);
         });
 
@@ -175,9 +177,20 @@
         }
     }
 
+    // "Reduce motion": jump straight to the target card instead of easing.
+    const reduceMotion = !!(window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
     function settle() {
         if (animationFrame !== null) {
             cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+
+        if (reduceMotion) {
+            position = target;
+            paint();
+            return;
         }
 
         function step() {
@@ -284,6 +297,35 @@
         }
     }
 
+    // Touchpad / mouse-wheel: a two-finger swipe sideways slides the row.
+    // Vertical scrolling is left alone so the page still scrolls normally.
+    var wheelTimer = null;
+    stage.addEventListener("wheel", function(event) {
+        var sideways = Math.abs(event.deltaX) > Math.abs(event.deltaY) || (event.shiftKey && event.deltaY);
+        if (!sideways) {
+            return;
+        }
+
+        event.preventDefault();
+        var amount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+
+        if (animationFrame !== null) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+        }
+
+        position += amount / (cardWidth() * 0.67);
+        target = position;
+        paint();
+
+        // When the fingers stop, settle on the nearest town.
+        clearTimeout(wheelTimer);
+        wheelTimer = setTimeout(function() {
+            target = Math.round(position);
+            settle();
+        }, 110);
+    }, { passive: false });
+
     stage.addEventListener("pointerup", endDrag);
     stage.addEventListener("pointercancel", endDrag);
 
@@ -311,11 +353,14 @@
         });
     }
 
-    dots.forEach(function(dot, index) {
-        dot.addEventListener("click", function() {
-            goTo(index);
+    if (dotRow) {
+        dotRow.addEventListener("click", function(event) {
+            const index = dots.indexOf(event.target);
+            if (index >= 0) {
+                goTo(index);
+            }
         });
-    });
+    }
 
     // Navigation on tap is handled in endDrag (pointer capture makes a
     // separate click listener unreliable), so no click handler is needed here.
@@ -335,4 +380,62 @@
     window.addEventListener("resize", paint, { passive: true });
 
     paint();
+
+    /*
+      The slides in the HTML are only a fallback. Once the API answers, rebuild
+      them from the database's town list with each town's live 4-room median,
+      so a town added to the data shows up here without editing the page.
+    */
+    const money = function(n) { return "$" + Number(n).toLocaleString("en-SG"); };
+
+    function rebuild(towns, medians) {
+        if (!towns.length) {
+            return;
+        }
+
+        const byTown = {};
+        medians.forEach(function(row) { byTown[row.town_name] = row; });
+
+        stage.querySelectorAll(".town-slide").forEach(function(slide) { slide.remove(); });
+        if (dotRow) {
+            dotRow.innerHTML = "";
+        }
+
+        const anchor = stage.querySelector(".coverflow-btn");
+
+        towns.forEach(function(town) {
+            const name = titleCase(town);
+            const m = byTown[town];
+            const slide = document.createElement("article");
+            slide.className = "town-slide";
+            slide.tabIndex = -1;
+            slide.dataset.town = town;
+            slide.dataset.caption = m
+                ? "4-room median " + money(m.median_price) + ", from " + m.txn_count.toLocaleString("en-SG") + " sales"
+                : "Too few 4-room sales in the last year for a median";
+            slide.innerHTML = '<div class="town-info"><h3>' + escapeHtml(name) + "</h3></div>";
+            stage.insertBefore(slide, anchor);
+            loadTownImage(slide);
+
+            if (dotRow) {
+                const dot = document.createElement("button");
+                dot.className = "dot";
+                dot.type = "button";
+                dot.setAttribute("aria-label", "Go to " + name);
+                dotRow.appendChild(dot);
+            }
+        });
+
+        slides = [...stage.querySelectorAll(".town-slide")];
+        dots = dotRow ? [...dotRow.querySelectorAll(".dot")] : [];
+        count = slides.length;
+        position = target = Math.min(Math.round(position), count - 1);
+        paint();
+    }
+
+    if (typeof getOptions === "function" && typeof apiGet === "function") {
+        Promise.all([getOptions(), apiGet("/api/insights/town-medians", { flat_type: "4 ROOM", months: 12 })])
+            .then(function(res) { rebuild(res[0].towns || [], res[1].rows || []); })
+            .catch(function(err) { console.warn("[town-coverflow] keeping the built-in towns:", err.message); });
+    }
 })();

@@ -1,0 +1,608 @@
+{
+  "generated_at": "2026-10-24T00:11:38+00:00",
+  "summary": {
+    "pass": 6,
+    "warn": 0,
+    "fail": 0,
+    "pending": 0
+  },
+  "checks": [
+    {
+      "id": "V1",
+      "name": "Coverage",
+      "status": "pass",
+      "criterion": ">= 95 % of blocks and >= 99 % of 2017+ sales located",
+      "metrics": {
+        "blocks": 10010,
+        "exact": 9765,
+        "fuzzy": 0,
+        "unmatched": 245,
+        "not_attempted": 0,
+        "unmatched_demolished": 160,
+        "located": 9765,
+        "pct_blocks": 97.55,
+        "pct_sales": 97.9,
+        "pct_sales_2017": 99.04,
+        "sales": 985219,
+        "sales_located": 964482,
+        "sales_2017": 240628,
+        "located_2017": 238329
+      },
+      "detail": {
+        "largest_unmatched": [
+          {
+            "block_no": "33",
+            "street_name": "TAMAN HO SWEE",
+            "town_name": "BUKIT MERAH",
+            "in_property_info": false,
+            "sales": 452
+          },
+          {
+            "block_no": "3",
+            "street_name": "STREET. GEORGE'S ROAD",
+            "town_name": "KALLANG/WHAMPOA",
+            "in_property_info": true,
+            "sales": 368
+          },
+          {
+            "block_no": "16",
+            "street_name": "HOLLAND DRIVE",
+            "town_name": "QUEENSTOWN",
+            "in_property_info": false,
+            "sales": 268
+          },
+          {
+            "block_no": "403",
+            "street_name": "CLEMENTI AVENUE 1",
+            "town_name": "CLEMENTI",
+            "in_property_info": false,
+            "sales": 249
+          },
+          {
+            "block_no": "7",
+            "street_name": "STREET. GEORGE'S LANE",
+            "town_name": "KALLANG/WHAMPOA",
+            "in_property_info": true,
+            "sales": 233
+          },
+          {
+            "block_no": "83",
+            "street_name": "BEDOK NORTH ROAD",
+            "town_name": "BEDOK",
+            "in_property_info": false,
+            "sales": 225
+          },
+          {
+            "block_no": "309",
+            "street_name": "ANG MO KIO AVENUE 1",
+            "town_name": "ANG MO KIO",
+            "in_property_info": false,
+            "sales": 223
+          },
+          {
+            "block_no": "401",
+            "street_name": "CLEMENTI AVENUE 1",
+            "town_name": "CLEMENTI",
+            "in_property_info": false,
+            "sales": 206
+          },
+          {
+            "block_no": "1",
+            "street_name": "JALAN PASAR BARU",
+            "town_name": "GEYLANG",
+            "in_property_info": false,
+            "sales": 199
+          },
+          {
+            "block_no": "168",
+            "street_name": "BOON LAY DRIVE",
+            "town_name": "JURONG WEST",
+            "in_property_info": false,
+            "sales": 196
+          },
+          {
+            "block_no": "402",
+            "street_name": "CLEMENTI AVENUE 1",
+            "town_name": "CLEMENTI",
+            "in_property_info": false,
+            "sales": 193
+          },
+          {
+            "block_no": "169",
+            "street_name": "BOON LAY DRIVE",
+            "town_name": "JURONG WEST",
+            "in_property_info": false,
+            "sales": 191
+          },
+          {
+            "block_no": "308A",
+            "street_name": "PUNGGOL WALK",
+            "town_name": "PUNGGOL",
+            "in_property_info": true,
+            "sales": 182
+          },
+          {
+            "block_no": "2",
+            "street_name": "STREET. GEORGE'S ROAD",
+            "town_name": "KALLANG/WHAMPOA",
+            "in_property_info": true,
+            "sales": 181
+          },
+          {
+            "block_no": "787C",
+            "street_name": "WOODLANDS CRESCENT",
+            "town_name": "WOODLANDS",
+            "in_property_info": true,
+            "sales": 181
+          }
+        ]
+      }
+    },
+    {
+      "id": "V2",
+      "name": "Plausibility",
+      "status": "pass",
+      "criterion": "100 % inside Singapore's bounding box; <= 0.5 % of blocks sit among neighbours of another town (6 of the 7 nearest from a different town)",
+      "metrics": {
+        "located": 9765,
+        "outside_bbox": 0,
+        "neighbour_inconsistent": 6,
+        "pct_neighbour_inconsistent": 0.06,
+        "distance_test_flagged": 351,
+        "pct_distance_test_flagged": 3.59
+      },
+      "detail": {
+        "note": "The first-planned distance test (> median + 3 MAD and > 2 km from the town's median point) flags long, thin towns where far-apart blocks are normal, so it is reported for transparency but is not the pass criterion; the neighbour test is. This change was made after seeing the distance-test result.",
+        "neighbour_inconsistent_blocks": [
+          {
+            "block_id": 752,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "39",
+            "street": "UPPER BOON KENG ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "GEYLANG",
+              "KALLANG/WHAMPOA"
+            ],
+            "nearest_neighbour_m": 76
+          },
+          {
+            "block_id": 2019,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "38",
+            "street": "UPPER BOON KENG ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "GEYLANG",
+              "KALLANG/WHAMPOA"
+            ],
+            "nearest_neighbour_m": 76
+          },
+          {
+            "block_id": 2782,
+            "town": "LIM CHU KANG",
+            "block_no": "4",
+            "street": "LIM CHU KANG ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "CHOA CHU KANG"
+            ],
+            "nearest_neighbour_m": 4931
+          },
+          {
+            "block_id": 2813,
+            "town": "BEDOK",
+            "block_no": "1",
+            "street": "EAST COAST ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "MARINE PARADE"
+            ],
+            "nearest_neighbour_m": 920
+          },
+          {
+            "block_id": 3203,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "15",
+            "street": "BEACH ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "CENTRAL AREA"
+            ],
+            "nearest_neighbour_m": 208
+          },
+          {
+            "block_id": 5238,
+            "town": "HOUGANG",
+            "block_no": "464",
+            "street": "UPPER SERANGOON ROAD",
+            "quality": "exact",
+            "neighbour_towns": [
+              "SERANGOON"
+            ],
+            "nearest_neighbour_m": 331
+          }
+        ],
+        "distance_test_by_town": [
+          {
+            "town": "SENGKANG",
+            "flagged": 73,
+            "blocks": 617
+          },
+          {
+            "town": "HOUGANG",
+            "flagged": 61,
+            "blocks": 579
+          },
+          {
+            "town": "CHOA CHU KANG",
+            "flagged": 60,
+            "blocks": 512
+          },
+          {
+            "town": "PASIR RIS",
+            "flagged": 36,
+            "blocks": 425
+          },
+          {
+            "town": "TOA PAYOH",
+            "flagged": 28,
+            "blocks": 308
+          },
+          {
+            "town": "JURONG EAST",
+            "flagged": 25,
+            "blocks": 225
+          },
+          {
+            "town": "BUKIT MERAH",
+            "flagged": 20,
+            "blocks": 371
+          },
+          {
+            "town": "BISHAN",
+            "flagged": 14,
+            "blocks": 226
+          },
+          {
+            "town": "KALLANG/WHAMPOA",
+            "flagged": 14,
+            "blocks": 249
+          },
+          {
+            "town": "BUKIT TIMAH",
+            "flagged": 7,
+            "blocks": 26
+          },
+          {
+            "town": "WOODLANDS",
+            "flagged": 7,
+            "blocks": 686
+          },
+          {
+            "town": "JURONG WEST",
+            "flagged": 2,
+            "blocks": 712
+          }
+        ],
+        "distance_test_top": [
+          {
+            "block_id": 1238,
+            "town": "BUKIT TIMAH",
+            "block_no": "3",
+            "street": "QUEEN'S ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.46,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 2410,
+            "town": "BUKIT TIMAH",
+            "block_no": "2",
+            "street": "QUEEN'S ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.4,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 383,
+            "town": "BUKIT TIMAH",
+            "block_no": "6",
+            "street": "FARRER ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.39,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 1936,
+            "town": "BUKIT TIMAH",
+            "block_no": "5",
+            "street": "FARRER ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.37,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 382,
+            "town": "BUKIT TIMAH",
+            "block_no": "4",
+            "street": "QUEEN'S ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.31,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 1605,
+            "town": "BUKIT TIMAH",
+            "block_no": "1",
+            "street": "QUEEN'S ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.28,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 381,
+            "town": "BUKIT TIMAH",
+            "block_no": "8",
+            "street": "EMPRESS ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.2,
+            "cutoff_km": 0.58
+          },
+          {
+            "block_id": 6441,
+            "town": "PASIR RIS",
+            "block_no": "4",
+            "street": "CHANGI VILLAGE ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.2,
+            "cutoff_km": 2.16
+          },
+          {
+            "block_id": 6562,
+            "town": "PASIR RIS",
+            "block_no": "1",
+            "street": "CHANGI VILLAGE ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.2,
+            "cutoff_km": 2.16
+          },
+          {
+            "block_id": 6468,
+            "town": "PASIR RIS",
+            "block_no": "5",
+            "street": "CHANGI VILLAGE ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 4.12,
+            "cutoff_km": 2.16
+          },
+          {
+            "block_id": 5238,
+            "town": "HOUGANG",
+            "block_no": "464",
+            "street": "UPPER SERANGOON ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 3.78,
+            "cutoff_km": 1.93
+          },
+          {
+            "block_id": 735,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "14",
+            "street": "KG ARANG ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 3.52,
+            "cutoff_km": 2.0
+          },
+          {
+            "block_id": 1725,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "12",
+            "street": "KG ARANG ROAD",
+            "quality": "exact",
+            "km_from_town_centre": 3.42,
+            "cutoff_km": 2.0
+          },
+          {
+            "block_id": 1726,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "6",
+            "street": "JALAN BATU",
+            "quality": "exact",
+            "km_from_town_centre": 3.42,
+            "cutoff_km": 2.0
+          },
+          {
+            "block_id": 2186,
+            "town": "KALLANG/WHAMPOA",
+            "block_no": "5",
+            "street": "JALAN BATU",
+            "quality": "exact",
+            "km_from_town_centre": 3.4,
+            "cutoff_km": 2.0
+          }
+        ],
+        "outside": []
+      }
+    },
+    {
+      "id": "V3",
+      "name": "Manual ground truth",
+      "status": "pass",
+      "criterion": ">= 29 of 30 sampled blocks confirmed on the map",
+      "metrics": {
+        "sampled": 30,
+        "checked": 30,
+        "correct": 30,
+        "accuracy_pct": 100.0
+      },
+      "detail": {
+        "wrong": [],
+        "round1": {
+          "sampled": 30,
+          "correct": 26,
+          "wrong": [
+            {
+              "block": "309",
+              "street": "ANG MO KIO AVENUE 1",
+              "match_quality": "fuzzy",
+              "onemap_address": "309 ANG MO KIO AVENUE 2 HORIZON GARDENS SINGAPORE 569953",
+              "notes": "different road number"
+            },
+            {
+              "block": "1",
+              "street": "SELETAR WEST FARMWAY 6",
+              "match_quality": "fuzzy",
+              "onemap_address": "1 SELETAR WEST FARMWAY 9 SINGAPORE 797977",
+              "notes": "different road number"
+            },
+            {
+              "block": "2",
+              "street": "SELETAR WEST FARMWAY 6",
+              "match_quality": "fuzzy",
+              "onemap_address": "2 SELETAR WEST FARMWAY 2 SINGAPORE 798098",
+              "notes": "different road number"
+            },
+            {
+              "block": "321",
+              "street": "CLEMENTI AVENUE 5",
+              "match_quality": "fuzzy",
+              "onemap_address": "321 CLEMENTI AVENUE 3 321 CLEMENTI SINGAPORE 129905",
+              "notes": "different road number"
+            }
+          ],
+          "outcome": "defect found and fixed: a fuzzy match accepted a road with a different number; fuzzy matching now requires identical road numbers, and a fresh sample was drawn"
+        }
+      }
+    },
+    {
+      "id": "V4",
+      "name": "Cross-engine distances",
+      "status": "pass",
+      "criterion": "same nearest station >= 99.5 % (ties excluded); |Mongo - PostGIS sphere| <= 0.2 %; |Mongo - PostGIS spheroid| <= 1.0 % (beyond the 0.05 m storage rounding)",
+      "metrics": {
+        "blocks_compared": 9765,
+        "same_nearest_station": 9765,
+        "ties_within_1pct": 0,
+        "disagreements": 0,
+        "agreement_pct_excl_ties": 100.0,
+        "rel_diff_vs_postgis_sphere": {
+          "max_pct": 0.1113,
+          "p99_pct": 0.1111
+        },
+        "rel_diff_vs_postgis_spheroid": {
+          "max_pct": 0.6726,
+          "p99_pct": 0.668
+        },
+        "rel_diff_vs_haversine_same_radius": {
+          "max_pct": 0.0
+        },
+        "one_km_band_flips": 12,
+        "radius_ratio_pct": 0.1113
+      },
+      "detail": {
+        "disagreement_examples": [],
+        "explanation": "MongoDB measures on a 6,378.1 km sphere; PostGIS geography on the WGS84 spheroid. 'one_km_band_flips' counts blocks whose 'within 1 km' answer differs between the two models; they are reported as a known limitation."
+      }
+    },
+    {
+      "id": "V5",
+      "name": "Edge cases",
+      "status": "pass",
+      "criterion": "every probe behaves as specified",
+      "metrics": {
+        "probes": 11,
+        "failed": 0,
+        "postgis_spheroid_boundary_flips": 2
+      },
+      "detail": {
+        "probes": [
+          {
+            "case": "999 m at bearing 0",
+            "expected_inside": true,
+            "mongo_inside": true,
+            "ok": true
+          },
+          {
+            "case": "1001 m at bearing 0",
+            "expected_inside": false,
+            "mongo_inside": false,
+            "ok": true
+          },
+          {
+            "case": "999 m at bearing 180",
+            "expected_inside": true,
+            "mongo_inside": true,
+            "ok": true
+          },
+          {
+            "case": "1001 m at bearing 180",
+            "expected_inside": false,
+            "mongo_inside": false,
+            "ok": true
+          },
+          {
+            "case": "999 m at bearing 270",
+            "expected_inside": true,
+            "mongo_inside": true,
+            "ok": true
+          },
+          {
+            "case": "1001 m at bearing 270",
+            "expected_inside": false,
+            "mongo_inside": false,
+            "ok": true
+          },
+          {
+            "case": "MultiPoint uses nearest exit",
+            "expected_m": 11.1,
+            "mongo_m": 11.1,
+            "ok": true
+          },
+          {
+            "case": "$geoNear after $match is rejected",
+            "ok": true
+          },
+          {
+            "case": "swapped [lat, lon] rejected by the 2dsphere index",
+            "ok": true
+          },
+          {
+            "case": "all blocks_geo points stored as [lon, lat]",
+            "count_wrong": 0,
+            "ok": true
+          },
+          {
+            "case": "station opening years attached",
+            "with_year": 0,
+            "stations": 202,
+            "ok": true,
+            "note": "optional (data/reference/station_opening_years.csv)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "V6",
+      "name": "Idempotent rebuild",
+      "status": "pass",
+      "criterion": "re-running geocode (from cache) and feature build reproduces the stored tables exactly",
+      "metrics": {
+        "block_features_stored": "cf6818247935dec2",
+        "block_features_rebuilt": "cf6818247935dec2",
+        "block_locations_stored": "4e09a52db637eae5",
+        "block_locations_rebuilt": "4e09a52db637eae5"
+      },
+      "detail": ""
+    }
+  ],
+  "tolerances": {
+    "sphere_pct": 0.2,
+    "spheroid_pct": 1.0,
+    "tie_pct": 1.0
+  },
+  "radii_m": {
+    "mongodb": 6378100.0,
+    "postgis_sphere_and_haversine_reference": 6371008.8
+  }
+}

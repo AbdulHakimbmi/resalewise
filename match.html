@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Rank HDB blocks by how close they are to the MRT, parks, hawker centres, gyms, childcare and schools you care about.">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Match my priorities · ResaleWise SG">
+    <meta property="og:description" content="Rank HDB blocks by how close they are to the MRT, parks, hawker centres, gyms, childcare and schools you care about.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Match my priorities · ResaleWise SG">
+    <meta name="twitter:description" content="Rank HDB blocks by how close they are to the MRT, parks, hawker centres, gyms, childcare and schools you care about.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
+    <title>Match my priorities · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html" class="active" aria-current="page">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
+        <section class="page-hero">
+            <figure class="page-photo"><img src="assets/images/towns/queenstown.jpg" alt="A low-rise HDB block among trees beside a road in Queenstown"><figcaption>Queenstown</figcaption></figure>
+            <h1>Close to what <em>you</em> need.</h1>
+            <p>Tell us how much each kind of place matters. We rank HDB blocks by how close they are to those places, then show what flats there typically sell for. It sorts by your priorities; it does not say a block is good value.</p>
+        </section>
+
+        <section class="section" style="padding-top:8px" id="rwxMatch">
+            <form class="filter-card rwx-match-form" id="matchForm">
+                <div class="filter-grid">
+                    <div class="field"><label for="mFlat">Flat type</label><select id="mFlat"></select></div>
+                    <div class="field"><label for="mTown">Town</label><select id="mTown"><option value="">Any town</option></select></div>
+                    <div class="field"><label for="mMonths">Sales from the last</label><select id="mMonths">
+                        <option value="12">12 months</option><option value="24" selected>24 months</option>
+                        <option value="36">36 months</option><option value="60">60 months</option></select></div>
+                    <div class="field"><label for="mBudget">Typical price up to ($)</label><input id="mBudget" inputmode="numeric" placeholder="No limit" autocomplete="off"></div>
+                    <button class="search-btn" type="submit">Update ranking →</button>
+                </div>
+                <fieldset class="rwx-weights">
+                    <legend>What matters to you <span class="rwx-muted">0 ignores a place, 5 makes it essential</span></legend>
+                    <div class="rwx-weight"><label for="w_mrt">MRT/LRT station</label><output id="wv_mrt" for="w_mrt"></output>
+                        <input type="range" id="w_mrt" min="0" max="5" step="1" value="3"></div>
+                    <div class="rwx-weight"><label for="w_park">Park</label><output id="wv_park" for="w_park"></output>
+                        <input type="range" id="w_park" min="0" max="5" step="1" value="2"></div>
+                    <div class="rwx-weight"><label for="w_hawker">Hawker centre</label><output id="wv_hawker" for="w_hawker"></output>
+                        <input type="range" id="w_hawker" min="0" max="5" step="1" value="2"></div>
+                    <div class="rwx-weight"><label for="w_gym">Gym</label><output id="wv_gym" for="w_gym"></output>
+                        <input type="range" id="w_gym" min="0" max="5" step="1" value="1"></div>
+                    <div class="rwx-weight"><label for="w_childcare">Childcare centre</label><output id="wv_childcare" for="w_childcare"></output>
+                        <input type="range" id="w_childcare" min="0" max="5" step="1" value="1"></div>
+                    <div class="rwx-weight"><label for="w_primary_school">Primary school</label><output id="wv_primary_school" for="w_primary_school"></output>
+                        <input type="range" id="w_primary_school" min="0" max="5" step="1" value="2"></div>
+                    <div class="rwx-weight"><label for="w_secondary_school">Secondary school</label><output id="wv_secondary_school" for="w_secondary_school"></output>
+                        <input type="range" id="w_secondary_school" min="0" max="5" step="1" value="1"></div>
+                </fieldset>
+            </form>
+            <div id="matchOut" aria-live="polite"><div class="notice">Loading…</div></div>
+        </section>
+
+        </main>
+        <footer class="footer">
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/town-coverflow.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
+</body>
+</html>

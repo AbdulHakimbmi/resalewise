@@ -1,0 +1,8 @@
+{
+  "documents": 985219,
+  "insert_seconds": 31.9,
+  "index_seconds": 7.5,
+  "docs_per_second": 30918,
+  "storage_mb": 48.3,
+  "index_mb": 64.4
+}

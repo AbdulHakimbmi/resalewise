@@ -10,6 +10,29 @@
   var reduceMotion = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Count-up helper (fires when the number scrolls into view); the live band and the nearby stats share it.
+  function animateNumber(el, to, fmt) {
+    var done = false;
+    function run() {
+      if (done) return; done = true;
+      if (reduceMotion) { el.textContent = fmt(to); return; }
+      var start = null, DUR = 1200;
+      function frame(ts) {
+        if (start === null) start = ts;
+        var p = Math.min((ts - start) / DUR, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(to * eased);
+        if (p < 1) requestAnimationFrame(frame); else el.textContent = fmt(to);
+      }
+      requestAnimationFrame(frame);
+    }
+    if (!("IntersectionObserver" in window)) { run(); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { run(); io.disconnect(); } });
+    }, { threshold: 0.4 });
+    io.observe(el);
+  }
+
   // Full town list (matches the coverflow + DB). Title-cased for display.
   var TOWNS = [
     "Ang Mo Kio", "Bedok", "Bishan", "Bukit Batok", "Bukit Merah",
@@ -212,6 +235,9 @@
     function apply(theme) {
       if (theme === "light") document.documentElement.setAttribute("data-theme", "light");
       else document.documentElement.removeAttribute("data-theme");
+      // Keep the browser UI colour (mobile address bar) in step with the theme.
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", theme === "light" ? "#f4f2ec" : "#0e1013");
     }
     // Applied ASAP (also set very early below to avoid a flash).
     var saved = localStorage.getItem("rw_theme") || "dark";
@@ -305,7 +331,7 @@
     var active = -1;
 
     // Refresh from the live DB if reachable, so it always matches search.html.
-    var API_BASE = "http://localhost:5000";
+    // (API_BASE comes from api.js, which is loaded before this file.)
     if (window.fetch) {
       fetch(API_BASE + "/api/options")
         .then(function (r) { return r.ok ? r.json() : null; })
@@ -371,6 +397,49 @@
     update();
   })();
 
+  /* ---------- 9b. What's around: live counts and an example block, from the amenities API ---------- */
+  (function nearbyHome() {
+    var step = document.getElementById("nearStep");
+    if (!step || !window.fetch) return;                      // only on the homepage
+    var visual = document.getElementById("nearVisual");
+    var hide = function () {                                 // no nearby data loaded: leave the step out rather than show nothing
+      if (step) step.hidden = true;
+      if (visual) visual.hidden = true;
+    };
+    var fmt = function (m) { return m < 1000 ? Math.round(m) + " m" : (m / 1000).toFixed(2).replace(/0$/, "") + " km"; };
+    var title = function (s) { return String(s || "").toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); };
+
+    fetch(API_BASE + "/api/amenities/status")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.available || !d.amenities) { hide(); return null; }
+        var total = Object.keys(d.amenities).reduce(function (n, k) { return n + d.amenities[k]; }, 0);
+        var placesEl = document.getElementById("lsPlaces"), blocksEl = document.getElementById("lsBlocks");
+        if (placesEl && total) {
+          document.getElementById("lsPlacesStat").hidden = false;
+          animateNumber(placesEl, total, function (v) { return Math.round(v).toLocaleString("en-SG"); });
+        }
+        if (blocksEl && d.blocks_with_features) {
+          document.getElementById("lsBlocksStat").hidden = false;
+          animateNumber(blocksEl, d.blocks_with_features, function (v) { return Math.round(v).toLocaleString("en-SG"); });
+        }
+        return fetch(API_BASE + "/api/amenities/rank?flat_type=4+ROOM&months=24&limit=1").then(function (r) { return r.ok ? r.json() : null; });
+      })
+      .then(function (d) {
+        if (d === null || d === undefined) return;
+        var b = d.available && d.results && d.results[0];
+        if (!b) { hide(); return; }
+        var scale = d.scale || {};
+        document.getElementById("nearTitle").textContent = "Blk " + b.block_no + " " + title(b.street_name) + " · " + title(b.town_name);
+        var order = ["mrt", "park", "hawker", "gym", "childcare", "primary_school", "secondary_school"];
+        document.getElementById("nearList").innerHTML = order.filter(function (k) { return b.nearest_m && b.nearest_m[k] != null; }).map(function (k) {
+          var label = k === "mrt" ? "MRT/LRT station" : (scale[k] && scale[k].label) || k;
+          return "<li><span>" + label + "</span><b>" + fmt(b.nearest_m[k]) + "</b></li>";
+        }).join("");
+      })
+      .catch(hide);
+  })();
+
   /* ---------- 10. Live data band (real numbers from the API) ---------- */
   (function liveBand() {
     var recordsEl = document.getElementById("lsRecords");
@@ -384,7 +453,6 @@
       return Math.round(v).toLocaleString("en-SG");
     });
 
-    var API_BASE = "http://localhost:5000";
     if (!window.fetch) return;
 
     fetch(API_BASE + "/api/options")
@@ -406,29 +474,6 @@
         } else if (medianEl) { medianEl.textContent = "—"; }
       })
       .catch(function () { if (medianEl) medianEl.textContent = "—"; });
-
-    // Small count-up helper (fires when the band scrolls into view).
-    function animateNumber(el, to, fmt) {
-      var done = false;
-      function run() {
-        if (done) return; done = true;
-        if (reduceMotion) { el.textContent = fmt(to); return; }
-        var start = null, DUR = 1200;
-        function frame(ts) {
-          if (start === null) start = ts;
-          var p = Math.min((ts - start) / DUR, 1);
-          var eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = fmt(to * eased);
-          if (p < 1) requestAnimationFrame(frame); else el.textContent = fmt(to);
-        }
-        requestAnimationFrame(frame);
-      }
-      if (!("IntersectionObserver" in window)) { run(); return; }
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { if (e.isIntersecting) { run(); io.disconnect(); } });
-      }, { threshold: 0.4 });
-      io.observe(el);
-    }
   })();
 
 })();

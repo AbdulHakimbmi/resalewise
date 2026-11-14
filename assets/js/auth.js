@@ -32,30 +32,41 @@
 
     // POST /api/login
     login: async function (email, password) {
-      var res = await fetch(BASE + "/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: password })
-      });
-      var data = await res.json().catch(function () { return {}; });
-      if (!res.ok) throw new Error(data.error || ("Login failed (" + res.status + ")"));
+      var data = await postJson("/api/login", { email: email, password: password });
       this.save(data.token, data.user);
       return data.user;
     },
 
     // POST /api/register
     register: async function (email, password, name) {
-      var res = await fetch(BASE + "/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: password, name: name })
-      });
-      var data = await res.json().catch(function () { return {}; });
-      if (!res.ok) throw new Error(data.error || ("Sign up failed (" + res.status + ")"));
+      var data = await postJson("/api/register", { email: email, password: password, name: name });
       this.save(data.token, data.user);
       return data.user;
     }
   };
+
+  // POST JSON and return the parsed body. Failures throw an Error whose
+  // message is safe to show on screen (server-provided text, or a plain
+  // sentence when the server can't be reached) — never "Failed to fetch".
+  async function postJson(path, payload) {
+    var res;
+    try {
+      res = await fetch(BASE + path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      throw new Error("Can’t reach the server. Check your connection and try again.");
+    }
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) {
+      var err = new Error(data.error || ("Something went wrong (" + res.status + "). Please try again."));
+      err.code = data.code; err.status = res.status; err.field = data.field;
+      throw err;
+    }
+    return data;
+  }
 
   // fetch() wrapper that attaches the bearer token. Use for protected calls.
   window.authFetch = function (path, opts) {
@@ -86,8 +97,8 @@
     if (Auth.isLoggedIn() && user) {
       var name = user.name || (user.email || "Account").split("@")[0];
       actions.innerHTML =
-        '<a class="text-btn" href="compare.html">♥ Shortlist</a>' +
-        '<a class="nav-user" href="account.html" title="Account settings">' + name + '</a>' +
+        '<a class="text-btn" href="compare.html">Shortlist</a>' +
+        '<a class="nav-user" href="account.html" title="Account settings">' + escapeHtml(name) + '</a>' +
         '<button class="primary-btn" id="logoutBtn" type="button">Log out</button>';
       var lo = document.getElementById("logoutBtn");
       if (lo) lo.addEventListener("click", function () {

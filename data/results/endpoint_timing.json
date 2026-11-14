@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-10-27T05:29:58+00:00",
+  "repeats": 5,
+  "results": [
+    {
+      "question": "Home: price history, 4-room, 20 years",
+      "live_ms": 234.4,
+      "view_ms": 7.4,
+      "speedup": 31.7,
+      "same_answer": true
+    },
+    {
+      "question": "Home: town ranking, 4-room, 24 months",
+      "live_ms": 48.2,
+      "view_ms": 5.8,
+      "speedup": 8.3,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: summary cards, 4-room, 24 months",
+      "live_ms": 86.6,
+      "view_ms": 3.2,
+      "speedup": 27.1,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: trend, 4-room, 24 months",
+      "live_ms": 34.4,
+      "view_ms": 5.3,
+      "speedup": 6.5,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: by flat type, all towns, 24 months",
+      "live_ms": 95.9,
+      "view_ms": 9.3,
+      "speedup": 10.3,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: price bands, 4-room, 24 months",
+      "live_ms": 20.6,
+      "view_ms": 2.6,
+      "speedup": 7.9,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: summary, 3-room, Bedok, 10 years",
+      "live_ms": 156.0,
+      "view_ms": 2.7,
+      "speedup": 57.8,
+      "same_answer": true
+    },
+    {
+      "question": "Insights: by flat type, all towns, 10 years",
+      "live_ms": 466.2,
+      "view_ms": 4.6,
+      "speedup": 101.3,
+      "same_answer": true
+    }
+  ],
+  "note": "median client-observed database milliseconds; HTTP cache not involved"
+}

@@ -1,0 +1,10 @@
+# Normalise line endings in the repository (LF); Git for Windows still checks
+# files out with CRLF if core.autocrlf is on.
+* text=auto
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
+*.woff2 binary
+*.docx binary
+*.pdf binary

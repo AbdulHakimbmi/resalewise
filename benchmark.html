@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="How ResaleWise SG splits the work between PostgreSQL and MongoDB, and a like-for-like timing comparison">
+    <meta name="theme-color" content="#0f1012">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ResaleWise SG">
+    <meta property="og:title" content="Under the hood · ResaleWise SG">
+    <meta property="og:description" content="Where ResaleWise SG gets its HDB resale data, how the value labels and score are calculated, and what they can't tell you.">
+    <meta property="og:image" content="assets/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ResaleWise SG — Singapore HDB resale prices, made clearer">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Under the hood · ResaleWise SG">
+    <meta name="twitter:description" content="Where ResaleWise SG gets its HDB resale data, how the value labels and score are calculated, and what they can't tell you.">
+    <meta name="twitter:image" content="assets/images/og-image.png">
+    <title>Under the hood · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
+        <section class="page-hero">
+            <figure class="page-photo"><img src="assets/images/towns/punggol.jpg" alt="HDB blocks beside the waterway in Punggol"><figcaption>Punggol</figcaption></figure>
+            <div class="kicker">Under the hood</div>
+            <h1>Two databases, <em>one question at a time.</em></h1>
+            <p>How ResaleWise splits the work between PostgreSQL and MongoDB, how we check that the two agree, and how fast each one answers exactly the same question.</p>
+        </section>
+        <section class="section" style="padding-top:10px">
+            <article class="card chart-card">
+                <div class="small-kicker">Architecture</div>
+                <h3 style="margin:6px 0 0">Each database does what it is best at</h3>
+                <div class="rwx-arch">
+                    <div>
+                        <h4>PostgreSQL <span class="rwx-muted" style="font-weight:500">· relational</span></h4>
+                        <ul>
+                            <li><b>985,219 sales</b> in 5 normalised tables (towns, flat types, models, blocks, transactions)</li>
+                            <li>Accounts and the shortlist: <b>users &harr; transactions</b> many-to-many through bookmarks</li>
+                            <li>CHECK constraints, foreign keys, NOT NULL, a <b>BEFORE UPDATE</b> and an <b>AFTER INSERT/UPDATE/DELETE</b> trigger</li>
+                            <li>Views and a materialized view of quarterly medians; <b>window functions</b> (RANK, RANGE frames)</li>
+                            <li>PostGIS: block locations, stations, distances (the cross-check)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>MongoDB <span class="rwx-muted" style="font-weight:500">· documents</span></h4>
+                        <ul>
+                            <li><b>Reviews</b>: free text and tags, a <code>$jsonSchema</code> validator, a text index, <code>$facet</code> summaries</li>
+                            <li><b>Stations</b> as GeoJSON MultiPoints (one point per exit) and <b>blocks</b> as Points, with 2dsphere indexes</li>
+                            <li><code>$geoNear</code> finds every block&rsquo;s nearest station; the results flow back to PostgreSQL</li>
+                            <li>A denormalised copy of the sales, so both engines can be timed on the same data</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="rwx-note"><b>Data flow:</b> HDB CSV &rarr; PostgreSQL (scripts/load.py) &rarr; OneMap geocoding &rarr; MongoDB <code>blocks_geo</code> + <code>places</code> &rarr; <code>$geoNear</code> &rarr; PostgreSQL <code>block_features</code> &rarr; price-driver analysis. Every distance is recomputed in PostGIS and compared.</p>
+            </article>
+
+            <article class="card chart-card" style="margin-top:18px">
+                <div class="small-kicker">Try it</div>
+                <h3 style="margin:6px 0 0">Ask both databases the same question</h3>
+                <p class="rwx-muted" style="margin:6px 0 0">Runs one search on PostgreSQL (with joins) and on MongoDB (one collection, no joins), then checks the answers are identical.</p>
+                <form class="rwx-engine-form" id="rwxEngineForm">
+                    <div><label for="egTown">Town</label><select id="egTown"><option value="">Any town</option></select></div>
+                    <div><label for="egType">Flat type</label><select id="egType"><option value="">Any flat type</option></select></div>
+                    <div><label for="egBudget">Max budget</label><input id="egBudget" inputmode="numeric" placeholder="e.g. 700,000"></div>
+                    <div><label for="egLease">Min lease</label><select id="egLease"><option value="">Any</option><option value="60">60 years</option><option value="70">70 years</option><option value="80">80 years</option></select></div>
+                    <button class="primary-btn" type="submit">Compare →</button>
+                </form>
+                <div class="rwx-engine-out" id="rwxEngineOut" aria-live="polite"></div>
+            </article>
+
+            <article class="card chart-card" style="margin-top:18px" id="rwxBench" aria-live="polite"><p class="side-hint">Loading benchmark results&hellip;</p></article>
+
+            <article class="card chart-card" style="margin-top:18px">
+                <div class="small-kicker">How the timings were taken</div>
+                <h3 style="margin:6px 0 0">A fair test, written down before the numbers</h3>
+                <div class="rwx-arch">
+                    <div><h4>Same answers first</h4><ul>
+                        <li>Every query is run on 20 parameter sets and the results are compared before anything is timed.</li>
+                        <li>Three set-ups: PostgreSQL as the app uses it (joins), PostgreSQL with one flat table, and MongoDB. The flat table separates the <b>data-model</b> effect from the <b>engine</b> effect.</li>
+                        <li>Matching indexes on both sides (Equality &rarr; Sort &rarr; Range order).</li></ul></div>
+                    <div><h4>Then the clock</h4><ul>
+                        <li>Fixed random seed; the same parameters replayed for each set-up, in rotating order.</li>
+                        <li>Warm-up runs discarded; median, p95, p99 and a bootstrap 95% interval for the median.</li>
+                        <li>Throughput at 1, 4 and 8 threads; query plans from <code>EXPLAIN ANALYZE</code> and <code>explain("executionStats")</code>.</li></ul></div>
+                </div>
+            </article>
+
+            <article class="card chart-card" style="margin-top:18px" id="rwxValidation" aria-live="polite"><p class="side-hint">Loading the geospatial checks&hellip;</p></article>
+        </section>
+        </main>
+        <footer class="footer">
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
+    </div>
+</body>
+
+</html>

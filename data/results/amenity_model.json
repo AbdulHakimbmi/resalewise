@@ -1,0 +1,135 @@
+{
+  "generated_at": "2026-11-03T07:03:52+00:00",
+  "since": "2017-01-01",
+  "test_months": 12,
+  "seed": 2003,
+  "kinds": [
+    "childcare",
+    "gym",
+    "hawker",
+    "park",
+    "primary_school",
+    "secondary_school"
+  ],
+  "mrt_feature": true,
+  "target": "log(price per sqm / median price per sqm of the same flat type in the same quarter)",
+  "method": "HistGradientBoostingRegressor, fixed settings, trained on older sales and scored on the latest months it never saw.",
+  "train_sales": 216658,
+  "test_sales": 23970,
+  "train_to": "2025-09",
+  "test_from": "2025-10",
+  "test_to": "2026-09",
+  "naive": {
+    "label": "Median of the same town and flat type (no model)",
+    "mape_pct": 12.389,
+    "median_ape_pct": 9.11,
+    "rmse_log": 0.18036,
+    "r2": 0.3696
+  },
+  "models": [
+    {
+      "id": "attributes",
+      "label": "Flat attributes + town",
+      "n_features": 6,
+      "mape_pct": 5.588,
+      "median_ape_pct": 4.417,
+      "rmse_log": 0.0748,
+      "r2": 0.8916,
+      "lift_vs_attributes_pct": 0.0
+    },
+    {
+      "id": "mrt",
+      "label": "+ distance to MRT/LRT",
+      "n_features": 7,
+      "mape_pct": 4.809,
+      "median_ape_pct": 3.776,
+      "rmse_log": 0.06435,
+      "r2": 0.9198,
+      "lift_vs_attributes_pct": 13.94
+    },
+    {
+      "id": "amenities",
+      "label": "+ 6 kinds of nearby places",
+      "n_features": 18,
+      "mape_pct": 4.418,
+      "median_ape_pct": 3.495,
+      "rmse_log": 0.05852,
+      "r2": 0.9336,
+      "lift_vs_attributes_pct": 20.94
+    },
+    {
+      "id": "full",
+      "label": "+ MRT and amenities",
+      "n_features": 19,
+      "mape_pct": 4.339,
+      "median_ape_pct": 3.442,
+      "rmse_log": 0.05766,
+      "r2": 0.9356,
+      "lift_vs_attributes_pct": 22.35
+    }
+  ],
+  "importance_model": "full",
+  "importance": [
+    {
+      "group": "remaining lease",
+      "increase_pct_points": 12.276
+    },
+    {
+      "group": "town",
+      "increase_pct_points": 11.627
+    },
+    {
+      "group": "storey",
+      "increase_pct_points": 1.988
+    },
+    {
+      "group": "flat type",
+      "increase_pct_points": 1.985
+    },
+    {
+      "group": "floor area",
+      "increase_pct_points": 1.96
+    },
+    {
+      "group": "MRT/LRT distance",
+      "increase_pct_points": 1.82
+    },
+    {
+      "group": "flat model",
+      "increase_pct_points": 0.928
+    },
+    {
+      "group": "gym",
+      "increase_pct_points": 0.503
+    },
+    {
+      "group": "hawker",
+      "increase_pct_points": 0.411
+    },
+    {
+      "group": "park",
+      "increase_pct_points": 0.234
+    },
+    {
+      "group": "secondary_school",
+      "increase_pct_points": 0.198
+    },
+    {
+      "group": "primary_school",
+      "increase_pct_points": 0.188
+    },
+    {
+      "group": "childcare",
+      "increase_pct_points": 0.121
+    }
+  ],
+  "caveat": "Associations in past sales, not causes. Surroundings are as of today's map; straight-line distances; renovation, view and facing are not in the data.",
+  "premium": {
+    "months": 24,
+    "blocks": 4481,
+    "p10_pct": -5.55,
+    "median_pct": -0.01,
+    "p90_pct": 8.17,
+    "meaning": "Model-estimated price difference versus a block with typical surroundings, same flat, town and quarter."
+  }
+}

@@ -1,0 +1,10 @@
+# Apache / XAMPP only (ignored by other servers).
+
+# Never serve source, config or docs as downloadable files — app.py contains
+# connection settings.
+<FilesMatch "\.(py|pyc|txt|md|yaml|yml|sql|toml|env)$|^Procfile$">
+    Require all denied
+</FilesMatch>
+
+# Styled 404 page. Adjust the path if the project isn't at /resalewise-sg/.
+ErrorDocument 404 /resalewise-sg/404.html

@@ -1,4 +1,16 @@
 __pycache__/
 *.pyc
+.pytest_cache/
 .vscode/
 *.log
+.env
+.env.txt
+venv/
+.venv/
+.DS_Store
+# Data: the sales CSV is ~200 MB and goes in the submission zip, not in Git. The small open amenity files in data/raw/ are committed.
+resale_clean.csv
+bench/results/raw/
+
+# Full-size originals of the town pictures (resized copies are used by the site)
+assets/images/towns/_originals/
