@@ -60,7 +60,7 @@
                             <li><b>985,219 sales</b> in 5 normalised tables (towns, flat types, models, blocks, transactions)</li>
                             <li>Accounts and the shortlist: <b>users &harr; transactions</b> many-to-many through bookmarks</li>
                             <li>CHECK constraints, foreign keys, NOT NULL, a <b>BEFORE UPDATE</b> and an <b>AFTER INSERT/UPDATE/DELETE</b> trigger</li>
-                            <li>Views and a materialized view of quarterly medians; <b>window functions</b> (RANK, RANGE frames)</li>
+                            <li>Views and three materialized views of precomputed medians; <b>window functions</b> (RANK, RANGE frames)</li>
                             <li>PostGIS: block locations, stations, distances (the cross-check)</li>
                         </ul>
                     </div>
@@ -68,7 +68,7 @@
                         <h4>MongoDB <span class="rwx-muted" style="font-weight:500">· documents</span></h4>
                         <ul>
                             <li><b>Reviews</b>: free text and tags, a <code>$jsonSchema</code> validator, a text index, <code>$facet</code> summaries</li>
-                            <li><b>Stations</b> as GeoJSON MultiPoints (one point per exit) and <b>blocks</b> as Points, with 2dsphere indexes</li>
+                            <li><b>Stations</b> as GeoJSON MultiPoints (one point per exit), <b>blocks</b> and <b>amenities</b> as Points, with 2dsphere indexes</li>
                             <li><code>$geoNear</code> finds every block&rsquo;s nearest station; the results flow back to PostgreSQL</li>
                             <li>A denormalised copy of the sales, so both engines can be timed on the same data</li>
                         </ul>
@@ -104,7 +104,8 @@
                     <div><h4>Then the clock</h4><ul>
                         <li>Fixed random seed; the same parameters replayed for each set-up, in rotating order.</li>
                         <li>Warm-up runs discarded; median, p95, p99 and a bootstrap 95% interval for the median.</li>
-                        <li>Throughput at 1, 4 and 8 threads; query plans from <code>EXPLAIN ANALYZE</code> and <code>explain("executionStats")</code>.</li></ul></div>
+                        <li>Throughput at 1, 2, 4 and 8 threads, connections opened before the clock starts; query plans from <code>EXPLAIN ANALYZE</code> and <code>explain("executionStats")</code>.</li>
+                        <li>Single-row writes timed twice: once waiting for the disk on both engines, once not, so both make the same promise.</li></ul></div>
                 </div>
             </article>
 

@@ -51,6 +51,7 @@
 .map-wrap .rwx-map { position: absolute; inset: 0; min-height: 0; }
 .leaflet-container { font: inherit; background: var(--bg); }
 .leaflet-container a { color: var(--accent); }
+.leaflet-container .leaflet-control-attribution a { color: var(--ink); }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: var(--bg); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
@@ -158,7 +159,7 @@
 .rwx-hist .t i { position: absolute; inset: 0 auto 0 0; background: var(--chart-1); }
 .rwx-tags { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
 .rwx-search { display: flex; gap: 8px; margin-top: 12px; }
-.rwx-search input { flex: 1; padding: 10px 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+.rwx-search input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
 .rwx-owner { display: flex; gap: 8px; margin-top: 10px; }
 .rwx-owner button, .rwx-linkbtn {
     background: none; border: 1px solid var(--line); color: var(--ink); padding: 5px 12px;
@@ -244,6 +245,7 @@
 :root[data-theme="light"] .stats { background: none; }
 
 /* Review form: town dropdown fills the card and lines up with the fields below it. */
+.review-layout > * { min-width: 0; }   /* stops the form overflowing on phones */
 .review-form .field { display: grid; grid-template-columns: 1fr; justify-content: stretch; justify-items: stretch; text-align: left; }
 .review-form .field select { width: 100% !important; max-width: none !important; justify-self: stretch; }
 .review-form .field label { justify-self: start; text-align: left; }
@@ -323,6 +325,8 @@ select option { background-color: var(--surface); color: var(--ink); }
 .rwx-blk-act { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 10px !important; }
 .rwx-prem { font-weight: 600; }
 .rwx-link { font-weight: 600; color: var(--accent); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; margin-block: -12px; }
+:root[data-theme="light"] .rwx-link { color: #b80d62; }   /* accent is too light on the grey cards */
+.rwx-chip .rwx-muted { color: inherit; }
 .rwx-link:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 .rwx-cell { display: grid; gap: 2px; align-content: start; }
 .rwx-cell b { font-size: var(--step-body); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
@@ -374,3 +378,10 @@ select option { background-color: var(--surface); color: var(--ink); }
 .rwx-places li { display: flex; justify-content: space-between; gap: 12px; padding: 0; border: 0; }
 .rwx-places li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
 .rwx-places li > span:last-child { white-space: nowrap; }
+
+/* show / hide password */
+.pw-wrap { position: relative }
+.pw-wrap input { padding-right: 46px }
+.pw-toggle { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); display: grid; place-items: center; width: 36px; height: 36px; border: 0; background: transparent; color: var(--muted); cursor: pointer }
+.pw-toggle:hover { color: var(--ink) }
+.pw-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }

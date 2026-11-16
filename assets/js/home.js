@@ -1,5 +1,5 @@
 /*
-  ResaleWise SG — homepage only: hero photo crossfade and the live price check.
+  ResaleWise SG — homepage only: the hero photo and the live price check.
   Reveals, the town rotator, hero search, scrollytelling and the live band
   stay in ui-polish.js. Load after api.js.
 */
@@ -12,20 +12,39 @@
   var money = function (n) { return "$" + Math.round(n).toLocaleString("en-SG"); };
   var month = function (iso) { return RW.formatMonth(iso); };
 
-  /* ---------- hero: slow crossfade between three estates ---------- */
-  (function crossfade() {
-    var fade = $("[data-fade]");
-    if (!fade || still) return;
-    var imgs = $$("img", fade), cap = $("[data-fade-caption]", fade);
-    var names = ["Tampines", "Tanglin Halt, Queenstown", "Toa Payoh"];
-    var at = 0;
-    setInterval(function () {
-      if (document.hidden) return;
-      imgs[at].classList.remove("is-on");
-      at = (at + 1) % imgs.length;
-      imgs[at].classList.add("is-on");
-      cap.textContent = names[at];
-    }, 6500);
+  /* ---------- hero: the photo follows the town named in the headline ---------- */
+  (function townPhoto() {
+    var fade = $("[data-fade]"), word = $("[data-town-rotator]");
+    if (!fade || !word || still) return;
+    var layers = $$("img", fade), cap = $("[data-fade-caption]", fade);
+    var HOME = {                       // portrait photos for the home page
+      "Tampines": "home/tampines-hdb-4.jpg",
+      "Queenstown": "home/publichousing-tanglinhalt-singapore-20090317.jpg",
+      "Toa Payoh": "home/toa-payoh-hdb-3.jpg"
+    };
+    function src(town) { return "assets/images/" + (HOME[town] || "towns/" + town.toLowerCase().replace(/[^a-z]+/g, "-") + ".jpg"); }
+    function warm(town) { if (town) { var im = new Image(); im.src = src(town); } }
+    var on = 0, wanted = null;
+    function show(town) {
+      wanted = town;
+      var next = layers[1 - on], prev = layers[on];
+      var ready = function () {
+        if (wanted !== town) return;                 // stale, a newer town was requested
+        prev.classList.add("was-on"); prev.classList.remove("is-on");
+        next.classList.remove("was-on"); next.classList.add("is-on");
+        next.alt = "HDB blocks in " + town;
+        cap.textContent = town;
+        on = 1 - on;
+        setTimeout(function () { prev.classList.remove("was-on"); }, 800);
+        warm(word.dataset.next);
+      };
+      next.loading = "eager";
+      next.src = src(town);
+      // decode before fading so it doesn't stutter. If it fails the old photo stays
+      next.decode().then(ready, function () {});
+    }
+    document.addEventListener("rw:town", function (e) { show(e.detail); });
+    warm(word.dataset.next);
   })();
 
   /* ---------- the live check: every window is one sale, cheapest on the ground floor ---------- */

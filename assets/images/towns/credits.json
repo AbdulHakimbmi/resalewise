@@ -560,5 +560,47 @@
    "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
   ],
   "saved": "2026-10-25T14:03:06.299Z"
+ },
+ {
+  "file": "assets/images/towns/bukit-timah.jpg",
+  "media": "image",
+  "ref": "supplied:resalewise-team",
+  "title": "Illustrative view of an HDB estate (Bukit Timah)",
+  "creator": "the ResaleWise team",
+  "date": null,
+  "license": "Illustrative image",
+  "licenseCode": "illustration",
+  "creditRequired": false,
+  "page": "",
+  "via": "ResaleWise SG",
+  "width": 960,
+  "height": 1120,
+  "bytes": 306263,
+  "credit": "Illustrative view of an HDB estate, supplied by the ResaleWise team (not a photograph of Bukit Timah)",
+  "notes": [
+   "Stands in for a photograph until one with a free licence is added."
+  ],
+  "saved": "2026-11-05T00:00:00.000Z"
+ },
+ {
+  "file": "assets/images/towns/lim-chu-kang.jpg",
+  "media": "image",
+  "ref": "supplied:resalewise-team",
+  "title": "Illustrative view of an HDB estate (Lim Chu Kang)",
+  "creator": "the ResaleWise team",
+  "date": null,
+  "license": "Illustrative image",
+  "licenseCode": "illustration",
+  "creditRequired": false,
+  "page": "",
+  "via": "ResaleWise SG",
+  "width": 928,
+  "height": 1152,
+  "bytes": 308645,
+  "credit": "Illustrative view of an HDB estate, supplied by the ResaleWise team (not a photograph of Lim Chu Kang)",
+  "notes": [
+   "Stands in for a photograph until one with a free licence is added."
+  ],
+  "saved": "2026-11-05T00:00:00.000Z"
  }
 ]

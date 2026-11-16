@@ -5,7 +5,7 @@
   the page exactly as it was when it doesn't (e.g. before the geospatial
   pipeline has been run, the original map embed stays).
 
-    RWFeatures.details(record)      map with nearest stations + "What drives this price?"
+    RWFeatures.details(record)      map with nearest stations + "What goes with a higher price?"
     RWFeatures.nearby(record)       "What's nearby": parks, hawker centres, gyms, childcare, schools
     RWFeatures.matchPage()          "Match my priorities": rank blocks by the weights you set
     RWFeatures.townMap(town)        blocks coloured by price per sqm + stations
@@ -224,7 +224,7 @@
     const box = document.createElement("section");
     box.className = "rwx-drivers";
     box.setAttribute("aria-labelledby", "driversTitle");
-    let html = `<div class="small-kicker">Matched comparison</div><h3 id="driversTitle">What drives this price?</h3>
+    let html = `<div class="small-kicker">Matched comparison</div><h3 id="driversTitle">What goes with a higher price?</h3>
       <p class="rwx-muted" style="margin:4px 0 0">${esc(p.definition || "")} — <b>${(p.n || 0).toLocaleString("en-SG")}</b> sales.</p>`;
     if (p.n) {
       const pricier = p.pct_cheaper_than_this;
@@ -589,7 +589,7 @@
       <article class="card rwx-danger-zone" style="margin-top:18px"><div class="small-kicker">Danger zone</div><h3 style="margin:6px 0 0">Delete your account</h3>
         <p class="rwx-muted" style="margin:6px 0 0">This permanently removes your account and shortlist. Reviews you wrote stay up, credited to “Former member”.</p>
         <form id="rwxDelete" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
-          <input type="password" id="rwxDelPw" autocomplete="current-password" placeholder="Confirm with your password" required
+          <input type="password" id="rwxDelPw" autocomplete="current-password" placeholder="Confirm with your password" aria-label="Your password, to confirm deleting the account" required
             style="flex:1;min-width:220px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
           <button class="rwx-danger" id="rwxDelBtn" type="submit">Delete account</button></form>
         <p class="rwx-muted" id="rwxDelMsg" role="status" style="margin:10px 0 0;font-size:.85rem"></p></article>`;
@@ -637,6 +637,7 @@
     if (c.id === "V4") big = m.agreement_pct_excl_ties != null ? m.agreement_pct_excl_ties + "% same nearest station" : "";
     if (c.id === "V5") big = m.probes != null ? (m.probes - m.failed) + " / " + m.probes + " probes behave" : "";
     if (c.id === "V6") big = c.status === "pass" ? "identical on rebuild" : "";
+    if (c.id === "V7") big = m.counts_identical_same_sphere_pct != null ? m.counts_identical_same_sphere_pct + "% of amenity counts match" : "";
     return `<div class="rwx-check"><span class="rwx-badge ${esc(c.status)}">${esc(c.status)}</span><h4>${esc(c.id)} · ${esc(c.name)}</h4>
       <p>${esc(c.criterion)}</p><span class="big">${esc(big)}</span></div>`;
   }
@@ -651,7 +652,7 @@
         const m = v4.metrics;
         extra = `<p class="rwx-note">MongoDB and PostGIS agree on the nearest station for <b>${m.agreement_pct_excl_ties}%</b> of blocks. Their distances differ by at most <b>${m.rel_diff_vs_postgis_sphere.max_pct}%</b> on a sphere (the two radii differ by ${m.radius_ratio_pct}%) and <b>${m.rel_diff_vs_postgis_spheroid.max_pct}%</b> against the WGS84 spheroid; ${m.one_km_band_flips} blocks change their “within 1 km” answer between the two earth models.</p>`;
       }
-      el.innerHTML = `<div class="rwx-section-title"><h3>Map data checks ${sampleBadge(d)}</h3><span class="rwx-muted" style="font-size:.8rem">${esc(d.label || d.generated_at || "")}</span></div>
+      el.innerHTML = `<div class="rwx-section-title"><h3>Map data checks ${sampleBadge(d)}</h3><span class="rwx-muted" style="font-size:.8rem">${esc(d.label || (d.generated_at ? "Run " + day(d.generated_at) : ""))}</span></div>
         <div class="rwx-checks">${(d.checks || []).map(checkCard).join("")}</div>${extra}`;
     } catch (_) {
       el.innerHTML = `<p class="rwx-note">The geospatial checks appear here once <code>scripts/validate_geo.py</code> has been run.</p>`;
@@ -663,6 +664,9 @@
   };
 
   const CFG_LABEL = { postgres: "PostgreSQL (joins)", postgres_flat: "PostgreSQL (flat)", mongodb: "MongoDB" };
+  const GEO_WORKLOADS = ["W4", "W5"];   // PostGIS queries: no joins
+  const cfgLabel = (c, wid) => (c === "postgres" && GEO_WORKLOADS.includes(wid) ? "PostgreSQL (PostGIS)" : CFG_LABEL[c] || c);
+  const day = iso => { const t = new Date(iso); return isNaN(t) ? "" : t.toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }); };
 
   function workloadBlock(w) {
     const cfgs = w.configs.filter(c => w.latency[c]);
@@ -673,12 +677,46 @@
       <span class="rwx-badge ${ok ? "pass" : "warn"}" title="Answers compared before timing">same answers ${eq.passed}/${eq.checked}</span></div>
       <div class="rwx-bars">${cfgs.map(c => {
         const s = w.latency[c];
-        return `<div class="rwx-brow"><span class="name">${CFG_LABEL[c] || c}</span><span class="track">
+        return `<div class="rwx-brow"><span class="name">${cfgLabel(c, w.id)}</span><span class="track">
           <span class="fill cfg-${c}" style="width:${(100 * s.p50_ms / max).toFixed(1)}%"></span>
           <span class="whisk" style="left:${(100 * s.p50_ci95[0] / max).toFixed(2)}%;width:${Math.max(0.6, 100 * (s.p50_ci95[1] - s.p50_ci95[0]) / max).toFixed(2)}%"></span></span>
           <span class="ms" title="p95 ${fmtMs(s.p95_ms)} · p99 ${fmtMs(s.p99_ms)}">${fmtMs(s.p50_ms)}</span></div>`;
       }).join("")}</div>
-      <p class="rwx-muted" style="font-size:.76rem;margin:8px 0 0">Median of ${w.latency[cfgs[0]].n} runs (whisker: 95% CI) · p95: ${cfgs.map(c => (CFG_LABEL[c] || c) + " " + fmtMs(w.latency[c].p95_ms)).join(" · ")}</p></div>`;
+      <p class="rwx-muted" style="font-size:.76rem;margin:8px 0 0">Median of ${w.latency[cfgs[0]].n} runs (whisker: 95% CI) · p95: ${cfgs.map(c => cfgLabel(c, w.id) + " " + fmtMs(w.latency[c].p95_ms)).join(" · ")}</p></div>`;
+  }
+
+  // W7 single-row writes and the storage each data model takes
+  function writesBlock(d) {
+    const w = d.writes, st = d.storage;
+    if (!w || !w.modes) return "";
+    const p50 = (mode, op, c) => (((w.modes[mode] || {})[op] || {})[c] || {}).p50_ms;
+    const rows = ["durable", "fast"].flatMap(mode => w.ops.map(op => `<tr><td>${esc(op)}</td><td>${mode === "durable" ? "yes" : "no"}</td>
+      <td>${fmtMs(p50(mode, op, "postgres"))}</td><td>${fmtMs(p50(mode, op, "mongodb"))}</td></tr>`)).join("");
+    const mb = x => (x == null ? "–" : x.toLocaleString("en-SG") + " MB");
+    const kept = { postgres: "5 tables, uncompressed", postgres_flat: "1 table, uncompressed", mongodb: "1 collection, compressed" };
+    const strows = st ? ["postgres", "postgres_flat", "mongodb"].map(c => st[c] ? `<tr><td>${CFG_LABEL[c] || c}</td><td>${kept[c]}</td>
+      <td>${mb(st[c].data_mb)}</td><td>${mb(st[c].index_mb)}</td></tr>` : "").join("") : "";
+    return `<div class="small-kicker" style="margin-top:22px">W7 · one sale inserted, updated and deleted, median of each, committed</div>
+      <div class="rwx-table-wrap"><table class="rwx-table"><thead><tr><th>Write</th><th>Waits for disk</th><th>PostgreSQL</th><th>MongoDB</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+      <p class="rwx-note">Same answers after every step in ${w.equivalence ? w.equivalence.passed + " of " + w.equivalence.checked : "–"} checks. ${esc(w.note || "")}</p>
+      ${strows ? `<div class="small-kicker" style="margin-top:18px">Storage on disk</div>
+      <div class="rwx-table-wrap"><table class="rwx-table"><thead><tr><th>Data model</th><th>Stored as</th><th>Data</th><th>Indexes</th></tr></thead>
+      <tbody>${strows}</tbody></table></div><p class="rwx-note">${esc(st.note || "")}</p>` : ""}`;
+  }
+
+  // operations per second at each thread count, one row per workload and set-up
+  function throughputTable(d) {
+    const rows = {}, threads = [...new Set((d.concurrency || []).map(c => c.threads))].sort((a, b) => a - b);
+    (d.concurrency || []).forEach(c => { (rows[c.workload + "|" + c.config] = rows[c.workload + "|" + c.config] || {})[c.threads] = c; });
+    if (!threads.length) return "";
+    const body = Object.entries(rows).map(([k, by]) => {
+      const [wid, cfg] = k.split("|");
+      return `<tr><td>${esc(wid)}</td><td>${cfgLabel(cfg, wid)}</td>${threads.map(n => `<td>${by[n] ? Math.round(by[n].ops_per_s).toLocaleString("en-SG") : "–"}</td>`).join("")}</tr>`;
+    }).join("");
+    return `<div class="small-kicker" style="margin-top:22px">Throughput · operations per second, 10 s per step</div>
+      <div class="rwx-table-wrap"><table class="rwx-table"><thead><tr><th>Workload</th><th>Set-up</th>${threads.map(n => `<th>${n} thread${n > 1 ? "s" : ""}</th>`).join("")}</tr></thead>
+      <tbody>${body}</tbody></table></div>`;
   }
 
   RWF.benchmarkPage = async function () {
@@ -689,17 +727,19 @@
         const env = d.environment || {};
         const bl = d.bulk_load || {};
         const ms = d.median_semantics || {};
-        const conc = (d.concurrency || []).filter(c => c.threads === 8);
+        const box = ((env.containers || {})["resalewise-postgres"] || {}).cpus;
         res.innerHTML = `<div class="rwx-section-title"><div><div class="small-kicker">Measured</div><h3>Latency per query ${sampleBadge(d)}</h3></div>
             <span class="rwx-muted" style="font-size:.8rem">${esc(d.label || "")}</span></div>
-          <p class="rwx-muted" style="margin:6px 0 0;font-size:.85rem">${esc(env.postgres || "")}${env.postgis ? " + PostGIS " + esc(env.postgis) : ""} · MongoDB ${esc(env.mongodb || "")} · ${esc(String(env.rows_postgres || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","))} rows · ${esc(env.cpu_count || "")} CPUs · ${esc(d.generated_at || "")}</p>
+          <p class="rwx-muted" style="margin:6px 0 0;font-size:.85rem">${esc(env.postgres || "")}${env.postgis ? " + PostGIS " + esc(env.postgis) : ""} · MongoDB ${esc(env.mongodb || "")} · ${esc(String(env.rows_postgres || "").replace(/\B(?=(\d{3})+(?!\d))/g, ","))} rows · ${box ? esc(box) + " CPUs per database" : esc(env.cpu_count || "") + " CPUs"} · run ${esc(day(d.generated_at))}</p>
           <div class="rwx-legend"><span><i class="sq cfg-postgres"></i>PostgreSQL, normalised (the app)</span><span><i class="sq cfg-postgres_flat"></i>PostgreSQL, one flat table</span><span><i class="sq cfg-mongodb"></i>MongoDB documents</span></div>
           ${(d.workloads || []).map(workloadBlock).join("")}
           <div class="rwx-grid2" style="margin-top:10px">
             <div class="rwx-check"><div class="small-kicker">W6 · bulk load</div><span class="big">${(bl.postgres_copy || {}).rows_per_s_median ? bl.postgres_copy.rows_per_s_median.toLocaleString("en-SG") : "–"} rows/s</span><p>PostgreSQL COPY</p>
               <span class="big">${(bl.mongodb_insert_many || {}).rows_per_s_median ? bl.mongodb_insert_many.rows_per_s_median.toLocaleString("en-SG") : "–"} docs/s</span><p>MongoDB insert_many (${(bl.rows || 0).toLocaleString("en-SG")} rows, median of ${((bl.postgres_copy || {}).runs || []).length} runs)</p></div>
-            <div class="rwx-check"><div class="small-kicker">Throughput, 8 threads</div>${conc.map(c => `<span class="big">${c.ops_per_s.toLocaleString("en-SG")} ops/s</span><p>${esc(c.workload)} · ${CFG_LABEL[c.config] || c.config} · p95 ${fmtMs(c.p95_ms)}</p>`).join("") || "<p>–</p>"}</div>
           </div>
+          ${throughputTable(d)}
+          ${box ? `<p class="rwx-note">Each database runs in its own container limited to <b>${box} CPUs</b>, so with more than ${box} threads the queries queue for CPU time: throughput then shows that limit, not the engine.</p>` : ""}
+          ${writesBlock(d)}
           ${ms.groups ? `<p class="rwx-note"><b>Two kinds of median.</b> MongoDB's <code>$median</code> returned exactly PostgreSQL's <code>PERCENTILE_DISC(0.5)</code> (an observed price) in every check, so the timings compare like with like. The app itself uses <code>PERCENTILE_CONT</code>, which averages the two middle prices; that gives a different number in ${ms.pct_groups}% of ${ms.groups.toLocaleString("en-SG")} town × type × quarter groups (up to ${ms.max_rel_diff_pct}%).</p>` : ""}`;
       } catch (_) {
         res.innerHTML = `<p class="rwx-note">Benchmark results appear here once <code>python bench/run_bench.py</code> has been run.</p>`;

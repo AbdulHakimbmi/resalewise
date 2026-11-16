@@ -60,13 +60,18 @@
 
     if (reduceMotion) return; // show a single static town, no cycling
 
-    var HOLD = 3000; // ms each town stays visible
+    el.dataset.next = order[1]; // so home.js can preload the next photo
+    var HOLD = 4500; // ms each town stays visible
     function next() {
+      if (document.hidden) return;
       el.classList.add("is-swapping"); // fade/slide out (CSS)
       setTimeout(function () {
         i = (i + 1) % order.length;
         el.textContent = order[i];
+        el.dataset.next = order[(i + 1) % order.length];
         el.classList.remove("is-swapping"); // fade/slide back in
+        // home.js swaps the hero photo on this
+        document.dispatchEvent(new CustomEvent("rw:town", { detail: order[i] }));
       }, 420); // must match CSS transition duration
     }
     setInterval(next, HOLD);

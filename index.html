@@ -47,7 +47,7 @@
     <title>ResaleWise SG — Singapore HDB resale prices, made clearer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/home.css">
     <script>
         // set the saved theme before paint so the page never flashes the wrong one
@@ -78,7 +78,6 @@
             <figure class="hero-photo" data-fade>
                 <img src="assets/images/home/tampines-hdb-4.jpg" width="1200" height="1600" alt="A row of red and cream HDB blocks along a road in Tampines" class="is-on">
                 <img src="assets/images/home/publichousing-tanglinhalt-singapore-20090317.jpg" width="1600" height="2133" alt="Two tall orange HDB blocks against a blue sky at Tanglin Halt, Queenstown" loading="lazy">
-                <img src="assets/images/home/toa-payoh-hdb-3.jpg" width="1200" height="1600" alt="Mint and yellow HDB blocks in Toa Payoh seen from below" loading="lazy">
                 <figcaption><span data-fade-caption>Tampines</span></figcaption>
             </figure>
         </section>
@@ -134,42 +133,38 @@
         <section class="town-section" id="townExplorer" aria-labelledby="towns-title">
             <div class="section-head" data-reveal>
                 <h2 id="towns-title">Explore by town</h2>
-                <p>Every town in the HDB resale record. Drag the row, use the arrow keys, or jump straight to a town, then tap it to open its prices, trends and reviews.</p>
+                <p>Every town in the HDB resale record. Drag the shelf, use the arrow keys, or jump straight to a town. Tap the front one for a quick look at its prices, then go on to the full town page.</p>
                 <div class="town-jump"><label for="townJump">Jump to town</label><select id="townJump"><option value="">Select a town</option><option value="ANG MO KIO">Ang Mo Kio</option><option value="BEDOK">Bedok</option><option value="BISHAN">Bishan</option><option value="BUKIT BATOK">Bukit Batok</option><option value="BUKIT MERAH">Bukit Merah</option><option value="BUKIT PANJANG">Bukit Panjang</option><option value="BUKIT TIMAH">Bukit Timah</option><option value="CENTRAL AREA">Central Area</option><option value="CHOA CHU KANG">Choa Chu Kang</option><option value="CLEMENTI">Clementi</option><option value="GEYLANG">Geylang</option><option value="HOUGANG">Hougang</option><option value="JURONG EAST">Jurong East</option><option value="JURONG WEST">Jurong West</option><option value="KALLANG/WHAMPOA">Kallang/Whampoa</option><option value="MARINE PARADE">Marine Parade</option><option value="PASIR RIS">Pasir Ris</option><option value="PUNGGOL">Punggol</option><option value="QUEENSTOWN">Queenstown</option><option value="SEMBAWANG">Sembawang</option><option value="SENGKANG">Sengkang</option><option value="SERANGOON">Serangoon</option><option value="TAMPINES">Tampines</option><option value="TOA PAYOH">Toa Payoh</option><option value="WOODLANDS">Woodlands</option><option value="YISHUN">Yishun</option></select></div>
             </div>
-            <div class="coverflow-shell" data-coverflow>
-                <div class="coverflow-stage" tabindex="0" role="region" aria-label="Explore Singapore HDB towns carousel">
-                    <article class="town-slide" data-town="ANG MO KIO" data-caption="4-room median $615,000, from 308 sales" tabindex="-1"><div class="town-info"><h3>Ang Mo Kio</h3></div></article>
-                    <article class="town-slide" data-town="BEDOK" data-caption="4-room median $599,000, from 533 sales" tabindex="-1"><div class="town-info"><h3>Bedok</h3></div></article>
-                    <article class="town-slide" data-town="BISHAN" data-caption="4-room median $788,000, from 205 sales" tabindex="-1"><div class="town-info"><h3>Bishan</h3></div></article>
-                    <article class="town-slide" data-town="BUKIT BATOK" data-caption="4-room median $630,000, from 616 sales" tabindex="-1"><div class="town-info"><h3>Bukit Batok</h3></div></article>
-                    <article class="town-slide" data-town="BUKIT MERAH" data-caption="4-room median $936,000, from 400 sales" tabindex="-1"><div class="town-info"><h3>Bukit Merah</h3></div></article>
-                    <article class="town-slide" data-town="BUKIT PANJANG" data-caption="4-room median $570,000, from 398 sales" tabindex="-1"><div class="town-info"><h3>Bukit Panjang</h3></div></article>
-                    <article class="town-slide" data-town="BUKIT TIMAH" data-caption="4-room median $930,000, from 19 sales" tabindex="-1"><div class="town-info"><h3>Bukit Timah</h3></div></article>
-                    <article class="town-slide" data-town="CENTRAL AREA" data-caption="4-room median $870,000, from 81 sales" tabindex="-1"><div class="town-info"><h3>Central Area</h3></div></article>
-                    <article class="town-slide" data-town="CHOA CHU KANG" data-caption="4-room median $555,000, from 518 sales" tabindex="-1"><div class="town-info"><h3>Choa Chu Kang</h3></div></article>
-                    <article class="town-slide" data-town="CLEMENTI" data-caption="4-room median $849,888, from 213 sales" tabindex="-1"><div class="town-info"><h3>Clementi</h3></div></article>
-                    <article class="town-slide" data-town="GEYLANG" data-caption="4-room median $718,880, from 253 sales" tabindex="-1"><div class="town-info"><h3>Geylang</h3></div></article>
-                    <article class="town-slide" data-town="HOUGANG" data-caption="4-room median $619,444, from 628 sales" tabindex="-1"><div class="town-info"><h3>Hougang</h3></div></article>
-                    <article class="town-slide" data-town="JURONG EAST" data-caption="4-room median $548,000, from 145 sales" tabindex="-1"><div class="town-info"><h3>Jurong East</h3></div></article>
-                    <article class="town-slide" data-town="JURONG WEST" data-caption="4-room median $535,888, from 623 sales" tabindex="-1"><div class="town-info"><h3>Jurong West</h3></div></article>
-                    <article class="town-slide" data-town="KALLANG/WHAMPOA" data-caption="4-room median $905,000, from 314 sales" tabindex="-1"><div class="town-info"><h3>Kallang/Whampoa</h3></div></article>
-                    <article class="town-slide" data-town="MARINE PARADE" data-caption="4-room median $660,000, from 41 sales" tabindex="-1"><div class="town-info"><h3>Marine Parade</h3></div></article>
-                    <article class="town-slide" data-town="PASIR RIS" data-caption="4-room median $635,000, from 323 sales" tabindex="-1"><div class="town-info"><h3>Pasir Ris</h3></div></article>
-                    <article class="town-slide" data-town="PUNGGOL" data-caption="4-room median $680,000, from 893 sales" tabindex="-1"><div class="town-info"><h3>Punggol</h3></div></article>
-                    <article class="town-slide" data-town="QUEENSTOWN" data-caption="4-room median $1,030,000, from 313 sales" tabindex="-1"><div class="town-info"><h3>Queenstown</h3></div></article>
-                    <article class="town-slide" data-town="SEMBAWANG" data-caption="4-room median $600,000, from 411 sales" tabindex="-1"><div class="town-info"><h3>Sembawang</h3></div></article>
-                    <article class="town-slide" data-town="SENGKANG" data-caption="4-room median $640,000, from 891 sales" tabindex="-1"><div class="town-info"><h3>Sengkang</h3></div></article>
-                    <article class="town-slide" data-town="SERANGOON" data-caption="4-room median $660,000, from 184 sales" tabindex="-1"><div class="town-info"><h3>Serangoon</h3></div></article>
-                    <article class="town-slide" data-town="TAMPINES" data-caption="4-room median $663,000, from 952 sales" tabindex="-1"><div class="town-info"><h3>Tampines</h3></div></article>
-                    <article class="town-slide" data-town="TOA PAYOH" data-caption="4-room median $1,000,000, from 443 sales" tabindex="-1"><div class="town-info"><h3>Toa Payoh</h3></div></article>
-                    <article class="town-slide" data-town="WOODLANDS" data-caption="4-room median $550,000, from 919 sales" tabindex="-1"><div class="town-info"><h3>Woodlands</h3></div></article>
-                    <article class="town-slide" data-town="YISHUN" data-caption="4-room median $555,000, from 834 sales" tabindex="-1"><div class="town-info"><h3>Yishun</h3></div></article>
-                </div><button class="coverflow-btn prev" type="button" aria-label="Previous town">←</button><button class="coverflow-btn next" type="button" aria-label="Next town">→</button>
-                <div class="town-caption">
-                    <div data-town-caption aria-live="polite"><strong>ANG MO KIO</strong><span>4-room median $615,000, from 308 sales</span></div>
-                    <div class="dots"><button class="dot active" aria-label="Go to Ang Mo Kio" type="button"></button><button class="dot" aria-label="Go to Bedok" type="button"></button><button class="dot" aria-label="Go to Bishan" type="button"></button><button class="dot" aria-label="Go to Bukit Batok" type="button"></button><button class="dot" aria-label="Go to Bukit Merah" type="button"></button><button class="dot" aria-label="Go to Bukit Panjang" type="button"></button><button class="dot" aria-label="Go to Bukit Timah" type="button"></button><button class="dot" aria-label="Go to Central Area" type="button"></button><button class="dot" aria-label="Go to Choa Chu Kang" type="button"></button><button class="dot" aria-label="Go to Clementi" type="button"></button><button class="dot" aria-label="Go to Geylang" type="button"></button><button class="dot" aria-label="Go to Hougang" type="button"></button><button class="dot" aria-label="Go to Jurong East" type="button"></button><button class="dot" aria-label="Go to Jurong West" type="button"></button><button class="dot" aria-label="Go to Kallang/Whampoa" type="button"></button><button class="dot" aria-label="Go to Marine Parade" type="button"></button><button class="dot" aria-label="Go to Pasir Ris" type="button"></button><button class="dot" aria-label="Go to Punggol" type="button"></button><button class="dot" aria-label="Go to Queenstown" type="button"></button><button class="dot" aria-label="Go to Sembawang" type="button"></button><button class="dot" aria-label="Go to Sengkang" type="button"></button><button class="dot" aria-label="Go to Serangoon" type="button"></button><button class="dot" aria-label="Go to Tampines" type="button"></button><button class="dot" aria-label="Go to Toa Payoh" type="button"></button><button class="dot" aria-label="Go to Woodlands" type="button"></button><button class="dot" aria-label="Go to Yishun" type="button"></button></div>
-                </div>
+            <div class="archive" data-archive>
+                <ul class="archive-data" aria-label="Towns and their 4-room median prices">
+                    <li class="archive-slide" data-town="ANG MO KIO" data-median="615000" data-count="308">Ang Mo Kio: 4-room median $615,000, from 308 sales</li>
+                    <li class="archive-slide" data-town="BEDOK" data-median="599000" data-count="533">Bedok: 4-room median $599,000, from 533 sales</li>
+                    <li class="archive-slide" data-town="BISHAN" data-median="788000" data-count="205">Bishan: 4-room median $788,000, from 205 sales</li>
+                    <li class="archive-slide" data-town="BUKIT BATOK" data-median="630000" data-count="616">Bukit Batok: 4-room median $630,000, from 616 sales</li>
+                    <li class="archive-slide" data-town="BUKIT MERAH" data-median="936000" data-count="400">Bukit Merah: 4-room median $936,000, from 400 sales</li>
+                    <li class="archive-slide" data-town="BUKIT PANJANG" data-median="570000" data-count="398">Bukit Panjang: 4-room median $570,000, from 398 sales</li>
+                    <li class="archive-slide" data-town="BUKIT TIMAH" data-median="930000" data-count="19">Bukit Timah: 4-room median $930,000, from 19 sales</li>
+                    <li class="archive-slide" data-town="CENTRAL AREA" data-median="870000" data-count="81">Central Area: 4-room median $870,000, from 81 sales</li>
+                    <li class="archive-slide" data-town="CHOA CHU KANG" data-median="555000" data-count="518">Choa Chu Kang: 4-room median $555,000, from 518 sales</li>
+                    <li class="archive-slide" data-town="CLEMENTI" data-median="849888" data-count="213">Clementi: 4-room median $849,888, from 213 sales</li>
+                    <li class="archive-slide" data-town="GEYLANG" data-median="718880" data-count="253">Geylang: 4-room median $718,880, from 253 sales</li>
+                    <li class="archive-slide" data-town="HOUGANG" data-median="619444" data-count="628">Hougang: 4-room median $619,444, from 628 sales</li>
+                    <li class="archive-slide" data-town="JURONG EAST" data-median="548000" data-count="145">Jurong East: 4-room median $548,000, from 145 sales</li>
+                    <li class="archive-slide" data-town="JURONG WEST" data-median="535888" data-count="623">Jurong West: 4-room median $535,888, from 623 sales</li>
+                    <li class="archive-slide" data-town="KALLANG/WHAMPOA" data-median="905000" data-count="314">Kallang/Whampoa: 4-room median $905,000, from 314 sales</li>
+                    <li class="archive-slide" data-town="MARINE PARADE" data-median="660000" data-count="41">Marine Parade: 4-room median $660,000, from 41 sales</li>
+                    <li class="archive-slide" data-town="PASIR RIS" data-median="635000" data-count="323">Pasir Ris: 4-room median $635,000, from 323 sales</li>
+                    <li class="archive-slide" data-town="PUNGGOL" data-median="680000" data-count="893">Punggol: 4-room median $680,000, from 893 sales</li>
+                    <li class="archive-slide" data-town="QUEENSTOWN" data-median="1030000" data-count="313">Queenstown: 4-room median $1,030,000, from 313 sales</li>
+                    <li class="archive-slide" data-town="SEMBAWANG" data-median="600000" data-count="411">Sembawang: 4-room median $600,000, from 411 sales</li>
+                    <li class="archive-slide" data-town="SENGKANG" data-median="640000" data-count="891">Sengkang: 4-room median $640,000, from 891 sales</li>
+                    <li class="archive-slide" data-town="SERANGOON" data-median="660000" data-count="184">Serangoon: 4-room median $660,000, from 184 sales</li>
+                    <li class="archive-slide" data-town="TAMPINES" data-median="663000" data-count="952">Tampines: 4-room median $663,000, from 952 sales</li>
+                    <li class="archive-slide" data-town="TOA PAYOH" data-median="1000000" data-count="443">Toa Payoh: 4-room median $1,000,000, from 443 sales</li>
+                    <li class="archive-slide" data-town="WOODLANDS" data-median="550000" data-count="919">Woodlands: 4-room median $550,000, from 919 sales</li>
+                    <li class="archive-slide" data-town="YISHUN" data-median="555000" data-count="834">Yishun: 4-room median $555,000, from 834 sales</li>
+                </ul>
             </div>
             <p class="town-note">Medians are for 4-room flats sold in the latest 12 months of data, to September 2026.</p>
         </section>
@@ -211,7 +206,7 @@
                     </li>
                     <li class="scrolly-step" data-step="1">
                         <h3>See the market shape</h3>
-                        <p>Charts show how prices are spread and how size drives value, so you know what normal looks like.</p>
+                        <p>Charts show how prices are spread and how price changes with size, so you know what normal looks like.</p>
                     </li>
                     <li class="scrolly-step" data-step="2">
                         <h3>Spot the value</h3>
@@ -369,7 +364,7 @@
     <script src="assets/js/ux.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/app.js"></script>
-    <script src="assets/js/town-coverflow.js"></script>
+    <script src="assets/js/town-archive.js"></script>
     <script src="assets/js/ui-polish.js"></script>
     <script src="assets/js/home.js"></script>
 </body>

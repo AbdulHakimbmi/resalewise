@@ -151,7 +151,7 @@ button, input, select { font: inherit; color: inherit; letter-spacing: inherit }
 }
 .theme-toggle:hover, .menu:hover { background: var(--surface-2) }
 .theme-toggle svg { width: 18px; height: 18px }
-.menu { display: none; width: auto; padding: 0 14px; font-weight: 600 }
+.menu { display: none; width: auto; padding: 0 14px; font-weight: 600; color: var(--ink) }
 .scroll-progress { position: fixed; top: 0; left: 0; right: 0; z-index: 30; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left }
 
 /* the window band: a row of filled cells, tinted by the theme */
@@ -187,11 +187,12 @@ h1 {
     line-height: .95;
     letter-spacing: -0.05em;
 }
-.town-rotator { display: block; white-space: nowrap; transition: opacity .42s var(--ease), transform .42s var(--ease) }
+.town-rotator { display: block; white-space: nowrap; font-family: "Instrument Serif", Georgia, serif !important; font-style: italic; font-weight: 400; font-size: 1.14em; letter-spacing: -.01em; color: var(--accent); transition: opacity .42s var(--ease), transform .42s var(--ease) }
 .town-rotator.is-swapping { opacity: 0; transform: translateY(.15em) }
 .hero-lead { margin-top: 36px; font-size: var(--step-lead); line-height: 1.3; max-width: 30ch }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px 28px; margin-top: 36px }
 .hero-photo { position: relative; overflow: hidden; background: var(--field-1); min-height: 480px }
+/* fade between photos (opacity + transform only, so it stays smooth) */
 .hero-photo img {
     position: absolute;
     inset: 0;
@@ -199,11 +200,13 @@ h1 {
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transform: scale(1.06);
-    transition: opacity 1.6s ease, transform 8s linear;
+    transform: scale(1.03);
+    will-change: opacity, transform;
 }
-.hero-photo img.is-on { opacity: 1; transform: scale(1) }
-.hero-photo figcaption { position: absolute; left: 0; bottom: 0; padding: 10px 16px; background: #000; color: #fff; font-size: var(--step-small); font-weight: 600 }
+.hero-photo img.is-on { z-index: 2; opacity: 1; transform: none; transition: opacity .7s ease-out, transform 1.4s cubic-bezier(.22, 1, .36, 1) }
+.hero-photo img.was-on { z-index: 1; opacity: 1; transform: none }
+@media (prefers-reduced-motion: reduce) { .hero-photo img.is-on { transition: none } }
+.hero-photo figcaption { position: absolute; z-index: 3; left: 0; bottom: 0; padding: 10px 16px; background: #000; color: #fff; font-size: var(--step-small); font-weight: 600 }
 
 /* hero search bar */
 .filter-card { margin: var(--gap) var(--m) 0; padding: 20px; background: var(--surface) }
@@ -291,68 +294,137 @@ h2 { font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spa
 .block-line span { position: absolute; right: 0; bottom: 10px; padding: 4px 10px; background: #d0106f; color: #fff; font-weight: 800; font-size: var(--step-small); font-variant-numeric: normal }
 .stage-note { align-self: stretch; min-height: 3em; font-weight: 600 }
 
-/* towns: the existing coverflow, restyled */
+/* towns: the section head and the jump-to-town select */
 .section-head { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gap); align-items: end }
 .section-head h2 { grid-column: 1 / 6 }
 .section-head p { grid-column: 6 / 10; max-width: 46ch }
 .town-jump { grid-column: 10 / 13; display: grid; gap: 6px; font-weight: 600; font-size: var(--step-small) }
 .town-jump select { min-height: 52px; padding: 0 14px; background: var(--surface); border: 0; border-radius: 0; font-size: var(--step-body) }
-.coverflow-shell { position: relative; overflow: hidden; margin-top: 40px; perspective: 1450px; touch-action: pan-y; background: var(--surface) }
-.coverflow-stage { position: relative; height: 480px; transform-style: preserve-3d; cursor: grab; user-select: none; outline: none }
-.coverflow-stage:active { cursor: grabbing }
-.town-slide {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: clamp(220px, 24vw, 340px);
-    aspect-ratio: 1 / 1.14;
-    overflow: hidden;
-    background: var(--field-1);
-    transform-style: preserve-3d;
-    will-change: transform, opacity;
+/* towns: the archive. A shelf of tapes on a curved arc; the middle one turns to show its photograph (assets/js/town-archive.js) */
+.archive {
+    position: relative; overflow: hidden; margin-top: 40px; padding-top: 24px; background: var(--surface);
+    --H: 380px; --ws: 64px; --d: 200px;                       /* set from the script; these are the no-script sizes */
+    -webkit-user-select: none; user-select: none;
 }
-.town-slide:nth-child(4n+2) { background: var(--field-2) }
-.town-slide:nth-child(4n+3) { background: var(--field-3) }
-.town-slide:nth-child(4n) { background: var(--field-4) }
-.town-slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; pointer-events: none }
-.town-slide.has-image img { display: block }
-/* no photo for this town yet: draw its block, a grid of windows on the field colour */
-.town-slide.no-image::before {
-    content: "";
-    position: absolute;
-    inset: 18% 16% 0;
-    /* black columns + black rows leave the field showing through as square windows */
-    background:
-        linear-gradient(90deg, #000 8px, transparent 0 20px, #000 0) 0 0 / 28px 28px,
-        linear-gradient(#000 8px, transparent 0 20px, #000 0) 0 0 / 28px 28px;
+.archive-data { list-style: none; margin: 0; padding: 20px; display: grid; gap: 6px }
+.archive.is-live .archive-data { display: none }
+
+/* the halftone words behind the shelf: a dot screen cut out of the letters */
+.archive-word {
+    position: absolute; top: 18px; z-index: 1; pointer-events: none;
+    font-size: clamp(88px, 12vw, 190px); font-weight: 800; line-height: 1; letter-spacing: .02em; writing-mode: vertical-rl;
+    color: transparent; -webkit-background-clip: text; background-clip: text;
+    background-color: color-mix(in srgb, var(--ink) 9%, transparent);
+    background-image: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--ink) 46%, transparent) 0 36%, transparent 40%);
+    background-size: 4px 4px;
 }
-.town-info { position: absolute; left: 0; bottom: 0; padding: 10px 14px; background: #000; color: #fff }
-.town-info h3 { font-size: var(--step-body); font-weight: 800; letter-spacing: -0.02em }
-.coverflow-btn {
-    position: absolute;
-    top: 240px;
-    z-index: 110;
-    width: 52px;
-    height: 52px;
-    border: 0;
-    background: var(--accent);
-    color: var(--accent-ink);
-    font-size: 22px;
-    font-weight: 800;
-    cursor: pointer;
-    transform: translateY(-50%);
-    transition: background-color .18s;
+.archive-word-l { left: 1.6vw }
+.archive-word-r { right: 1.6vw }
+.archive-floor {
+    position: absolute; left: 50%; z-index: 2; pointer-events: none; transform: translateX(-50%);
+    top: calc(24px + (var(--H) + 100px) / 2 + var(--H) * .37);
+    width: min(96%, calc(var(--H) * 3.6)); height: calc(var(--H) * .26);
+    background: radial-gradient(50% 50% at 50% 40%, rgb(0 0 0 / .34), rgb(0 0 0 / .1) 55%, transparent 72%);
 }
-.coverflow-btn:hover { background: var(--accent-hover) }
-.coverflow-btn.prev { left: 16px }
-.coverflow-btn.next { right: 16px }
-.town-caption { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 18px 20px; background: var(--surface-2) }
-.town-caption strong { display: block; font-size: var(--step-lead); font-weight: 800; letter-spacing: -0.03em }
-.town-caption span { display: block }
-.dots { display: flex; flex-wrap: wrap; gap: 4px; max-width: 520px }
-.dot { width: 14px; height: 14px; padding: 0; border: 0; background: var(--surface); cursor: pointer; transition: background-color .18s }
-.dot:hover { background: var(--muted) }
-.dot.active { background: var(--accent) }
+.archive-shelf { position: relative; z-index: 10; height: calc(var(--H) + 100px); perspective: 1400px; perspective-origin: 50% 50%; touch-action: pan-y; outline: none }
+.archive-shelf:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px }
+.archive-stage { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d }
+.archive-tape { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; will-change: transform }
+.archive-sp, .archive-cv { position: absolute; top: calc(var(--H) / -2); height: var(--H); backface-visibility: hidden; -webkit-backface-visibility: hidden }
+.archive-sp { overflow: hidden }          /* not on the cover: a clip on a face turned 90 degrees stops the browser hit-testing it, so it could not be tapped */
+.archive-sp::after, .archive-cv::after { content: ""; position: absolute; inset: 0; background: #000; pointer-events: none }
+.archive-sp::after { opacity: var(--sp, 0) }
+.archive-cv::after { opacity: var(--cv, 0) }
+/* the spine: a slice of the town's photograph, its name set upright along the spine, and a boxed tag */
+.archive-sp { width: var(--ws); left: calc(var(--ws) / -2); transform: translateZ(calc(var(--d) / 2)); display: flex; flex-direction: column; background: var(--surface-2); color: var(--ink); outline: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); outline-offset: -1px }
+.archive-sp-img, .archive-cv-img { background-color: var(--field-1); background-image: var(--photo, none); background-size: cover; background-position: var(--focus, 50% 50%); background-repeat: no-repeat }
+.archive-sp-img { flex: 0 0 38% }
+.archive-sp-name { flex: 1; min-height: 0; padding: 10px 0; margin: 0 auto; writing-mode: vertical-rl; transform: rotate(180deg); text-transform: uppercase; white-space: nowrap; overflow: hidden; font-weight: 800; letter-spacing: .02em; font-size: calc(var(--ws) * .3) }
+.archive-tag { margin: 0 auto 10px; padding: 2px 5px; border: 1px solid currentColor; font-weight: 700; letter-spacing: .08em; font-size: calc(var(--ws) * .16) }
+/* the cover: the photograph, turned to face you */
+.archive-cv { width: var(--d); left: calc(var(--d) / -2); transform: rotateY(90deg) translateZ(calc(var(--ws) / 2)); background: var(--field-1) }
+.archive-cv-img { position: absolute; inset: 0 }
+.archive-cv-top, .archive-cv-name { position: absolute; left: 0; z-index: 1; max-width: 100%; background: #000; color: #fff }
+.archive-cv-top { top: 0; padding: 6px 9px; font-size: clamp(9px, calc(var(--d) * .05), 13px); font-weight: 600 }
+.archive-cv-name { bottom: 0; padding: 8px 12px; font-size: clamp(14px, calc(var(--d) * .11), 24px); font-weight: 800; letter-spacing: -.02em }
+/* a town with no photograph yet: its field colour and the name */
+.archive-tape.is-bare .archive-cv-img { background-image: none }
+
+.archive-hint {
+    position: absolute; z-index: 20; display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border: 0;
+    top: calc(24px + (var(--H) + 100px) / 2 - var(--H) / 2 + 10px);
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: var(--step-small); cursor: pointer;
+    transform: translateX(-100%) scale(var(--on, 0)); transform-origin: right center;
+}
+.archive-hint span { width: 0; height: 0; border-left: 9px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent }
+.archive-hint:hover { background: var(--accent-hover) }
+.archive-hint:focus-visible, .archive-arrow:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px }
+.archive-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap }
+
+.archive-caption { position: relative; z-index: 10; display: grid; justify-items: center; gap: 10px; padding: 6px 72px 14px; text-align: center }
+.archive-mask { display: grid; justify-items: center; max-width: min(80vw, 640px); overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em }
+.archive-mask > span { grid-area: 1 / 1 }
+.archive-name { font-size: clamp(28px, 3.4vw, 46px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; color: var(--accent) }
+.archive-sub { font-size: var(--step-body); font-weight: 600 }
+.archive-meta { font-size: var(--step-small); color: var(--muted); min-height: 1.3em }
+.archive-rule { width: 18px; height: 1px; background: var(--accent) }
+.archive-arrow {
+    position: absolute; top: 0; width: 44px; height: 44px; display: grid; place-items: center; padding: 0;
+    border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; transition: background-color .18s, color .18s;
+}
+.archive-arrow:hover { background: var(--accent); color: var(--accent-ink) }
+.archive-prev { left: calc(50% - min(19vw, 250px) - 22px) }
+.archive-next { left: calc(50% + min(19vw, 250px) - 22px) }
+
+/* the price ruler: the dot rides to the median of the town in front */
+.archive-ruler { position: relative; z-index: 10; height: 46px; margin: 4px 36px 14px; cursor: pointer }
+.archive-ruler[hidden] { display: none }
+.archive-ruler-line { position: absolute; left: 0; right: 0; top: 12px; height: 1px; background: var(--accent); opacity: .75 }
+.archive-ruler-ticks span { position: absolute; top: 12px; width: 1px; background: var(--accent) }
+.archive-ruler-ticks .maj { height: 13px; opacity: .75 }
+.archive-ruler-ticks .min { height: 7px; opacity: .4 }
+.archive-ruler-ticks em { position: absolute; top: 19px; left: 0; transform: translateX(-50%); font-style: normal; font-size: 11px; font-weight: 500; color: var(--accent); white-space: nowrap }
+.archive-ruler-dot { position: absolute; top: 12px; left: 0; width: 11px; height: 11px; background: var(--accent); transform: translate(-50%, -50%) scale(0) }
+
+/* the sheet that grows out of the cover */
+.archive-sheet {
+    position: fixed; inset: 0; z-index: 200; display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 34vw); gap: 4vw; align-items: center;
+    padding: 96px 6vw 48px 7vw; overflow: auto; overscroll-behavior: contain; background: var(--bg); color: var(--ink);
+}
+.archive-sheet[hidden] { display: none }
+.archive-close { position: fixed; top: 28px; right: 36px; z-index: 2; min-height: 44px; padding: 0 20px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-weight: 600; cursor: pointer }
+.archive-close:hover { background: var(--ink); color: var(--bg) }
+.archive-close:focus-visible, .archive-go:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px }
+.archive-sheet-copy { display: grid; gap: 14px; max-width: 540px }
+.archive-line { overflow: hidden; padding-bottom: .12em }
+.archive-label { font-size: var(--step-small); font-weight: 600; color: var(--accent) }
+.archive-sheet h3 { font-size: clamp(44px, 5.4vw, 84px); font-weight: 800; letter-spacing: -.035em; line-height: .98 }
+.archive-price { font-size: var(--step-lead); font-weight: 700; letter-spacing: -.02em }
+.archive-facts { color: var(--muted) }
+.archive-trend svg { display: block; width: 100%; max-width: 340px; height: auto }
+.archive-trend polyline { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round }
+.archive-trend rect { fill: var(--accent) }
+.archive-trend p { margin-top: 6px; font-size: var(--step-small); color: var(--muted) }
+.archive-go { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; margin-top: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 700; text-decoration: none }
+.archive-go:hover { background: var(--accent-hover) }
+.archive-poster { position: relative; justify-self: end; width: min(100%, calc(78vh * .6)); aspect-ratio: .6; margin: 0 }
+.archive-poster-img { position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat; background-color: var(--field-1) }
+.archive-poster figcaption { position: absolute; left: 0; bottom: 0; max-width: 100%; padding: 5px 10px; background: #000; color: #fff; font-size: 11px }
+
+@media (max-width: 767px) {
+    .archive-word { font-size: 22vw; opacity: .8 }
+    .archive-cv-top { display: none }
+    .archive-caption { padding: 6px 16px 14px }
+    .archive-arrow { top: auto; bottom: 0 }
+    .archive-prev { left: 12px }
+    .archive-next { left: auto; right: 12px }
+    .archive-ruler { margin: 4px 16px 14px }
+    .archive-ruler-ticks .min { display: none }
+    .archive-sheet { grid-template-columns: 1fr; padding: 72px 20px 32px; align-items: start; gap: 24px }
+    .archive-poster { order: -1; justify-self: stretch; width: 100%; aspect-ratio: 4 / 3 }
+    .archive-close { top: 12px; right: 12px }
+}
+
 .town-note { margin-top: 14px; color: var(--muted) }
 
 /* story: three figures on colour fields */
@@ -518,8 +590,6 @@ h2 { font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spa
     .check-stage { grid-column: 1 / -1; position: static; min-height: 0 }
     .section-head h2, .section-head p { grid-column: 1 / -1 }
     .town-jump { grid-column: 1 / 7 }
-    .coverflow-stage { height: 400px }
-    .coverflow-btn { top: 200px }
     .story-head, .story-figures { grid-column: 1 / -1 }
     .scrolly-steps { grid-column: 1 / 7 }
     .scrolly-sticky { grid-column: 7 / 13 }
@@ -554,10 +624,6 @@ h2 { font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spa
     .block-line { left: -12px; right: -12px }
 
     .town-jump { grid-column: 1 / -1 }
-    .coverflow-stage { height: 380px }
-    .town-slide { width: 62vw }
-    .coverflow-btn { top: 190px; width: 44px; height: 44px }
-    .dots { display: none }
 
     .story-figures { grid-template-columns: 1fr }
     .figure { min-height: 0 }
@@ -589,7 +655,7 @@ h2 { font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spa
 }
 
 @media print {
-    .nav, .scroll-progress, .toast, .skip-link, .filter-card, .coverflow-btn, .hero-photo { display: none }
+    .nav, .scroll-progress, .toast, .skip-link, .filter-card, .hero-photo, .archive-sheet { display: none }
 }
 
 /* the wall opens: the hero photo starts behind a wall of window cut-outs whose frames open until the photo is clean */
@@ -621,6 +687,7 @@ h2 { font-size: var(--step-head); font-weight: 800; line-height: .95; letter-spa
 .nav-links a { font-size: .84rem }
 .nav-actions { gap: 9px }
 .nav .text-btn { font-size: .82rem; padding: 10px }
+.nav .nav-user { font-size: .82rem; padding: 10px; max-width: none }
 .nav .primary-btn { font-size: .81rem }
 @media (min-width: 1081px) {
     .nav > .nav-links { margin-left: auto; margin-right: auto }

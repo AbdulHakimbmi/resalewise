@@ -108,7 +108,7 @@ a { text-underline-offset: 3px }
 .card h3, .chart-card h3 { font-size: var(--step-lead); font-weight: 800; letter-spacing: -0.03em }
 .metric strong { font-weight: 800; letter-spacing: -0.04em; color: var(--ink) }
 /* Schibsted's tabular figures set the comma wide ("$920 , 000"), so prices use its proportional ones */
-.metric strong, .price, .price strong, .price-big, strong { font-variant-numeric: normal !important }
+.metric strong, .price, .price strong, strong { font-variant-numeric: normal !important }
 .metric.accent { background: var(--field-1) !important; color: var(--field-ink) }
 .metric.accent strong, .metric.accent .label, .metric.accent span { color: var(--field-ink) !important }
 .grid3 > .metric:nth-child(2) { background: var(--field-2) !important; color: var(--field-ink) }
@@ -130,8 +130,7 @@ a { text-underline-offset: 3px }
 
 /* form controls */
 input, select, textarea { border-radius: 0 }
-.filter-group input, .filter-group select, .auth-card input, .auth-card select, .auth-card textarea,
-.form-field input, .form-field select, .form-field textarea, textarea {
+.filter-group input, .filter-group select, textarea {
     background: var(--bg) !important;
     border: 0 !important;
     color: var(--ink);
@@ -140,7 +139,7 @@ input, select, textarea { border-radius: 0 }
 .field label { color: var(--ink) }
 
 /* chips and badges keep their meaning but lose the pill */
-.chip, .tag, .badge, .pill { border: 0 !important }
+.chip, .tag{ border: 0 !important }
 
 /* footer on inner pages: the homepage's columns, without the skyline */
 .footer { display: block; border: 0 }
@@ -158,11 +157,11 @@ input, select, textarea { border-radius: 0 }
 }
 
 /* charts: solid fills from the palette, no gradients */
-.bar i, .br-track i, .score-meter i, .sv-mock-bars i { background: var(--field-1) !important }
+.bar i, .br-track i, .score-meter i{ background: var(--field-1) !important }
 .hist-bar, .bar-chart [class*="bar"], .bar-chart i { background: var(--field-1) !important }
 .hist-col.is-median .hist-bar, .bar-row.focus .br-track i { background: var(--accent) !important }
 .bar-row.focus .br-label { color: var(--accent) }
-.price-compare, .recommend-banner, .rc-avatar { background: var(--surface-2) !important }
+ .recommend-banner, .rc-avatar { background: var(--surface-2) !important }
 
 /* the footer keeps the homepage's sizes, not style.css's small print */
 .footer { font-size: var(--step-body); color: var(--ink); line-height: 1.45 }
@@ -202,15 +201,15 @@ input, select, textarea { border-radius: 0 }
 /* nothing under 13px; labels in sentence case */
 .kicker, .small-kicker, .metric .label, .type, .score, .featured-label, .town-switcher label, .rv-field-label,
 .field label, .filter-group label, .axis-tick, .hist-col span, .y-tick, .x-ticks, .y-axis-label, .x-axis-label,
-.sb-code, .band-key, .rec-badge, .chip, .tag, .badge, .review-top span, .meta, small,
+.sb-code, .band-key, .rec-badge, .chip, .tag, .review-top span, .meta, small,
 .chart-tip, .chart-tip b, .chart-tip span, .details div, .details span, .float span, .legend, .rc-time, .rc-town,
-.rec-score, .review-tags i, .score-label, .spark-wrap, .stats span, .town-info p, .town-jump label, .value-badge {
+.rec-score, .review-tags i, .score-label, .spark-wrap, .stats span, .town-jump label, .value-badge {
     font-size: max(13px, var(--step-small)) !important;
 }
 .field label, .filter-group label { font-weight: 600 }
 
 /* prices in the ink, not the old blue */
-.metric strong, .price strong, .price, .price-compare strong, .compare-price, .details b { color: var(--ink) }
+.metric strong, .price strong, .price, .compare-price, .details b { color: var(--ink) }
 .metric.accent strong { color: var(--field-ink) }
 
 /* value tags: the palette's fields, black text, in both themes */
@@ -315,4 +314,4 @@ a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible
 @media (prefers-reduced-motion: reduce) { .page-photo::after { animation: none } }
 
 /* empty states: no emoji standing in for icons */
-.sb-ico, .empty-reviews .er-ico { display: none }
+.sb-ico{ display: none }

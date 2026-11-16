@@ -84,7 +84,6 @@
         <script src="assets/js/ux.js"></script>
         <script src="assets/js/auth.js"></script>
         <script src="assets/js/app.js"></script>
-        <script src="assets/js/town-coverflow.js"></script>
         <script src="assets/js/ui-polish.js"></script>
         <script src="assets/js/features.js"></script>
         <script>
@@ -136,7 +135,7 @@
               const sub = document.getElementById("mapSub");
               if (sub) sub.textContent = `${r.block_no} ${r.street_name}, ${titleCase(r.town_name)}`;
             }
-            // Precise map + nearest stations + "What drives this price?" (when the data exists).
+            // Precise map + nearest stations + "What goes with a higher price?" (when the data exists).
             if (window.RWFeatures) RWFeatures.details(r);
           }
 

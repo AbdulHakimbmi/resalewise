@@ -115,7 +115,8 @@ function Stage() {
       id = setTimeout(step, ((n + 1) * SCENE - t) * 1000 + 8)
     }
     step()
-    SCENES.forEach((s) => { const i = new Image(); i.src = s.src })      // the next photographs are fetched while the first plays
+    // the next photographs are fetched and decoded while the first plays, so no scene arrives with a hitch
+    SCENES.forEach((s) => { const i = new Image(); i.src = s.src; i.decode?.().catch(() => {}) })
     return () => clearTimeout(id)
   }, [])
   const frozen = freeze !== null
