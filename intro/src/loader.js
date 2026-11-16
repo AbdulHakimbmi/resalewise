@@ -12,7 +12,6 @@ export const STEPS = [
   { label: 'Market summary', url: '/api/insights/summary?flat_type=4%20ROOM&months=24' },
   { label: 'Town medians', url: '/api/insights/town-medians?flat_type=4+ROOM&months=12' },
   { label: 'Nearby places', url: '/api/amenities/status' },
-  { label: 'Best-fit example', url: '/api/amenities/rank?flat_type=4+ROOM&months=24&limit=1' },
   { label: 'Market trend', url: '/api/insights/trend?flat_type=4%20ROOM&months=24' },
   { label: 'Recent sales', url: '/api/search?limit=20&page=1' },
   { label: 'Search statistics', url: '/api/search-stats' },

@@ -90,31 +90,3 @@ or an API consumed by other programs. The website keeps OFFSET but limits a
 search to its first 10,000 results (500 pages): nobody needs page 40,000 of
 "every sale since 1990", and the cap bounds the cost of any request.
 Output: `data/results/paging.json`.
-
-## Preliminary results (Claude's cloud workspace)
-
-Run on 2 CPUs with PostgreSQL 18.6 on x86_64-conda-linux-gnu + PostGIS 3.6.4 and MongoDB 8.3.7
-installed natively (default PostgreSQL settings), 985,219 rows, before the
-geospatial pipeline existed (so no W4/W5). **Replace these with your own Docker
-run for the report** (`python bench/run_bench.py --label "..."`).
-
-Median ms (p95 ms):
-
-| Workload | Same answers | PostgreSQL (joins) | PostgreSQL (flat) | MongoDB |
-|---|---|---|---|---|
-| W0 Primary-key lookup | 20/20 | 0.97 (1.25) | 0.32 (0.43) | 0.75 (1.09) |
-| W1 Filtered search | 20/20 | 7.03 (14.90) | 0.68 (1.03) | 1.70 (2.51) |
-| W2 Median by town | 20/20 | 23.66 (47.97) | 7.42 (20.04) | 36.47 (90.61) |
-| W3 Quarterly trend | 20/20 | 40.20 (82.90) | 18.75 (40.60) | 57.34 (132.99) |
-
-Bulk load: COPY 314,036 rows/s vs insert_many 112,956 docs/s.
-Throughput (W1, 8 threads): postgres 240.9 ops/s, postgres_flat 4,485.9 ops/s, mongodb 2,226.5 ops/s.
-
-What these say (to be confirmed by the Docker run):
-- The **data model** dominates: removing the joins makes PostgreSQL ~10× faster on the search (W1).
-- On the **same data model**, PostgreSQL was faster than MongoDB on every workload here,
-  most clearly on aggregation (W2, W3) and bulk loading (W6).
-- MongoDB beats the **normalised** PostgreSQL schema on lookups and search (W0, W1),
-  which is the comparison a naive benchmark would report on its own.
-- Limits: one machine, Python client overhead included in every number (it is the
-  same for both engines), warm caches (the data fits in memory), single-node MongoDB.

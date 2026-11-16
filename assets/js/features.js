@@ -7,12 +7,8 @@
 
     RWFeatures.details(record)      map with nearest stations + "What goes with a higher price?"
     RWFeatures.nearby(record)       "What's nearby": parks, hawker centres, gyms, childcare, schools
-    RWFeatures.matchPage()          "Match my priorities": rank blocks by the weights you set
     RWFeatures.townMap(town)        blocks coloured by price per sqm + stations
     RWFeatures.townPicker(el)       grid of towns when none is chosen
-    RWFeatures.momentum(el)         window-function league table (insights page)
-    RWFeatures.reviewInsights(el)   $facet summary on the reviews page
-    RWFeatures.wireReviewOwner(...) edit / delete your own review
     RWFeatures.account()            activity (trigger audit trail) + delete account
     RWFeatures.about()              validation results + photo credits
     RWFeatures.benchmarkPage()      the "Under the hood" page
@@ -261,7 +257,7 @@
 
 
   // ------------------------------------------------------------------
-  // What's nearby (details page) and Match my priorities (match.html)
+  // What's nearby (details page)
   // ------------------------------------------------------------------
   const KIND_ORDER = ["mrt", "park", "hawker", "gym", "childcare", "primary_school", "secondary_school"];
   const KIND_LABEL = { mrt: "MRT/LRT station", park: "Park", hawker: "Hawker centre", gym: "Gym", childcare: "Childcare centre",
@@ -311,101 +307,6 @@
     slot(card, "nearby").appendChild(box);
   }
   RWF.nearby = r => nearbyPanel(r);
-
-  RWF.matchPage = async function () {
-    const root = $("#rwxMatch");
-    if (!root) return;
-    const form = $("#matchForm", root), out = $("#matchOut", root);
-    const flatSel = $("#mFlat", root), townSel = $("#mTown", root);
-    await Promise.all([populateFlatTypes(flatSel, { includeAny: false }), populateTowns(townSel, { includeAny: true, anyLabel: "Any town" })]);
-    for (const o of flatSel.options) if (o.textContent.trim().toUpperCase() === "4 ROOM") { flatSel.value = o.value; break; }
-
-    const sliders = KIND_ORDER.map(k => ({ k, el: $("#w_" + k, root), out: $("#wv_" + k, root) }));
-    const syncLabels = () => sliders.forEach(s => {
-      s.out.textContent = s.el.value === "0" ? "ignore" : s.el.value;
-      s.el.style.setProperty("--v", (100 * s.el.value / (s.el.max || 5)) + "%");   // fills the slider track
-    });
-    let timer = null, seq = 0;
-
-    function params() {
-      const p = { flat_type: flatSel.value, months: $("#mMonths", root).value, limit: 20 };
-      if (townSel.value) p.town = townSel.value;
-      const budget = parseInt($("#mBudget", root).value.replace(/[^0-9]/g, ""), 10);
-      if (budget > 0) p.max_price = budget;
-      sliders.forEach(s => { p["w_" + s.k] = s.el.value; });
-      return p;
-    }
-
-    // One row per block. The columns are the kinds that were scored, each with its distance, walk time
-    // and a closeness bar, so blocks can be compared down a column instead of by reading every chip.
-    function row(r, i, cols) {
-      const cells = cols.map(k => `<div class="rwx-cell"><span class="rwx-cell-label">${esc(KIND_LABEL[k])}</span>
-          <b class="rwx-num">${dist(r.nearest_m[k])}</b><span class="rwx-muted">${esc(walk(r.walk_min[k]))}</span>${scoreBar(r.scores[k])}</div>`).join("");
-      const prem = r.premium_pct == null ? "" :
-        `<span class="rwx-prem ${r.premium_pct >= 0 ? "rwx-up" : "rwx-down"}" title="Model estimate from past sales: an association, not a cause">Location ${signed(r.premium_pct)} vs typical</span>`;
-      const act = r.latest_txn_id ? `<a class="rwx-link" href="details.html?id=${encodeURIComponent(r.latest_txn_id)}">Latest sale &amp; map →</a>` : "";
-      return `<li class="rwx-row">
-        <span class="rwx-rank">${i + 1}</span>
-        <div class="rwx-blk">
-          <h3>Blk ${esc(r.block_no)} ${esc(tc(r.street_name))}</h3>
-          <p class="rwx-muted">${esc(tc(r.town_name))} · typical ${money(r.median_price)} · ${money(r.median_psm)}/sqm · ${r.n_sales} sales</p>
-          <p class="rwx-blk-act">${prem}${act}</p>
-        </div>
-        ${cells}
-        <div class="rwx-score"><span class="rwx-cell-label">Match score</span><b class="rwx-num">${Math.round(r.score)}</b>${scoreBar(r.score)}</div>
-      </li>`;
-    }
-
-    function table(d) {
-      const have = Object.keys(d.results[0].scores || {});
-      const cols = KIND_ORDER.filter(k => have.includes(k) && d.results[0].nearest_m && d.results[0].nearest_m[k] !== undefined);
-      const head = `<div class="rwx-rank-head" aria-hidden="true"><span></span><span>Block</span>${cols.map(k => {
-        const sc = d.scale[k];
-        return `<span>${esc(KIND_LABEL[k])}${sc ? `<small>full score within ${sc.full_score_within_m} m</small>` : ""}</span>`;
-      }).join("")}<span>Match score</span></div>`;
-      return `<div class="rwx-rank-table" style="--cols:${cols.length}">${head}<ol class="rwx-rank-list">${d.results.map((r, i) => row(r, i, cols)).join("")}</ol></div>`;
-    }
-
-    async function run() {
-      const mine = ++seq;
-      out.setAttribute("aria-busy", "true");
-      try {
-        const d = await get("/api/amenities/rank", params());
-        if (mine !== seq) return;
-        if (d.available) {
-          const off = new Set(d.not_loaded || []);
-          sliders.forEach(s => {
-            s.el.disabled = off.has(s.k);
-            s.el.closest(".rwx-weight").title = off.has(s.k) ? "No data loaded for this yet" : "";
-            if (off.has(s.k)) s.out.textContent = "no data";
-          });
-        }
-        if (!d.available) {
-          out.innerHTML = `<p class="rwx-note">Nearby-place data has not been loaded yet. Run <code>scripts/load_amenities.py</code> and
-            <code>scripts/build_amenity_features.py</code> (see USER_MANUAL.md), then reload this page.</p>`;
-          return;
-        }
-        const head = `<p class="rwx-summary">${d.scored.toLocaleString("en-SG")} blocks scored from ${d.candidates.toLocaleString("en-SG")} with enough recent ${esc(d.flat_type.toLowerCase())} sales`
-          + (d.not_located ? ` (${d.not_located} could not be located on the map)` : "") + `. Showing the top ${d.results.length}.</p>`;
-        out.innerHTML = d.results.length
-          ? head + table(d) + `<p class="rwx-note">${esc(d.note)} Blocks with the same score are listed cheapest first. “Typical” is the median of the last ${d.months} months.
-              Distances are straight-line; the score for each kind runs from 100 (very close) to 0 (far): ${
-              Object.values(d.scale).map(s => `${esc(s.label.toLowerCase())} ${s.full_score_within_m} m → ${s.zero_score_at_m} m`).join(", ")}.</p>`
-          : `<p class="rwx-note">No blocks match. Try a longer time window, a higher budget or a different town.</p>`;
-      } catch (e) {
-        if (mine === seq) out.innerHTML = `<p class="rwx-note">${esc(e.message || "Couldn’t load the ranking.")}</p>`;
-      } finally {
-        if (mine === seq) out.removeAttribute("aria-busy");
-      }
-    }
-
-    const later = () => { clearTimeout(timer); timer = setTimeout(run, 350); };
-    sliders.forEach(s => s.el.addEventListener("input", () => { syncLabels(); later(); }));
-    form.addEventListener("change", later);
-    form.addEventListener("submit", e => { e.preventDefault(); clearTimeout(timer); run(); });
-    syncLabels();
-    run();
-  };
 
   // ------------------------------------------------------------------
   // Town page
@@ -480,105 +381,7 @@
   };
 
   // ------------------------------------------------------------------
-  // Insights page: momentum league table (window functions)
-  // ------------------------------------------------------------------
-  RWF.momentum = async function (el) {
-    if (!el) return;
-    el.innerHTML = `<div class="rwx-section-title"><div><div class="small-kicker">Window functions</div><h3>Which towns are moving?</h3></div>
-      <label class="rwx-muted" style="font-size:.85rem">Flat type <select id="momType" style="margin-left:6px"></select></label></div>
-      <p class="rwx-muted" style="margin:6px 0 0" id="momSub">Latest quarter, towns with at least 30 sales.</p>
-      <div class="rwx-table-wrap"><table class="rwx-table"><thead><tr><th>Rank</th><th>Town</th><th>Median</th><th>vs last quarter</th><th>vs a year ago</th><th>Rank change (1y)</th><th>Sales</th></tr></thead><tbody id="momBody"><tr><td colspan="7">Loading…</td></tr></tbody></table></div>
-      <p class="rwx-note">Computed in PostgreSQL with <code>RANK()</code>, <code>PERCENT_RANK()</code> and date-based <code>RANGE</code> window frames over a materialized view of quarterly medians, so a quarter with no sales is a gap, never a wrong comparison.</p>`;
-    const sel = $("#momType", el);
-    if (typeof populateFlatTypes === "function") await populateFlatTypes(sel, { selected: "4 Room" });
-    const body = $("#momBody", el);
-    async function load() {
-      body.innerHTML = `<tr><td colspan="7">Loading…</td></tr>`;
-      try {
-        const m = await get("/api/insights/momentum", { flat_type: sel.value || "4 ROOM", min_n: 30 });
-        $("#momSub", el).textContent = `${RW.formatQuarter ? RW.formatQuarter(m.quarter) : m.quarter} · towns with at least 30 sales that quarter.`;
-        if (!m.rows.length) { body.innerHTML = `<tr><td colspan="7">Not enough sales for this flat type.</td></tr>`; return; }
-        body.innerHTML = m.rows.map(r => {
-          const rc = r.rank_change_1y;
-          const arrow = rc == null ? "–" : rc > 0 ? `<span class="rwx-up">▲ ${rc}</span>` : rc < 0 ? `<span class="rwx-down">▼ ${-rc}</span>` : "=";
-          const cls = v => (v == null ? "" : v >= 0 ? "rwx-up" : "rwx-down");
-          return `<tr><td class="rwx-num">${r.price_rank}</td><td><a href="town.html?town=${encodeURIComponent(r.town_name)}">${esc(tc(r.town_name))}</a></td>
-            <td class="rwx-num">${money(r.median_price)}</td><td class="rwx-num ${cls(r.qoq_pct)}">${signed(r.qoq_pct)}</td>
-            <td class="rwx-num ${cls(r.yoy_pct)}">${signed(r.yoy_pct)}</td><td>${arrow}</td><td class="rwx-num">${r.txn_count}</td></tr>`;
-        }).join("");
-      } catch (e) {
-        body.innerHTML = `<tr><td colspan="7">${esc(e.code === "feature_unavailable" ? "Run scripts/migrate.py to enable this table." : "Couldn’t load this table.")}</td></tr>`;
-      }
-    }
-    sel.addEventListener("change", load);
-    load();
-  };
-
-  // ------------------------------------------------------------------
-  // Reviews page
-  // ------------------------------------------------------------------
-  RWF.reviewInsights = async function (el, town) {
-    if (!el) return;
-    try {
-      const d = await get("/api/reviews/insights", town ? { town } : {});
-      const total = (d.ratings || []).reduce((a, r) => a + r.count, 0);
-      if (!total) { el.hidden = true; return; }
-      const by = {};
-      d.ratings.forEach(r => { by[r.stars] = r.count; });
-      const hist = [5, 4, 3, 2, 1].map(s => `<div><span>${s}★</span><span class="t"><i style="width:${(100 * (by[s] || 0) / total).toFixed(1)}%"></i></span><span class="rwx-num">${by[s] || 0}</span></div>`).join("");
-      const tags = (d.tags || []).map(t => `<span class="rwx-chip">${esc(t.tag)} <span class="rwx-muted">${t.count}</span></span>`).join("") || '<span class="rwx-muted">No tags yet</span>';
-      el.hidden = false;
-      el.innerHTML = `<div><div class="small-kicker">Ratings${town ? " in " + esc(tc(town)) : ""}</div><div class="rwx-hist" style="margin-top:10px">${hist}</div></div>
-        <div><div class="small-kicker">What people mention</div><div class="rwx-tags" style="margin-top:10px">${tags}</div>
-        <p class="rwx-muted" style="font-size:.74rem;margin:12px 0 0">One MongoDB aggregation ($facet) computes both panels.</p></div>`;
-    } catch (_) { el.hidden = true; }
-  };
-
-  // Owner actions on review cards rendered with data-review-id + .rc-text.
-  RWF.wireReviewOwner = function (listEl, reload) {
-    if (!listEl || listEl.dataset.rwxWired) return;
-    listEl.dataset.rwxWired = "1";
-    listEl.addEventListener("click", async ev => {
-      const btn = ev.target.closest("button[data-act]");
-      if (!btn) return;
-      const card = btn.closest("[data-review-id]");
-      const id = card && card.dataset.reviewId;
-      if (!id) return;
-      const act = btn.dataset.act;
-      if (act === "delete") {
-        if (btn.dataset.armed !== "1") {
-          btn.dataset.armed = "1";
-          btn.textContent = "Tap again to delete";
-          setTimeout(() => { btn.dataset.armed = ""; btn.textContent = "Delete"; }, 4000);
-          return;
-        }
-        try { await send("DELETE", "/api/reviews/" + id); toast("Review deleted."); reload(); }
-        catch (e) { toast(e.message || "Couldn’t delete that review."); }
-      } else if (act === "edit") {
-        const text = card.querySelector(".rc-text");
-        const rating = Number(card.dataset.rating) || 5;
-        const form = document.createElement("div");
-        form.className = "rwx-edit";
-        form.innerHTML = `<textarea maxlength="1000" aria-label="Edit your review">${esc(text ? text.textContent : "")}</textarea>
-          <div class="rwx-owner"><select aria-label="Rating">${[5, 4, 3, 2, 1].map(s => `<option value="${s}" ${s === rating ? "selected" : ""}>${s} stars</option>`).join("")}</select>
-          <button type="button" data-act="save">Save</button><button type="button" data-act="cancel">Cancel</button></div>`;
-        card.querySelector(".rwx-owner").replaceWith(form);
-        if (text) text.hidden = true;
-        form.querySelector("textarea").focus();
-      } else if (act === "cancel") {
-        reload();
-      } else if (act === "save") {
-        const form = btn.closest(".rwx-edit");
-        try {
-          await send("PATCH", "/api/reviews/" + id, { comment: form.querySelector("textarea").value, rating: Number(form.querySelector("select").value) });
-          toast("Review updated."); reload();
-        } catch (e) { toast(e.message || "Couldn’t save your changes."); }
-      }
-    });
-  };
-
-  // ------------------------------------------------------------------
-  // Account page: shortlist activity (trigger audit) + delete account
+  // Account page
   // ------------------------------------------------------------------
   RWF.account = async function () {
     const host = $("#rwxAccountExtras");
@@ -587,7 +390,7 @@
       <article class="card" style="margin-top:18px"><div class="small-kicker">Recorded by a database trigger</div><h3 style="margin:6px 0 0">Recent shortlist activity</h3>
         <ul class="rwx-activity" id="rwxActivity"><li>Loading…</li></ul></article>
       <article class="card rwx-danger-zone" style="margin-top:18px"><div class="small-kicker">Danger zone</div><h3 style="margin:6px 0 0">Delete your account</h3>
-        <p class="rwx-muted" style="margin:6px 0 0">This permanently removes your account and shortlist. Reviews you wrote stay up, credited to “Former member”.</p>
+        <p class="rwx-muted" style="margin:6px 0 0">This permanently removes your account and shortlist.</p>
         <form id="rwxDelete" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center">
           <input type="password" id="rwxDelPw" autocomplete="current-password" placeholder="Confirm with your password" aria-label="Your password, to confirm deleting the account" required
             style="flex:1;min-width:220px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
@@ -775,8 +578,6 @@
   // Auto-wiring for pages that need no page-specific data
   // ------------------------------------------------------------------
   function boot() {
-    if ($("#rwxMomentum")) RWF.momentum($("#rwxMomentum"));
-    if ($("#rwxMatch")) RWF.matchPage();
     if ($("#rwxAccountExtras")) RWF.account();
     if ($("#rwxValidation") && !$("#rwxBench")) RWF.about();
     if ($("#rwxBench")) RWF.benchmarkPage();

@@ -44,7 +44,7 @@ def create_app():
     web.register_error_handlers(app)
     web.register_request_hooks(app)
 
-    from .routes import account, amenities, bookmarks, drivers, engines, geo, insights, ops, reviews, search
-    for module in (account, search, insights, bookmarks, reviews, geo, amenities, drivers, engines, ops):
+    from .routes import account, amenities, bookmarks, drivers, engines, geo, insights, ops, search
+    for module in (account, search, insights, bookmarks, geo, amenities, drivers, engines, ops):
         app.register_blueprint(module.bp)
     return app

@@ -32,8 +32,6 @@ class IntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = create_app()
-        from resalewise.mongo_setup import ensure_collection
-        ensure_collection(db.mongo(), "reviews")
 
     def setUp(self):
         web.limiter._hits.clear()
@@ -124,14 +122,6 @@ class IntegrationTests(unittest.TestCase):
                     db.execute(sql, [base["block_id"], base["flat_type_id"], base["flat_model_id"]])
 
     # -- PostgreSQL: views and window functions ----------------------------
-    def test_momentum_window_functions(self):
-        r = self.c.get("/api/insights/momentum?flat_type=4%20ROOM")
-        self.assertEqual(r.status_code, 200, r.get_json())
-        rows = r.get_json()["rows"]
-        self.assertGreater(len(rows), 10)
-        self.assertEqual(rows[0]["price_rank"], 1)
-        self.assertEqual(rows[0]["median_price"], max(x["median_price"] for x in rows))
-        self.assertTrue(any(x["yoy_pct"] is not None for x in rows))
 
     def test_drivers_peers(self):
         body = self.c.get(f"/api/drivers/{self.any_txn()}").get_json()
@@ -139,24 +129,6 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn("not causes", body["caveat"])
 
     # -- MongoDB: validator, CRUD with ownership, text search, $facet ------
-    def test_review_crud_ownership_search_and_facets(self):
-        _, H, _ = self.register()
-        _, H2, _ = self.register()
-        word = "zq" + uuid.uuid4().hex[:8]
-        r = self.c.post("/api/reviews", json={"town": "Bedok", "rating": 4, "comment": f"Great {word} hawker",
-                                              "tags": ["near-food"]}, headers=H)
-        self.assertEqual(r.status_code, 201)
-        rid = r.get_json()["id"]
-        self.assertEqual(self.c.patch(f"/api/reviews/{rid}", json={"rating": 5}, headers=H2).status_code, 403)
-        self.assertEqual(self.c.patch(f"/api/reviews/{rid}", json={"rating": 5}, headers=H).status_code, 200)
-        found = self.c.get(f"/api/reviews?q={word}", headers=H).get_json()
-        self.assertEqual([f["id"] for f in found], [rid])
-        self.assertTrue(found[0]["mine"])
-        self.assertEqual(found[0]["rating"], 5)
-        facets = self.c.get("/api/reviews/insights?town=bedok").get_json()
-        self.assertTrue(facets["ratings"] and facets["tags"])
-        self.assertEqual(self.c.delete(f"/api/reviews/{rid}", headers=H).status_code, 200)
-        self.assertEqual(self.c.get(f"/api/reviews?q={word}").get_json(), [])
 
     def test_mongo_validator_rejects_bad_documents(self):
         from datetime import datetime, timezone
@@ -222,11 +194,3 @@ class PrecomputedViewTests(unittest.TestCase):
                         self.assertEqual(self.ins.trend_rows(ft, months, town),
                                          self.ins.trend_rows(ft, months, town, live=True))
 
-    def test_band_counts_add_up_to_the_window(self):
-        for town in self.towns:
-            agg, _ = self.ins.summary_parts("4 ROOM", 24, town)
-            self.assertEqual(sum(self.ins.price_band_counts("4 ROOM", 24, town)), agg["txn_count"])
-
-
-if __name__ == "__main__":
-    unittest.main()

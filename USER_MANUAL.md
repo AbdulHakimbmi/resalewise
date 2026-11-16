@@ -53,7 +53,6 @@ Type each command in the **VS Code terminal (PowerShell)**, in the project folde
 9. `docker compose up -d`, then `docker compose ps`. Wait until both say **healthy** [3].
 10. `python scripts/load.py --reset --yes` (about 1 minute)
 11. `python scripts/load_mongo_transactions.py` (about 1 minute)
-12. `python scripts/seed_reviews.py` (sample reviews so the review pages aren't empty)
 
 **D. Load the map data (about 2 minutes, no geocoding wait)**
 
@@ -129,7 +128,6 @@ This starts PostgreSQL 17 with PostGIS on port **5433** and MongoDB 8 on port
 ```powershell
 python scripts/load.py --reset --yes              # ~1 minute: tables, 985,219 sales, constraints, views
 python scripts/load_mongo_transactions.py      # ~1 minute: the MongoDB copy for the comparison
-python scripts/seed_reviews.py                 # optional: sample reviews so the reviews pages aren't empty
 ```
 
 Then load the map data. **You do not have to geocode:** the located blocks are
@@ -150,9 +148,6 @@ this price?" panels stay empty (section 5 explains each step).
 (all accounts and shortlists are deleted). Without `--yes` it asks you to type
 the database name. It writes a quality report to `data/results/load_report.json`.
 
-`seed_reviews.py` adds generated example reviews (about 15 per town). They are
-stored with `seeded: true` and shown with a **Sample** badge, so nobody mistakes
-them for real residents. Real reviews written through the site have no badge.
 
 ## 4. Run the website
 
@@ -166,7 +161,7 @@ API, so nothing else is needed. Check it with http://localhost:5000/api/health
 
 For development with auto-reload, set `FLASK_DEBUG=1` in `.env` first.
 
-Pages: Home, Find a flat (`search.html`), Towns, Market insights, Town reviews,
+Pages: Home, Find a flat (`search.html`), Towns,
 Compare (your shortlist, needs an account), Account, About & methodology, and
 **Under the hood** (`benchmark.html`, linked in the footer).
 
@@ -296,8 +291,7 @@ The method is described in the script's header and on the About page.
 
 This adds parks, hawker centres, gyms, childcare centres and primary/secondary schools
 to the geospatial pipeline. It powers the "What's nearby?" panel on each transaction page
-(the nearest places by name, also drawn on its map) and the **Best fit** page, where you set how much each kind of place matters and
-get blocks ranked by that. Run it **after** 5.1 to 5.3 (it needs the saved block
+(the nearest places by name, also drawn on its map). Run it **after** 5.1 to 5.3 (it needs the saved block
 locations). Nothing here changes the MRT pipeline: amenities live in their own
 MongoDB collection (`amenities`) and PostgreSQL tables.
 
@@ -363,10 +357,9 @@ saved numbers.
 
 How to read the results (and what to say in the report):
 
-* The score on the Best fit page is simple and explained there: each kind scores
-  100 within a short distance, falling in a straight line to 0 at a longer one
-  (school distances follow MOE's 1 km and 2 km registration phases). It sorts by
-  *your* priorities; it is not a verdict on value.
+* The closeness score is simple: each kind scores 100 within a short distance,
+  falling in a straight line to 0 at a longer one (school distances follow MOE's
+  1 km and 2 km registration phases). It is not a verdict on value.
 * The model finds **associations in past sales, not causes**. Distance features
   are block-level, so the model can partly recognise individual blocks; the
   grouped importance and the held-out test months are what keep this honest.
@@ -378,8 +371,7 @@ How to read the results (and what to say in the report):
 * Distances are straight-line, not walking routes. Walking times on the pages are
   an estimate (about 80 m a minute with a 30 % detour).
 * Supermarkets were replaced by gyms and childcare. A teammate's database that still has
-  them is cleaned the next time any amenity file is loaded. The Best fit page leaves any
-  kind with no data out of the score and says so.
+  them is cleaned the next time any amenity file is loaded.
 * The score scales are judgment calls, set from how far away things really are: the median
   block has a gym 1.0 km away (100 within 500 m, 0 at 2.5 km) and a childcare centre
   118 m away (100 within 100 m, 0 at 400 m), so a wider childcare scale would give almost
@@ -437,7 +429,7 @@ python -m pytest tests                    # unit tests: no databases needed
 $env:RW_INTEGRATION="1"; python -m pytest tests; Remove-Item Env:RW_INTEGRATION
 ```
 
-The integration tests create and delete test users and reviews, so point them at
+The integration tests create and delete test users, so point them at
 your local Docker databases only.
 
 ## 9. Using the cloud databases (Neon + MongoDB Atlas) instead
@@ -446,8 +438,7 @@ your local Docker databases only.
    connection strings (the commented examples show the shape).
 2. A database loaded before this version: run `python scripts/migrate.py` (adds
    the constraints, triggers and views without deleting anything). A new database:
-   run `python scripts/load.py --reset`. The MongoDB indexes (including the three
-   new review indexes) are created when `python app.py` starts.
+   run `python scripts/load.py --reset`.
 3. PostGIS on Neon: the geospatial scripts run `CREATE EXTENSION postgis`, which
    Neon supports.
 
@@ -457,17 +448,14 @@ remove it from the history.
 
 ### Keeping the two databases consistent
 
-PostgreSQL and MongoDB cannot share one transaction. Deleting an account removes
-the person from PostgreSQL and anonymises their reviews in MongoDB in a fixed
-order, so a failure in either database leaves nothing half-done. To check after
-a crash, a manual edit, or before the demo:
+The sales live in PostgreSQL and, as a copy for the comparison, in MongoDB. To
+check that the two still agree:
 
 ```powershell
-python scripts/check_consistency.py          # report only
-python scripts/check_consistency.py --fix    # also anonymise reviews whose author no longer exists
+python scripts/check_consistency.py
 ```
 
-It also confirms that the MongoDB copy of the sales has as many documents as
+It confirms that the MongoDB copy of the sales has as many documents as
 PostgreSQL has rows, so the benchmark compares the same data.
 
 ## 10. Troubleshooting

@@ -115,23 +115,7 @@ def update_me(user):
 @require_auth
 def delete_me(user):
     """Delete the account. Needs the password again (a stolen token alone is
-    not enough).
-
-    The account lives in PostgreSQL and the person's reviews in MongoDB, and
-    no transaction spans two databases, so the order of the steps carries the
-    guarantee:
-
-      1. open the PostgreSQL transaction and delete the user (ON DELETE CASCADE
-         removes the bookmarks and profile; nothing is committed yet);
-      2. anonymise the reviews in MongoDB. This step is safe to repeat;
-      3. commit PostgreSQL.
-
-    If MongoDB is unreachable, step 2 raises, PostgreSQL rolls back, and the
-    person simply tries again: the account is never gone while their name
-    still sits on reviews. The only partial outcome left is a failure of the
-    commit itself after step 2: the reviews are anonymised but the account
-    still exists, which is harmless and fixed by deleting again.
-    (scripts/check_consistency.py looks for reviews whose owner no longer exists.)"""
+    not enough). ON DELETE CASCADE removes the bookmarks and profile."""
     data = json_body()
     row = db.q("SELECT password_hash FROM users WHERE user_id = %s", [user["user_id"]])
     if not row or not check_password_hash(row[0]["password_hash"], str(data.get("password") or "")[:128]):
@@ -144,11 +128,7 @@ def delete_me(user):
         cur.execute("SELECT to_regclass('bookmark_audit') IS NOT NULL")
         if cur.fetchone()[0]:
             cur.execute("DELETE FROM bookmark_audit WHERE user_id = %s", [user["user_id"]])
-        res = db.mongo().reviews.update_many(
-            {"user_id": user["user_id"]},
-            {"$set": {"author": "Former member"}, "$unset": {"user_id": ""}})
-        anonymised = getattr(res, "modified_count", 0) or 0
-    return jsonify({"ok": True, "reviews_anonymised": anonymised})
+    return jsonify({"ok": True})
 
 
 @bp.route("/api/me/activity")

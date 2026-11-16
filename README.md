@@ -27,14 +27,10 @@ search, with a rigorous side-by-side comparison of the two.
   how the flat compares with similar flats sold the same year, and which features
   go with higher prices across the market (with 95% confidence intervals). These
   are associations, not causes, and the page says so.
-- **Understand the market.** Median prices and trends, towns side by side, and a
-  league table of which towns are rising fastest (window functions).
-- **Explore a town.** Median prices, recent sales, a map of every block coloured
-  by price per sqm, and residents' reviews.
+- **Explore a town.** Median prices, recent sales, and a map of every block coloured
+  by price per sqm.
 - **Build a shortlist.** Save flats, add notes, and compare them; the account page
   shows your recent shortlist activity and lets you delete the account.
-- **Read and write reviews.** Search them, see the rating spread and most-used
-  tags, and edit or delete your own.
 - **Look under the hood.** `benchmark.html` shows how the work is split between
   the two databases, runs the same search on both live, and shows the benchmark
   and geospatial validation results.
@@ -43,7 +39,7 @@ search, with a rigorous side-by-side comparison of the two.
 
 | PostgreSQL (relational) | MongoDB (documents) |
 |---|---|
-| `towns`, `flat_types`, `flat_models`, `blocks`, `resale_transactions` (normalised, 985k rows) | `reviews`: free text + tags, `$jsonSchema` validator, text index, `$facet` |
+| `towns`, `flat_types`, `flat_models`, `blocks`, `resale_transactions` (normalised, 985k rows) | `amenities`: parks, hawker centres, gyms, childcare and schools as GeoJSON, 2dsphere |
 | `users` ↔ `resale_transactions` many-to-many via `bookmarks`; `user_profiles` (1:1) | `places`: MRT/LRT stations as GeoJSON MultiPoint (one point per exit), 2dsphere |
 | CHECK constraints, NOT NULL, foreign keys with cascades | `blocks_geo`: every geocoded block as a GeoJSON Point, 2dsphere |
 | Triggers: `updated_at` stamp + an audit trail of shortlist changes | `$geoNear` computes each block's nearest station → written back to PostgreSQL |
@@ -65,10 +61,10 @@ resalewise/                the Flask application
   benchmarks.py            "value" benchmarks: each sale vs its own period
   geo.py                   geocode matching + distance helpers
   mongo_setup.py           MongoDB validators and indexes
-  routes/                  one blueprint per area (search, insights, geo, reviews, ...)
+  routes/                  one blueprint per area (search, insights, geo, amenities, ...)
 sql/                       schema_extras.sql (constraints, triggers, views), geo.sql, indexes.sql
 scripts/                   load.py (PostgreSQL from resale_clean.csv), load_mongo_transactions.py, geocoding,
-                           stations, features, validation, check_consistency.py, seed_reviews.py, photos
+                           stations, features, validation, check_consistency.py, photos
 data/reference/            MRT/LRT station opening years (hand-checked) used by the price-driver analysis
 analysis/price_drivers.py  matched comparisons with bootstrap confidence intervals
 bench/                     run_bench.py (SQL vs NoSQL, plus --no-index) and run_paging.py (see bench/README.md)

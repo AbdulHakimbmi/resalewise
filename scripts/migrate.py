@@ -16,8 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import psycopg2  # noqa: E402
 
-from resalewise import config, db  # noqa: E402
-from resalewise.mongo_setup import ensure_all  # noqa: E402
+from resalewise import config  # noqa: E402
 
 SQL_DIR = os.path.join(config.ROOT, "sql")
 # Precomputed answers (sql/schema_extras.sql). Refresh them after reloading the data;
@@ -61,9 +60,6 @@ def main():
             print("  notice:", n.strip())
     conn.close()
 
-    print("MongoDB:")
-    ensure_all(db.mongo(), ["reviews"])
-    print("  reviews: validator + indexes in place")
     print("Done.")
 
 
