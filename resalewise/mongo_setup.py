@@ -7,6 +7,7 @@ documents that predate the rule are left alone, new writes must comply).
 
 Collections
 -----------
+reviews       user-written town reviews (free text + tags)       app CRUD
 places        MRT/LRT stations as GeoJSON MultiPoint (exits)      $geoNear
 amenities     parks, hawker centres, gyms, childcare, schools     $geoNear (Point or MultiPoint)
 blocks_geo    every geocoded HDB block as a GeoJSON Point         $geoNear / $geoWithin
@@ -14,7 +15,7 @@ transactions  denormalised copy of the resale sales               SQL-vs-NoSQL b
 
 Run directly to (re)apply everything:  python -m resalewise.mongo_setup
 """
-from pymongo import ASCENDING, DESCENDING, GEOSPHERE
+from pymongo import ASCENDING, DESCENDING, GEOSPHERE, TEXT
 from pymongo.errors import CollectionInvalid, OperationFailure
 
 POINT = {
@@ -29,6 +30,20 @@ POINT = {
 }
 
 VALIDATORS = {
+    "reviews": {"$jsonSchema": {
+        "bsonType": "object",
+        "required": ["town", "rating", "comment", "created_at"],
+        "properties": {
+            "town":       {"bsonType": "string", "minLength": 1, "maxLength": 64},
+            "rating":     {"bsonType": ["int", "long"], "minimum": 1, "maximum": 5},
+            "comment":    {"bsonType": "string", "minLength": 1, "maxLength": 1000},
+            "author":     {"bsonType": "string", "maxLength": 60},
+            "tags":       {"bsonType": "array", "maxItems": 8, "items": {"bsonType": "string", "maxLength": 30}},
+            "user_id":    {"bsonType": ["int", "long"]},
+            "created_at": {"bsonType": "date"},
+            "updated_at": {"bsonType": "date"},
+        },
+    }},
     "places": {"$jsonSchema": {
         "bsonType": "object",
         "required": ["name", "kind", "loc", "centroid", "source"],
@@ -79,6 +94,17 @@ VALIDATORS = {
 }
 
 INDEXES = {
+    "reviews": [
+        # Paged lists end every sort with _id (a stable order), so the index must too,
+        # or MongoDB sorts the matching reviews in memory (the same lesson as the
+        # `transactions` indexes below). town_recent_id replaces the earlier
+        # (town, created_at) index; an existing database keeps the old one, harmlessly.
+        ([("created_at", DESCENDING), ("_id", DESCENDING)], {"name": "recent_id"}),
+        ([("town", ASCENDING), ("created_at", DESCENDING), ("_id", DESCENDING)], {"name": "town_recent_id"}),
+        ([("rating", DESCENDING), ("created_at", DESCENDING), ("_id", DESCENDING)], {"name": "top_rated_id"}),
+        ([("user_id", ASCENDING)], {"name": "by_author", "sparse": True}),
+        ([("comment", TEXT), ("tags", TEXT)], {"name": "review_text", "weights": {"tags": 3, "comment": 1}}),
+    ],
     "places": [
         ([("loc", GEOSPHERE)], {"name": "loc_2dsphere"}),
         ([("codes", ASCENDING)], {"name": "codes"}),
