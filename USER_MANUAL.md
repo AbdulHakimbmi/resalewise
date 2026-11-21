@@ -53,13 +53,14 @@ Type each command in the **VS Code terminal (PowerShell)**, in the project folde
 9. `docker compose up -d`, then `docker compose ps`. Wait until both say **healthy** [3].
 10. `python scripts/load.py --reset --yes` (about 1 minute)
 11. `python scripts/load_mongo_transactions.py` (about 1 minute)
+12. `python scripts/seed_reviews.py` (sample reviews so the review pages aren't empty)
 
 **D. Load the map data (about 2 minutes, no geocoding wait)**
 
 13. `python scripts/geocode_blocks.py --apply-only` (puts the saved block locations into both databases; no internet needed)
 14. `python scripts/load_stations.py --onemap` (downloads the MRT/LRT station list; needs internet)
 15. `python scripts/build_block_features.py` (nearest station for every block)
-16. `python analysis/price_drivers.py` (a few seconds: fills the table behind the "What drives this price?" panel) [6]
+16. `python analysis/price_drivers.py` (a few seconds: fills the table behind the "What goes with a higher price?" panel) [6]
 17. `git restore data/results` (the loaders above rewrite the team's saved result files in `data/results/`;
     this puts them back so you never commit them by accident. It is safe to run any time.)
 
@@ -128,6 +129,7 @@ This starts PostgreSQL 17 with PostGIS on port **5433** and MongoDB 8 on port
 ```powershell
 python scripts/load.py --reset --yes              # ~1 minute: tables, 985,219 sales, constraints, views
 python scripts/load_mongo_transactions.py      # ~1 minute: the MongoDB copy for the comparison
+python scripts/seed_reviews.py                 # optional: sample reviews so the reviews pages aren't empty
 ```
 
 Then load the map data. **You do not have to geocode:** the located blocks are
@@ -137,17 +139,20 @@ already saved in `data/geo/geocode_cache.jsonl`, which came with the project.
 python scripts/geocode_blocks.py --apply-only     # ~1 minute, no internet: block locations into both databases
 python scripts/load_stations.py --onemap          # ~1 minute, needs internet: MRT/LRT stations
 python scripts/build_block_features.py            # ~1 minute: nearest station for every block
-python analysis/price_drivers.py                  # a few seconds: the table behind "What drives this price?"
+python analysis/price_drivers.py                  # a few seconds: the table behind "What goes with a higher price?"
 git restore data/results                          # put the team's saved result files back (see Quick start)
 ```
 
-Skip these steps and the site still works, but the maps and the "What drives
-this price?" panels stay empty (section 5 explains each step).
+Skip these steps and the site still works, but the maps and the "What goes with a
+higher price?" panels stay empty (section 5 explains each step).
 
 `scripts/load.py` refuses to run without `--reset` because it rebuilds every table
 (all accounts and shortlists are deleted). Without `--yes` it asks you to type
 the database name. It writes a quality report to `data/results/load_report.json`.
 
+`seed_reviews.py` adds generated example reviews (about 15 per town). They are
+stored with `seeded: true` and shown with a **Sample** badge, so nobody mistakes
+them for real residents. Real reviews written through the site have no badge.
 
 ## 4. Run the website
 
@@ -161,7 +166,7 @@ API, so nothing else is needed. Check it with http://localhost:5000/api/health
 
 For development with auto-reload, set `FLASK_DEBUG=1` in `.env` first.
 
-Pages: Home, Find a flat (`search.html`), Towns,
+Pages: Home, Find a flat (`search.html`), Towns, Market insights, Town reviews,
 Compare (your shortlist, needs an account), Account, About & methodology, and
 **Under the hood** (`benchmark.html`, linked in the footer).
 
@@ -190,6 +195,49 @@ how many requests have succeeded.
   moves a frozen frame). `?hold=1` stops the redirect, so you can watch the whole sequence on a fast server.
 * The bundle is about 255 KB (77 KB gzipped) plus the photographs, which load one by one as the scenes play.
 
+## 4A. The admin area
+
+Sign in on the normal login page with the user name **`admin`** and the password **`admintest`**
+(the field says "Email or user name"). The account is created automatically the first time the
+app starts. It opens `admin.html`, and an **Admin** link appears in the menu for that account only.
+Everyone else is refused: logged out is a 401, a normal member is a 403, decided from the database
+on every request.
+
+**On a public deployment set your own password** with `ADMIN_PASSWORD` in `.env` (see `.env.example`);
+the admin's password then follows it every time the app starts. On Render (it sets `RENDER`) there is
+no admin account at all until `ADMIN_PASSWORD` is set. The demo password is acceptable on
+your own machine only because the admin area cannot change the site's data: the two consoles are
+read-only and the other tools write only to its own sample table (`concurrency_accounts`).
+
+| Tab | What it does |
+|---|---|
+| **Overview** | Every table, materialized view and MongoDB collection with its size, rows and index count. |
+| **Query console** | A read-only **SQL** console (GROUP BY, HAVING, GROUPING SETS, window functions, CTEs, EXPLAIN) with 10 ready examples, and a **MongoDB** aggregation console (`$group`, `$unwind`, `$bucket`, `$indexStats`) with 7. Shows the plan and the time. |
+| **Sales cube** | The 985,219 sales as an OLAP cube. Rows and columns are dimensions (time, town, street, flat type, model, storey), the cell is a measure (count, median, average, $ per sqm, total). **Roll up**, **drill down** (click a heading), **slice**, **dice**, **pivot**, and choose `ROLLUP`, `CUBE` or no subtotals. Every view is one `GROUP BY`, shown underneath. |
+| **Index analysis** | Runs a query twice, with the indexes and with the planner told to ignore them, and shows the plans, the pages read and the real depth of the B+ tree (`pageinspect`). Includes a case where the planner rightly ignores an index. |
+| **Concurrency** | Two transactions on Alice's and Bob's accounts, sent on separate real database sessions: one after the other, a bad interleaving, locking (the waiting session is observed in `pg_stat_activity`), **deadlock** (PostgreSQL aborts one), **lost update**, optimistic retry, savepoint and atomicity. Each run ends with a verdict: the same balances as running them one after the other, or not. |
+
+**Run it in a terminal.** Every tool has a **Terminal commands** button. It opens a panel with the same thing as commands you can
+copy: the line that opens `psql` or `mongosh` (a `docker exec` against the local containers, or the
+plain client command for a cloud database, which asks for the password), then the statements to paste
+in, in order. The panel follows the tool: it shows the query in the console box, the statement of the
+current cube view, the two runs of the index analysis, the exact statements of a concurrency run
+(marked Terminal 1 or Terminal 2, to be pasted in two windows in the order shown; in the deadlock, PostgreSQL aborts whichever session it checks last, so by hand it may be the other one than on the page, and the steps say so).
+These are copyable commands, not a terminal embedded in the page.
+
+Notes for the report:
+
+* The SQL console runs each statement in a `READ ONLY` transaction, as a database role
+  (`resalewise_readonly`) that can read every table but not the password hashes in `users`, with an
+  8-second limit and a 200-row cap. Where the login may not create roles (some cloud databases) it
+  keeps the read-only transaction and, because the database no longer hides `users`, refuses any
+  statement that mentions that table. (Tested as an ordinary non-superuser login. Not tested: a
+  transaction-pooled connection string such as Neon's `-pooler` endpoint, which the concurrency runs'
+  session-level settings may not survive; use the direct endpoint for the admin area.)
+* The cube's SQL is assembled only from fixed lists of dimensions and measures; values typed into a
+  slice are passed to the database as parameters.
+* `python scripts/migrate.py` applies `sql/admin.sql` to an existing database; the app also does it at start-up.
+
 ## 5. The geospatial pipeline
 
 The pipeline puts every HDB block on the map, finds the nearest MRT/LRT station
@@ -202,7 +250,7 @@ slow part is already done.**
 | 5.1 Block locations | No (`--apply-only` reads the saved cache) | ~1 min | everyone |
 | 5.2 Stations | Yes (one OneMap request) | ~1 min | everyone |
 | 5.3 Nearest station per block | No | ~1 min | everyone |
-| 5.4 Validate (V1–V6) | No | ~1 min | only if you change the pipeline |
+| 5.4 Validate (V1–V7) | No | ~1 min | only if you change the pipeline |
 | 5.5 Geocode from scratch | Yes (~10,000 OneMap calls) | ~50 min | almost nobody |
 
 ### 5.1 Put the saved block locations into the databases
@@ -242,10 +290,10 @@ already open: add its code to the CSV and run the loader again.
 python scripts/build_block_features.py
 ```
 
-### 5.4 Validate (checks V1–V6)
+### 5.4 Validate (checks V1–V7)
 
 Only needed if you change the pipeline. The team's results are already saved in
-`data/results/geo_validation.json` and `.md` (including check V3, the 30 blocks
+`data/results/geo_validation.json` and `.md` (including check V3, the 60 blocks
 checked by hand against the map) and appear on the About and Under the hood pages.
 
 ```powershell
@@ -254,9 +302,13 @@ python scripts/validate_geo.py
 
 This rewrites those result files, so afterwards run `git restore data/results`
 unless you mean to replace the team's results. **Check V3 needs a person:** open
-`data/results/v3_ground_truth.csv` in Excel, click each `map_link`, and type `Y`
-(the point is on the right block) or `N` in the `correct` column. Save as CSV,
-then run `python scripts/validate_geo.py` again to score it.
+`data/results/v3_ground_truth.csv` in Excel. It lists 60 blocks, at least 2 from every
+town, and none that an earlier round checked (those rounds are kept in `v3_round1.csv`
+and `v3_round2.csv`). Click each `map_link`: the map opens with a marker. Type `Y` in the
+`correct` column if the marker is on the building with that block number (OpenStreetMap
+shows the number on the building at that zoom), or `N` if it is on another building or
+a road, with a few words in `notes`. Save as CSV (keep the file name), then run
+`python scripts/validate_geo.py` again to score it. It passes with at most 1 wrong.
 
 Restart `python app.py` after the pipeline so the maps appear straight away.
 
@@ -281,7 +333,7 @@ python analysis/price_drivers.py
 ```
 
 Takes a few seconds. It writes `data/results/drivers.json` and the
-`driver_effects` table used by each transaction's "What drives this price?"
+`driver_effects` table used by each transaction's "What goes with a higher price?"
 panel. Run it **after** the geospatial pipeline (5.1 to 5.3), because it needs the
 MRT distances. Run `git restore data/results` afterwards unless you mean to replace
 the team's saved numbers.
@@ -291,7 +343,8 @@ The method is described in the script's header and on the About page.
 
 This adds parks, hawker centres, gyms, childcare centres and primary/secondary schools
 to the geospatial pipeline. It powers the "What's nearby?" panel on each transaction page
-(the nearest places by name, also drawn on its map). Run it **after** 5.1 to 5.3 (it needs the saved block
+(the nearest places by name, also drawn on its map) and the **Best fit** page, where you set how much each kind of place matters and
+get blocks ranked by that. Run it **after** 5.1 to 5.3 (it needs the saved block
 locations). Nothing here changes the MRT pipeline: amenities live in their own
 MongoDB collection (`amenities`) and PostgreSQL tables.
 
@@ -357,9 +410,10 @@ saved numbers.
 
 How to read the results (and what to say in the report):
 
-* The closeness score is simple: each kind scores 100 within a short distance,
-  falling in a straight line to 0 at a longer one (school distances follow MOE's
-  1 km and 2 km registration phases). It is not a verdict on value.
+* The score on the Best fit page is simple and explained there: each kind scores
+  100 within a short distance, falling in a straight line to 0 at a longer one
+  (school distances follow MOE's 1 km and 2 km registration phases). It sorts by
+  *your* priorities; it is not a verdict on value.
 * The model finds **associations in past sales, not causes**. Distance features
   are block-level, so the model can partly recognise individual blocks; the
   grouped importance and the held-out test months are what keep this honest.
@@ -371,7 +425,8 @@ How to read the results (and what to say in the report):
 * Distances are straight-line, not walking routes. Walking times on the pages are
   an estimate (about 80 m a minute with a 30 % detour).
 * Supermarkets were replaced by gyms and childcare. A teammate's database that still has
-  them is cleaned the next time any amenity file is loaded.
+  them is cleaned the next time any amenity file is loaded. The Best fit page leaves any
+  kind with no data out of the score and says so.
 * The score scales are judgment calls, set from how far away things really are: the median
   block has a gym 1.0 km away (100 within 500 m, 0 at 2.5 km) and a childcare centre
   118 m away (100 within 100 m, 0 at 400 m), so a wider childcare scale would give almost
@@ -426,10 +481,10 @@ views, and checks that both give the same answer.
 
 ```powershell
 python -m pytest tests                    # unit tests: no databases needed
-$env:RW_INTEGRATION="1"; python -m pytest tests; Remove-Item Env:RW_INTEGRATION
+$env:RW_INTEGRATION="1"; python -m pytest tests/test_integration.py; Remove-Item Env:RW_INTEGRATION
 ```
 
-The integration tests create and delete test users, so point them at
+The integration tests create and delete test users and reviews, so point them at
 your local Docker databases only.
 
 ## 9. Using the cloud databases (Neon + MongoDB Atlas) instead
@@ -438,7 +493,8 @@ your local Docker databases only.
    connection strings (the commented examples show the shape).
 2. A database loaded before this version: run `python scripts/migrate.py` (adds
    the constraints, triggers and views without deleting anything). A new database:
-   run `python scripts/load.py --reset`.
+   run `python scripts/load.py --reset`. The MongoDB indexes (including the three
+   new review indexes) are created when `python app.py` starts.
 3. PostGIS on Neon: the geospatial scripts run `CREATE EXTENSION postgis`, which
    Neon supports.
 
@@ -448,14 +504,17 @@ remove it from the history.
 
 ### Keeping the two databases consistent
 
-The sales live in PostgreSQL and, as a copy for the comparison, in MongoDB. To
-check that the two still agree:
+PostgreSQL and MongoDB cannot share one transaction. Deleting an account removes
+the person from PostgreSQL and anonymises their reviews in MongoDB in a fixed
+order, so a failure in either database leaves nothing half-done. To check after
+a crash, a manual edit, or before the demo:
 
 ```powershell
-python scripts/check_consistency.py
+python scripts/check_consistency.py          # report only
+python scripts/check_consistency.py --fix    # also anonymise reviews whose author no longer exists
 ```
 
-It confirms that the MongoDB copy of the sales has as many documents as
+It also confirms that the MongoDB copy of the sales has as many documents as
 PostgreSQL has rows, so the benchmark compares the same data.
 
 ## 10. Troubleshooting
@@ -469,7 +528,7 @@ PostgreSQL has rows, so the benchmark compares the same data.
 | `No module named 'psycopg'` | You installed an old requirements file: `pip install -r requirements.txt` again. |
 | The site shows "Can't reach the server" | `python app.py` isn't running, or open http://localhost:5000 (not the HTML file directly). |
 | Geocoding stops with "Cannot reach OneMap" | Internet dropped: run the same command again, it resumes. (Teammates should not be geocoding at all: use `--apply-only`.) |
-| Maps and "What drives this price?" are empty | Run section 5.1 to 5.3 and section 6, then restart `python app.py`. |
+| Maps and "What goes with a higher price?" are empty | Run section 5.1 to 5.3 and section 6, then restart `python app.py`. |
 | `git status` shows files in `data/results/` as modified | The loaders rewrote them. Run `git restore data/results` before you commit. |
 | `geocode_cache.jsonl` not found | `git pull` on `main` (the cache is committed in `data/geo/`). |
 | Maps still show the old embed | Run the pipeline (section 5), then restart `python app.py`. |

@@ -77,7 +77,9 @@ def database_url():
     for prefix in ("postgresql+psycopg2://", "postgres://"):
         if url.startswith(prefix):
             url = "postgresql://" + url[len(prefix):]
-    return url
+    # Windows tries "localhost" as IPv6 first and Docker only answers on IPv4,
+    # so every new connection waited 2 s before falling back
+    return url.replace("@localhost:", "@127.0.0.1:", 1)
 
 
 def sqlalchemy_url():

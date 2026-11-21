@@ -402,14 +402,22 @@
     update();
   })();
 
-  /* ---------- 9b. What's around: live counts from the amenities API ---------- */
+  /* ---------- 9b. What's around: live counts and an example block, from the amenities API ---------- */
   (function nearbyHome() {
-    if (!document.getElementById("lsPlaces") || !window.fetch) return;   // only on the homepage
+    var step = document.getElementById("nearStep");
+    if (!step || !window.fetch) return;                      // only on the homepage
+    var visual = document.getElementById("nearVisual");
+    var hide = function () {                                 // no nearby data loaded: leave the step out rather than show nothing
+      if (step) step.hidden = true;
+      if (visual) visual.hidden = true;
+    };
+    var fmt = function (m) { return m < 1000 ? Math.round(m) + " m" : (m / 1000).toFixed(2).replace(/0$/, "") + " km"; };
+    var title = function (s) { return String(s || "").toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); };
 
     fetch(API_BASE + "/api/amenities/status")
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
-        if (!d || !d.available || !d.amenities) return;
+        if (!d || !d.available || !d.amenities) { hide(); return null; }
         var total = Object.keys(d.amenities).reduce(function (n, k) { return n + d.amenities[k]; }, 0);
         var placesEl = document.getElementById("lsPlaces"), blocksEl = document.getElementById("lsBlocks");
         if (placesEl && total) {
@@ -420,8 +428,21 @@
           document.getElementById("lsBlocksStat").hidden = false;
           animateNumber(blocksEl, d.blocks_with_features, function (v) { return Math.round(v).toLocaleString("en-SG"); });
         }
+        return fetch(API_BASE + "/api/amenities/rank?flat_type=4+ROOM&months=24&limit=1").then(function (r) { return r.ok ? r.json() : null; });
       })
-      .catch(function () {});
+      .then(function (d) {
+        if (d === null || d === undefined) return;
+        var b = d.available && d.results && d.results[0];
+        if (!b) { hide(); return; }
+        var scale = d.scale || {};
+        document.getElementById("nearTitle").textContent = "Blk " + b.block_no + " " + title(b.street_name) + " · " + title(b.town_name);
+        var order = ["mrt", "park", "hawker", "gym", "childcare", "primary_school", "secondary_school"];
+        document.getElementById("nearList").innerHTML = order.filter(function (k) { return b.nearest_m && b.nearest_m[k] != null; }).map(function (k) {
+          var label = k === "mrt" ? "MRT/LRT station" : (scale[k] && scale[k].label) || k;
+          return "<li><span>" + label + "</span><b>" + fmt(b.nearest_m[k]) + "</b></li>";
+        }).join("");
+      })
+      .catch(hide);
   })();
 
   /* ---------- 10. Live data band (real numbers from the API) ---------- */

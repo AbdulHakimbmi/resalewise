@@ -33,8 +33,8 @@ def norm_street(s):
     "BUKIT BATOK WEST AVENUE 6")."""
     s = (s or "").upper().replace("'", "").replace(".", " ").replace(",", " ")
     words = [ABBREVIATIONS.get(w, w) for w in s.split()]
-    # "ST. GEORGE'S" stays "ST" only when it starts the name (Saint).
-    if words and words[0] == "STREET" and len(words) > 1 and not words[1].isdigit():
+    # "ST. GEORGE'S" stays "ST" only when it starts the name (Saint); OneMap writes "SAINT"
+    if words and words[0] in ("STREET", "SAINT") and len(words) > 1 and not words[1].isdigit():
         words[0] = "ST"
     return " ".join(words)
 

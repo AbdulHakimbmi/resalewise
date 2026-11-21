@@ -23,14 +23,21 @@ search, with a rigorous side-by-side comparison of the two.
   same town and flat type **in the same quarter**, so a 1995 sale isn't called a
   bargain just because prices have risen since.
 - **See one sale in context.** Each transaction page shows the block on a map
-  with its nearest MRT/LRT stations, and a **"What drives this price?"** panel:
+  with its nearest MRT/LRT stations, and a **"What goes with a higher price?"** panel:
   how the flat compares with similar flats sold the same year, and which features
   go with higher prices across the market (with 95% confidence intervals). These
   are associations, not causes, and the page says so.
-- **Explore a town.** Median prices, recent sales, and a map of every block coloured
-  by price per sqm.
+- **Understand the market.** Median prices and trends, towns side by side, and a
+  league table of which towns are rising fastest (window functions).
+- **Explore a town.** Median prices, recent sales, a map of every block coloured
+  by price per sqm, and residents' reviews.
 - **Build a shortlist.** Save flats, add notes, and compare them; the account page
   shows your recent shortlist activity and lets you delete the account.
+- **Read and write reviews.** Search them, see the rating spread and most-used
+  tags, and edit or delete your own.
+- **Administer it.** Signed in as `admin`, `admin.html` queries both databases read-only, turns the sales into an
+  OLAP cube, shows an index and concurrent transactions (deadlock, lost update, savepoint) at work, and shows each tool's commands to copy into a terminal.
+  See USER_MANUAL.md, section 4A.
 - **Look under the hood.** `benchmark.html` shows how the work is split between
   the two databases, runs the same search on both live, and shows the benchmark
   and geospatial validation results.
@@ -39,7 +46,7 @@ search, with a rigorous side-by-side comparison of the two.
 
 | PostgreSQL (relational) | MongoDB (documents) |
 |---|---|
-| `towns`, `flat_types`, `flat_models`, `blocks`, `resale_transactions` (normalised, 985k rows) | `amenities`: parks, hawker centres, gyms, childcare and schools as GeoJSON, 2dsphere |
+| `towns`, `flat_types`, `flat_models`, `blocks`, `resale_transactions` (normalised, 985k rows) | `reviews`: free text + tags, `$jsonSchema` validator, text index, `$facet` |
 | `users` ↔ `resale_transactions` many-to-many via `bookmarks`; `user_profiles` (1:1) | `places`: MRT/LRT stations as GeoJSON MultiPoint (one point per exit), 2dsphere |
 | CHECK constraints, NOT NULL, foreign keys with cascades | `blocks_geo`: every geocoded block as a GeoJSON Point, 2dsphere |
 | Triggers: `updated_at` stamp + an audit trail of shortlist changes | `$geoNear` computes each block's nearest station → written back to PostgreSQL |
@@ -48,23 +55,24 @@ search, with a rigorous side-by-side comparison of the two.
 
 Pipeline: HDB CSV → PostgreSQL (`scripts/load.py`) → OneMap geocoding → MongoDB
 `blocks_geo` + `places` → `$geoNear` → PostgreSQL `block_features` → price-driver
-analysis. Every distance is recomputed in PostGIS and compared (checks V1–V6).
+analysis. Every distance is recomputed in PostGIS and compared (checks V1–V7).
 
 ## Project layout
 
 ```
 app.py                     entry point (python app.py / gunicorn app:app)
 resalewise/                the Flask application
+  admin.py, concurrency.py     the admin area: console guards, the cube's SQL, the concurrency runs
   config.py                settings from .env (no secrets in code)
   db.py                    PostgreSQL pool + lazy MongoDB client
   web.py, auth.py          error contract, rate limiting, cache, tokens
   benchmarks.py            "value" benchmarks: each sale vs its own period
   geo.py                   geocode matching + distance helpers
   mongo_setup.py           MongoDB validators and indexes
-  routes/                  one blueprint per area (search, insights, geo, amenities, ...)
-sql/                       schema_extras.sql (constraints, triggers, views), geo.sql, indexes.sql
+  routes/                  one blueprint per area (search, insights, geo, reviews, ...)
+sql/                       schema_extras.sql (constraints, triggers, views), geo.sql, indexes.sql, admin.sql
 scripts/                   load.py (PostgreSQL from resale_clean.csv), load_mongo_transactions.py, geocoding,
-                           stations, features, validation, check_consistency.py, photos
+                           stations, features, validation, check_consistency.py, seed_reviews.py, photos
 data/reference/            MRT/LRT station opening years (hand-checked) used by the price-driver analysis
 analysis/price_drivers.py  matched comparisons with bootstrap confidence intervals
 bench/                     run_bench.py (SQL vs NoSQL, plus --no-index) and run_paging.py (see bench/README.md)
@@ -78,8 +86,9 @@ docker-compose.yml         local PostgreSQL + PostGIS and MongoDB
 ## Tests
 
 ```bash
-python -m pytest tests                       # 82 unit tests, no database or network needed
-RW_INTEGRATION=1 python -m pytest tests      # + 12 integration tests against your .env databases
+python -m pytest tests                       # the unit tests: no database or network needed
+RW_INTEGRATION=1 python -m pytest tests/test_integration.py   # the 12 integration tests, on their own:
+                                                         # the unit tests set a fake database address
 ```
 
 ## Data and credits

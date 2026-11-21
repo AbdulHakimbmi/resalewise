@@ -34,7 +34,10 @@ CASES = [
     ("Home: town ranking, 4-room, 24 months",       ins.town_medians_rows,  ("4 ROOM", 24)),
     ("Insights: summary cards, 4-room, 24 months",  ins.summary_parts,      ("4 ROOM", 24)),
     ("Insights: trend, 4-room, 24 months",          ins.trend_rows,         ("4 ROOM", 24)),
+    ("Insights: by flat type, all towns, 24 months", ins.by_flat_type_rows, (24,)),
+    ("Insights: price bands, 4-room, 24 months",    ins.price_band_counts,  ("4 ROOM", 24)),
     ("Insights: summary, 3-room, Bedok, 10 years",  ins.summary_parts,      ("3 ROOM", 120, "BEDOK")),
+    ("Insights: by flat type, all towns, 10 years", ins.by_flat_type_rows,  (120,)),
 ]
 
 

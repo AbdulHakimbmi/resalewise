@@ -1,19 +1,20 @@
-"""Step 4 of the geospatial pipeline: validate it (checks V1-V6).
+"""Step 4 of the geospatial pipeline: validate it (checks V1-V7).
 
     python scripts/validate_geo.py
 
 Writes data/results/geo_validation.json (shown on the About page and used in
 the report) and data/results/geo_validation.md. Check V3 needs a person:
-the script writes data/results/v3_ground_truth.csv with 30 sampled blocks;
+the script writes data/results/v3_ground_truth.csv with 60 sampled blocks;
 open each link, write Y or N in the `correct` column, save, and run the
 script again to score it.
 
   V1 Coverage        share of blocks / sales that got a location
   V2 Plausibility    inside Singapore; not far from the rest of its town
-  V3 Ground truth    30 random blocks checked by hand against the map
+  V3 Ground truth    60 blocks, 2+ per town, checked by hand against the map
   V4 Cross-engine    MongoDB $geoNear vs PostGIS KNN vs haversine agree
   V5 Edge cases      1 km boundary, MultiPoint stations, stage order, [lon,lat]
   V6 Rebuild         re-running the pipeline gives identical output
+  V7 Amenities       MongoDB and PostGIS agree on every amenity distance and count
 
 Tolerances in V4 were set from a measured pilot, not guessed: MongoDB uses a
 sphere of radius 6,378.1 km, PostGIS geography uses the WGS84 spheroid by
@@ -40,8 +41,11 @@ from resalewise.geo import R_MEAN, R_MONGO, destination, haversine_m, mad, media
 
 OUT_DIR = os.path.join(config.ROOT, "data", "results")
 V3_CSV = os.path.join(OUT_DIR, "v3_ground_truth.csv")
-V3_ROUND1 = os.path.join(OUT_DIR, "v3_round1.csv")   # the first hand check, kept as evidence
-SEED = 2003                                   # INF2003: fixed so the sample is reproducible
+V3_ROUND1 = os.path.join(OUT_DIR, "v3_round1.csv")   # earlier hand checks, kept as evidence
+V3_ROUND2 = os.path.join(OUT_DIR, "v3_round2.csv")
+SEED = 2003                                   # fixed so the samples are reproducible
+V3_SEED = 2026                                # round 3: a new draw, not round 1's
+V3_SIZE, V3_PER_TOWN, V3_MAX_WRONG = 60, 2, 1
 
 TOL_SPHERE = 0.002        # 0.2 %: same model, radius ratio 6378.1/6371.0 explains ~0.11 %
 TOL_SPHEROID = 0.010      # 1.0 %: sphere vs WGS84 spheroid near the equator (~0.7 % measured)
@@ -188,54 +192,94 @@ def v2(cur):
 
 
 # --------------------------------------------------------------------------- V3
-def _v3_round1():
-    """Result of an earlier hand check, if one was kept (see the report: it found
-    that fuzzy matching accepted roads with a different number)."""
-    if not os.path.isfile(V3_ROUND1):
-        return None
-    with open(V3_ROUND1, encoding="utf-8-sig") as fh:
-        rows = [r for r in csv.DictReader(fh) if (r.get("correct") or "").strip().upper() in ("Y", "N")]
+def _read_round(path):
+    if not os.path.isfile(path):
+        return []
+    with open(path, encoding="utf-8-sig") as fh:
+        return list(csv.DictReader(fh))
+
+
+def _round_summary(rows, outcome):
+    done = [r for r in rows if (r.get("correct") or "").strip().upper() in ("Y", "N")]
     wrong = [{"block": r["block"], "street": r["street"], "match_quality": r["match_quality"],
               "onemap_address": r["onemap_address"], "notes": r.get("notes")}
-             for r in rows if r["correct"].strip().upper() == "N"]
-    return {"sampled": len(rows), "correct": len(rows) - len(wrong), "wrong": wrong,
-            "outcome": "defect found and fixed: a fuzzy match accepted a road with a different number; "
-                       "fuzzy matching now requires identical road numbers, and a fresh sample was drawn"}
+             for r in done if r["correct"].strip().upper() == "N"]
+    return {"sampled": len(done), "correct": len(done) - len(wrong), "wrong": wrong, "outcome": outcome}
+
+
+def _earlier_rounds():
+    """The two earlier hand checks, reported as they happened."""
+    r1, r2 = _read_round(V3_ROUND1), _read_round(V3_ROUND2)
+    if not r1:
+        return None
+    reused = len({x["block_id"] for x in r1} & {x["block_id"] for x in r2})
+    out = {"round1": _round_summary(r1, "found a defect: all 4 fuzzy matches were on a road with a different "
+                                        "number; fuzzy matching now requires identical road numbers")}
+    if r2:
+        out["round2"] = _round_summary(r2, f"{reused} of its {len(r2)} blocks were already in round 1, "
+                                           "so it was not an independent check; round 3 replaces it")
+    return out
+
+
+def upper_error_bound(wrong, n, conf=0.95):
+    """One-sided upper confidence bound on the error rate (exact binomial, Clopper-Pearson)."""
+    if n == 0:
+        return None
+    if wrong >= n:
+        return 1.0
+
+    def cdf(p):
+        from math import comb
+        return sum(comb(n, k) * p ** k * (1 - p) ** (n - k) for k in range(wrong + 1))
+    lo, hi = wrong / n, 1.0
+    for _ in range(60):                       # P(X <= wrong | p) = 1 - conf
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if cdf(mid) > 1 - conf else (lo, mid)
+    return hi
+
+
+def draw_v3_sample(rows, exclude):
+    """At least V3_PER_TOWN blocks from every town, then random blocks up to V3_SIZE,
+    never a block an earlier round checked."""
+    rng = random.Random(V3_SEED)
+    pool = [r for r in rows if r["block_id"] not in exclude]
+    by_town = {}
+    for r in pool:
+        by_town.setdefault(r["town_name"], []).append(r)
+    sample = []
+    for town in sorted(by_town):
+        sample += rng.sample(by_town[town], min(V3_PER_TOWN, len(by_town[town])))
+    taken = {r["block_id"] for r in sample}
+    rest = [r for r in pool if r["block_id"] not in taken]
+    sample += rng.sample(rest, max(0, min(V3_SIZE - len(sample), len(rest))))
+    return sorted(sample, key=lambda r: r["block_id"])
 
 
 def v3(cur):
-    existing = {}
-    if os.path.isfile(V3_CSV):
-        with open(V3_CSV, encoding="utf-8-sig") as fh:
-            for r in csv.DictReader(fh):
-                existing[int(r["block_id"])] = r
+    criterion = f"at most {V3_MAX_WRONG} of {V3_SIZE} fresh blocks wrong on the map (2+ per town)"
+    existing = {int(r["block_id"]): r for r in _read_round(V3_CSV)}
     if not existing:
         cur.execute("""
           SELECT l.block_id, b.block_no, b.street_name, tw.town_name, l.lat, l.lon, l.match_quality,
                  l.matched_address
           FROM block_locations l JOIN blocks b USING (block_id) JOIN towns tw USING (town_id)
           WHERE l.lat IS NOT NULL ORDER BY l.block_id""")
-        rows = cur.fetchall()
-        rng = random.Random(SEED)
-        fuzzy = [r for r in rows if r["match_quality"] == "fuzzy"]
-        exact = [r for r in rows if r["match_quality"] == "exact"]
-        sample = rng.sample(fuzzy, min(10, len(fuzzy)))           # over-sample the riskier matches
-        sample += rng.sample(exact, min(30 - len(sample), len(exact)))
+        exclude = {int(r["block_id"]) for r in _read_round(V3_ROUND1) + _read_round(V3_ROUND2)}
+        sample = draw_v3_sample(cur.fetchall(), exclude)
         os.makedirs(OUT_DIR, exist_ok=True)
         with open(V3_CSV, "w", newline="", encoding="utf-8") as fh:
             w = csv.writer(fh)
             w.writerow(["block_id", "block", "street", "town", "lat", "lon", "match_quality",
                         "onemap_address", "map_link", "correct", "notes"])
-            for r in sorted(sample, key=lambda r: r["block_id"]):
+            for r in sample:
                 w.writerow([r["block_id"], r["block_no"], r["street_name"], r["town_name"],
                             f"{r['lat']:.6f}", f"{r['lon']:.6f}", r["match_quality"], r["matched_address"],
                             f"https://www.openstreetmap.org/?mlat={r['lat']:.6f}&mlon={r['lon']:.6f}#map=19/{r['lat']:.6f}/{r['lon']:.6f}",
                             "", ""])
-        return check("V3", "Manual ground truth", "pending",
-                     ">= 29 of 30 sampled blocks confirmed on the map",
-                     {"sampled": len(sample), "checked": 0},
+        return check("V3", "Manual ground truth", "pending", criterion,
+                     {"sampled": len(sample), "checked": 0, "towns": len({r["town_name"] for r in sample})},
                      {"instructions": "Open data/results/v3_ground_truth.csv, check each map link, write Y/N in "
-                                      "'correct', then re-run this script.", "round1": _v3_round1()})
+                                      "'correct', then re-run this script.", "earlier_rounds": _earlier_rounds()})
     done = [r for r in existing.values() if (r.get("correct") or "").strip().upper() in ("Y", "N")]
     ok = sum(1 for r in done if r["correct"].strip().upper() == "Y")
     wrong = [{"block_id": int(r["block_id"]), "block": r["block"], "street": r["street"], "notes": r.get("notes")}
@@ -243,12 +287,14 @@ def v3(cur):
     if len(done) < len(existing):
         status = "pending"
     else:
-        status = "pass" if ok >= len(existing) - 1 else "fail"
-    return check("V3", "Manual ground truth", status,
-                 ">= 29 of 30 sampled blocks confirmed on the map",
+        status = "pass" if len(done) - ok <= V3_MAX_WRONG else "fail"
+    bound = upper_error_bound(len(done) - ok, len(done)) if len(done) == len(existing) else None
+    return check("V3", "Manual ground truth", status, criterion,
                  {"sampled": len(existing), "checked": len(done), "correct": ok,
-                  "accuracy_pct": round(100 * ok / len(done), 1) if done else None},
-                 {"wrong": wrong, "round1": _v3_round1()})
+                  "accuracy_pct": round(100 * ok / len(done), 1) if done else None,
+                  "towns": len({r["town"] for r in existing.values()}),
+                  "error_rate_upper_95_pct": round(100 * bound, 1) if bound is not None else None},
+                 {"wrong": wrong, "earlier_rounds": _earlier_rounds()})
 
 
 # --------------------------------------------------------------------------- V4
@@ -424,12 +470,71 @@ def v6(cur):
                   "block_locations_stored": d, "block_locations_rebuilt": c})
 
 
+# --------------------------------------------------------------------------- V7
+# Every stored amenity row (MongoDB wrote them) recomputed in PostGIS twice: on MongoDB's own
+# sphere, which must agree exactly, and on the WGS84 spheroid, where a place close to a radius
+# edge may fall on the other side. A count that differs for any other reason is a defect.
+V7_SQL = """
+SELECT f.block_id, f.kind, f.within_500m, f.within_1km, f.within_2km, f.nearest_m::float AS mongo_near,
+       c.s500, c.s1k, c.s2k, c.m500, c.m1k, c.m2k, c.far_flips, n.near_msphere
+FROM block_amenity_features f
+JOIN block_locations bl USING (block_id)
+CROSS JOIN LATERAL (
+  SELECT COUNT(*) FILTER (WHERE d_s <= 500)::int AS s500, COUNT(*) FILTER (WHERE d_s <= 1000)::int AS s1k,
+         COUNT(*) FILTER (WHERE d_s <= 2000)::int AS s2k,
+         COUNT(*) FILTER (WHERE d_m <= 500)::int AS m500, COUNT(*) FILTER (WHERE d_m <= 1000)::int AS m1k,
+         COUNT(*) FILTER (WHERE d_m <= 2000)::int AS m2k,
+         COUNT(*) FILTER (WHERE ((d_s <= 500) <> (d_m <= 500) AND abs(d_s - 500) > 500 * %(tol)s)
+                             OR ((d_s <= 1000) <> (d_m <= 1000) AND abs(d_s - 1000) > 1000 * %(tol)s)
+                             OR ((d_s <= 2000) <> (d_m <= 2000) AND abs(d_s - 2000) > 2000 * %(tol)s))::int AS far_flips
+  FROM (SELECT ST_Distance(a.geog, bl.geog, true) AS d_s,
+               ST_Distance(a.geog, bl.geog, false) * %(k)s AS d_m
+        FROM amenities a WHERE a.kind = f.kind AND ST_DWithin(a.geog, bl.geog, 2100)) x
+) c
+CROSS JOIN LATERAL (
+  SELECT MIN(ST_Distance(a.geog, bl.geog, false) * %(k)s) AS near_msphere
+  FROM (SELECT geog FROM amenities a WHERE a.kind = f.kind ORDER BY a.geog <-> bl.geog LIMIT 3) a
+) n
+"""
+
+
+def v7(cur):
+    cur.execute(V7_SQL, {"k": R_MONGO / R_MEAN, "tol": TOL_SPHEROID})
+    rows = cur.fetchall()
+    if not rows:
+        return check("V7", "Amenity cross-check", "fail", "-", {}, "No block_amenity_features rows: run build_amenity_features.py")
+    triple = lambda r, p: (r[p + "500"], r[p + "1k"], r[p + "2k"])
+    stored = lambda r: (r["within_500m"], r["within_1km"], r["within_2km"])
+    same_sphere = sum(stored(r) == triple(r, "m") for r in rows)
+    same_spheroid = sum(stored(r) == triple(r, "s") for r in rows)
+    near_diff = max(abs(r["mongo_near"] - r["near_msphere"]) for r in rows)
+    far_flips = sum(r["far_flips"] for r in rows)
+    by_kind = {}
+    for r in rows:
+        if stored(r) != triple(r, "s"):
+            by_kind[r["kind"]] = by_kind.get(r["kind"], 0) + 1
+    n = len(rows)
+    ok = same_sphere == n and near_diff <= ROUNDING_M + 0.01 and far_flips == 0
+    return check("V7", "Amenity cross-check", "pass" if ok else "fail",
+                 "on MongoDB's sphere every count and nearest distance matches PostGIS; on the WGS84 "
+                 "spheroid a count may differ only for a place within 1 % of a radius edge",
+                 {"rows_compared": n, "counts_identical_same_sphere": same_sphere,
+                  "counts_identical_same_sphere_pct": round(100 * same_sphere / n, 2),
+                  "nearest_max_diff_same_sphere_m": round(near_diff, 3),
+                  "counts_identical_spheroid_pct": round(100 * same_spheroid / n, 2),
+                  "spheroid_differences_by_kind": by_kind, "differences_away_from_an_edge": far_flips},
+                 {"explanation": "MongoDB measures on a 6,378.1 km sphere and PostGIS geography on the WGS84 "
+                                 "spheroid. The two can differ by up to about 0.7 %, so a place a few metres from "
+                                 "500 m, 1 km or 2 km can be inside the radius in one model and outside in the "
+                                 "other. Dense kinds (childcare) have the most places near an edge."})
+
+
 def main():
     conn = psycopg2.connect(config.database_url(), connect_timeout=15)
     conn.autocommit = True
     checks = []
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-        for fn in (v1, v2, v3, v4, v5, v6):
+        for fn in (v1, v2, v3, v4, v5, v6, v7):
             print(f"  running {fn.__name__.upper()} ...", flush=True)
             checks.append(fn(cur))
     conn.close()

@@ -4,7 +4,8 @@ import os
 import sys
 import unittest
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
 from resalewise.geo import (R_MONGO, destination, drop_excluded, haversine_m, in_sg, match_onemap,  # noqa: E402
                             mrt_band, norm_street, parse_station)
@@ -23,6 +24,7 @@ class StreetNormalisation(unittest.TestCase):
 
     def test_saint_is_not_street(self):
         self.assertEqual(norm_street("ST. GEORGE'S LANE"), norm_street("ST GEORGES LANE"))
+        self.assertEqual(norm_street("SAINT GEORGE'S LANE"), norm_street("ST. GEORGE'S LANE"))   # OneMap's spelling
         self.assertTrue(norm_street("ST. GEORGE'S LANE").startswith("ST "))
 
 
@@ -139,3 +141,26 @@ class ExcludedStations(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HandCheckSample(unittest.TestCase):
+    """V3: a fresh sample (no block from an earlier round) with every town in it."""
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("validate_geo", os.path.join(ROOT, "scripts", "validate_geo.py"))
+        cls.vg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.vg)
+
+    def test_every_town_is_in_it_and_no_earlier_block(self):
+        rows = [{"block_id": i, "town_name": f"T{i % 27}"} for i in range(500)]
+        sample = self.vg.draw_v3_sample(rows, exclude={0, 1, 2})
+        self.assertEqual(len(sample), 60)
+        self.assertEqual(len({r["town_name"] for r in sample}), 27)
+        self.assertFalse({0, 1, 2} & {r["block_id"] for r in sample})
+
+    def test_error_bound_shrinks_with_a_bigger_sample(self):
+        self.assertAlmostEqual(self.vg.upper_error_bound(0, 30), 0.095, places=3)   # 30 of 30 still allows ~9.5 %
+        self.assertAlmostEqual(self.vg.upper_error_bound(0, 60), 0.049, places=3)
+        self.assertEqual(self.vg.upper_error_bound(30, 30), 1.0)

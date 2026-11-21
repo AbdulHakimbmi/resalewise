@@ -2,10 +2,10 @@
 import re
 
 import psycopg2
-from flask import Blueprint, jsonify
+from flask import Blueprint, current_app, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .. import db
+from .. import admin, db
 from ..auth import current_user, make_token, require_auth
 from ..web import ApiError, iso, json_body, rate_limit
 
@@ -33,6 +33,8 @@ def register():
         raise ApiError("Please enter your name.", 400, "validation_error", field="name")
     if len(email) > 254 or not _EMAIL_RE.match(email):
         raise ApiError("A valid email is required.", 400, "validation_error", field="email")
+    if email == admin.ADMIN_EMAIL:                       # reserved: nobody can sign up as the admin
+        raise ApiError("An account with this email already exists.", 409, "conflict", field="email")
     _check_password(pw)
 
     if db.q("SELECT 1 FROM users WHERE email = %s", [email]):
@@ -54,16 +56,17 @@ def register():
 @rate_limit(10)
 def login():
     data  = json_body()
-    email = str(data.get("email") or "").strip().lower()[:254]
+    email = admin.login_identifier(data.get("email"))    # an email, or the admin's user name
     pw    = str(data.get("password") or "")[:128]
 
-    rows = db.q("SELECT user_id, email, name, password_hash FROM users WHERE email = %s", [email])
+    rows = db.q("SELECT user_id, email, name, password_hash, is_admin FROM users WHERE email = %s", [email])
     if not rows or not check_password_hash(rows[0]["password_hash"], pw):
         raise ApiError("Incorrect email or password.", 401, "invalid_credentials")
 
     u = rows[0]
+    is_admin = bool(u.get("is_admin"))
     return jsonify({"token": make_token(u["user_id"], u["email"]),
-                    "user": {"user_id": u["user_id"], "email": u["email"], "name": u.get("name")}})
+                    "user": {"user_id": u["user_id"], "email": u["email"], "name": u.get("name"), "is_admin": is_admin}})
 
 
 @bp.route("/api/me")
@@ -72,7 +75,7 @@ def me():
     if not user:
         raise ApiError("Please log in to continue.", 401, "unauthorized")
     return jsonify({"user_id": user["user_id"], "email": user["email"], "name": user.get("name"),
-                    "created_at": iso(user.get("created_at"))})
+                    "is_admin": bool(user.get("is_admin")), "created_at": iso(user.get("created_at"))})
 
 
 @bp.route("/api/me", methods=["PATCH"])
@@ -115,7 +118,23 @@ def update_me(user):
 @require_auth
 def delete_me(user):
     """Delete the account. Needs the password again (a stolen token alone is
-    not enough). ON DELETE CASCADE removes the bookmarks and profile."""
+    not enough).
+
+    The account lives in PostgreSQL and the person's reviews in MongoDB, and
+    no transaction spans two databases, so the order of the steps carries the
+    guarantee:
+
+      1. open the PostgreSQL transaction and delete the user (ON DELETE CASCADE
+         removes the bookmarks and profile; nothing is committed yet);
+      2. anonymise the reviews in MongoDB. This step is safe to repeat;
+      3. commit PostgreSQL.
+
+    If MongoDB is unreachable, step 2 raises, PostgreSQL rolls back, and the
+    person simply tries again: the account is never gone while their name
+    still sits on reviews. The only partial outcome left is a failure of the
+    commit itself after step 2: the reviews are anonymised but the account
+    still exists, which is harmless and fixed by deleting again.
+    (scripts/check_consistency.py looks for reviews whose owner no longer exists.)"""
     data = json_body()
     row = db.q("SELECT password_hash FROM users WHERE user_id = %s", [user["user_id"]])
     if not row or not check_password_hash(row[0]["password_hash"], str(data.get("password") or "")[:128]):
@@ -128,7 +147,11 @@ def delete_me(user):
         cur.execute("SELECT to_regclass('bookmark_audit') IS NOT NULL")
         if cur.fetchone()[0]:
             cur.execute("DELETE FROM bookmark_audit WHERE user_id = %s", [user["user_id"]])
-    return jsonify({"ok": True})
+        res = db.mongo().reviews.update_many(
+            {"user_id": user["user_id"]},
+            {"$set": {"author": "Former member"}, "$unset": {"user_id": ""}})
+        anonymised = getattr(res, "modified_count", 0) or 0
+    return jsonify({"ok": True, "reviews_anonymised": anonymised})
 
 
 @bp.route("/api/me/activity")

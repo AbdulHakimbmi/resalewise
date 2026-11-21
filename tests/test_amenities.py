@@ -516,6 +516,64 @@ class BlockEndpoint(ApiBase):
         self.assertEqual(r.headers["Cache-Control"], "no-store")
 
 
+class RankEndpoint(ApiBase):
+    def test_ranks_by_the_weights_and_explains_each_score(self):
+        body = self.client.get("/api/amenities/rank?flat_type=4+ROOM&w_park=5&w_hawker=0&w_mrt=0"
+                               "&w_gym=0&w_childcare=0&w_primary_school=0&w_secondary_school=0").get_json()
+        ids = [r["block_id"] for r in body["results"]]
+        self.assertEqual(ids, [1, 2])                       # block 3 has no features: cannot be scored
+        self.assertEqual(body["not_located"], 1)
+        self.assertEqual(body["results"][0]["score"], 100.0)
+        self.assertEqual(body["results"][1]["scores"]["hawker"], 100.0)
+        self.assertEqual(body["results"][0]["premium_pct"], 4.2)
+
+    def test_changing_the_weights_changes_the_order(self):
+        body = self.client.get("/api/amenities/rank?w_park=0&w_mrt=0&w_hawker=5&w_gym=0&w_childcare=0"
+                               "&w_primary_school=0&w_secondary_school=0").get_json()
+        self.assertEqual([r["block_id"] for r in body["results"]], [2, 1])
+
+    def test_budget_filter_and_limit(self):
+        body = self.client.get("/api/amenities/rank?max_price=650000&limit=1").get_json()
+        self.assertEqual([r["block_id"] for r in body["results"]], [2])      # block 1 costs 700k
+
+    def test_sql_is_parameterised_and_normalises_the_flat_type(self):
+        self.client.get("/api/amenities/rank?flat_type=multi-generation&town=bishan&months=12&min_sales=4")
+        sql, params = next(c for c in self.calls if "PERCENTILE_CONT" in c[0])
+        self.assertIn("UPPER(REPLACE(ft.flat_type_name, '-', ' ')) = %s", sql)
+        self.assertEqual(params[0], "MULTI GENERATION")
+        self.assertIn("BISHAN", params)
+        self.assertNotIn("multi", sql.lower().replace("multi_", ""))        # no value pasted into the SQL text
+        self.assertEqual(params[-1], 4)
+
+    def test_validation_errors_are_json_400(self):
+        for q in ("w_park=9", "w_park=abc", "months=0", "limit=500", "max_price=-1"):
+            with self.subTest(q=q):
+                r = self.client.get("/api/amenities/rank?" + q)
+                self.assertEqual(r.status_code, 400)
+                self.assertEqual(r.get_json()["code"], "invalid_parameter")
+
+    def test_all_zero_weights_are_rejected(self):
+        q = "&".join(f"w_{k.kind}=0" for k in am.SCORE_KINDS)
+        r = self.client.get("/api/amenities/rank?" + q)
+        self.assertEqual(r.status_code, 400)
+
+    def test_weights_default_to_a_balanced_mix(self):
+        body = self.client.get("/api/amenities/rank").get_json()
+        self.assertEqual(body["weights"]["mrt"], 3)
+        self.assertEqual(set(body["weights"]), {"mrt", "park", "hawker"})
+        self.assertIn("scale", body)
+
+    def test_kinds_that_were_never_loaded_are_left_out_not_scored_as_zero(self):
+        body = self.client.get("/api/amenities/rank").get_json()
+        self.assertEqual(body["not_loaded"], ["childcare", "gym", "primary_school", "secondary_school"])
+        self.assertNotIn("gym", body["weights"])
+        self.assertNotIn("gym", body["results"][0]["scores"])
+
+    def test_weighting_only_unloaded_kinds_is_a_400(self):
+        r = self.client.get("/api/amenities/rank?w_gym=5&w_mrt=0&w_park=0&w_hawker=0")
+        self.assertEqual(r.status_code, 400)
+
+
 class StatusAndResults(ApiBase):
     def test_status_counts(self):
         body = self.client.get("/api/amenities/status").get_json()

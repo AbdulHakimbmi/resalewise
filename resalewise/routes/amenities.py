@@ -1,12 +1,16 @@
-"""Nearby amenities: what is around a block.
+"""Nearby amenities: what is around a block, and which blocks fit your priorities.
 
 GET /api/amenities/status          what has been loaded
 GET /api/amenities/block/<id>      distances, counts and scores for one block
+GET /api/amenities/rank            blocks ranked by how well they match the weights you give
 
-Each kind of place scores 0-100 by how close the nearest one is (100 inside a short
-distance, falling in a straight line to 0 at a longer one: see resalewise/amenities.py).
-The model-based location premium (analysis/amenity_model.py) is shown next to it when it
-has been computed; it is an association in past sales, not a cause.
+The score is deliberately simple and explained on the page: each kind of place
+scores 0-100 by how close the nearest one is (100 inside a short distance, falling in
+a straight line to 0 at a longer one: see resalewise/amenities.py), and the overall
+score is the weighted average using the weights the user picks. It is a way to sort
+by YOUR priorities, not a verdict on which block is "best". The model-based location
+premium (analysis/amenity_model.py) is shown next to it when it has been computed;
+it is an association in past sales, not a cause.
 
 Every endpoint answers {"available": false} until the pipeline has been run.
 """
@@ -16,9 +20,12 @@ from flask import Blueprint, jsonify, request
 
 from .. import amenities as am
 from .. import db
-from ..web import ApiError, cache_json
+from ..benchmarks import norm_flat_type
+from ..web import ApiError, arg_float, arg_int, arg_str, cache_json
 
 bp = Blueprint("amenities", __name__)
+
+DEFAULT_WEIGHTS = {"mrt": 3, "park": 2, "hawker": 2, "gym": 1, "childcare": 1, "primary_school": 2, "secondary_school": 1}
 
 
 def _ready():
@@ -105,3 +112,94 @@ def block(block_id):
     return jsonify({"available": True, "block_id": block_id, "items": items, "premium": premium,
                     "places": _places(block_id),
                     "note": "Straight-line distances; walking time assumes about 80 m a minute with a 30 % detour."})
+
+
+def _weights():
+    w = {k.kind: arg_float(request.args, "w_" + k.kind, DEFAULT_WEIGHTS.get(k.kind, 0), lo=0, hi=5)
+         for k in am.SCORE_KINDS}
+    if not any(v > 0 for v in w.values()):
+        raise ApiError("Give at least one priority a weight above 0.", 400, "invalid_parameter")
+    return w
+
+
+@bp.route("/api/amenities/rank")
+@amenities_required
+@cache_json(300)
+def rank():
+    weights = _weights()
+    loaded = {r["kind"] for r in db.q("SELECT DISTINCT kind FROM block_amenity_features")}
+    if db.has_relation("block_features"):
+        loaded.add("mrt")
+    unloaded = sorted(k for k in weights if k not in loaded)
+    weights = {k: w for k, w in weights.items() if k in loaded}   # a kind with no data cannot be scored
+    if not any(w > 0 for w in weights.values()):
+        raise ApiError("None of the places you weighted have been loaded yet.", 400, "invalid_parameter")
+    flat_type = norm_flat_type(arg_str(request.args, "flat_type", "4 ROOM"))
+    town = arg_str(request.args, "town")
+    max_price = arg_int(request.args, "max_price", None, lo=0, hi=5_000_000)
+    months = arg_int(request.args, "months", 24, lo=1, hi=120)
+    min_sales = arg_int(request.args, "min_sales", 3, lo=1, hi=50)
+    limit = arg_int(request.args, "limit", 20, lo=1, hi=50)
+
+    sql = """
+      SELECT b.block_id, b.block_no, b.street_name, tw.town_name,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY t.resale_price))::int AS median_price,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY t.resale_price / NULLIF(t.floor_area_sqm, 0)))::int AS median_psm,
+             COUNT(*)::int AS n_sales,
+             (ARRAY_AGG(t.txn_id ORDER BY t.month DESC, t.txn_id DESC))[1] AS latest_txn_id
+      FROM resale_transactions t
+      JOIN blocks b      ON b.block_id = t.block_id
+      JOIN towns tw      ON tw.town_id = b.town_id
+      JOIN flat_types ft ON ft.flat_type_id = t.flat_type_id
+      WHERE UPPER(REPLACE(ft.flat_type_name, '-', ' ')) = %s
+        AND t.month >= ((SELECT MAX(month) FROM resale_transactions) - make_interval(months => %s))"""
+    params = [flat_type, months]
+    if town:
+        sql += " AND tw.town_name = %s"
+        params.append(town.upper())
+    sql += " GROUP BY b.block_id, b.block_no, b.street_name, tw.town_name HAVING COUNT(*) >= %s"
+    params.append(min_sales)
+    blocks = db.q(sql, params)
+    if max_price is not None:
+        blocks = [b for b in blocks if b["median_price"] is not None and b["median_price"] <= max_price]
+
+    ids = [b["block_id"] for b in blocks]
+    dist, counts = {}, {}
+    if ids:
+        for r in db.q("SELECT block_id, kind, nearest_m::float AS nearest_m, within_1km "
+                      "FROM block_amenity_features WHERE block_id = ANY(%s)", [ids]):
+            dist.setdefault(r["block_id"], {})[r["kind"]] = r["nearest_m"]
+            counts.setdefault(r["block_id"], {})[r["kind"]] = r["within_1km"]
+        if db.has_relation("block_features"):
+            for r in db.q("SELECT block_id, nearest_mrt_m::float AS m, stations_within_1km "
+                          "FROM block_features WHERE block_id = ANY(%s)", [ids]):
+                if r["m"] is not None:
+                    dist.setdefault(r["block_id"], {})["mrt"] = r["m"]
+                    counts.setdefault(r["block_id"], {})["mrt"] = r["stations_within_1km"]
+    premium = {}
+    if ids and db.has_relation("block_location_premium"):
+        premium = {r["block_id"]: r["premium_pct"] for r in db.q(
+            "SELECT block_id, premium_pct::float AS premium_pct FROM block_location_premium "
+            "WHERE block_id = ANY(%s)", [ids])}
+
+    ranked, without = [], 0
+    for b in blocks:
+        d = dist.get(b["block_id"])
+        if not d:
+            without += 1                       # not located: cannot be scored
+            continue
+        score, per = am.composite_score(d, weights)
+        ranked.append({**b, "score": score, "scores": {k: round(v, 1) for k, v in per.items() if k in loaded},
+                       "nearest_m": {k: round(v, 1) for k, v in d.items() if v is not None},
+                       "walk_min": {k: am.walk_minutes(v) for k, v in d.items() if v is not None},
+                       "within_1km": counts.get(b["block_id"], {}),
+                       "premium_pct": premium.get(b["block_id"])})
+    ranked.sort(key=lambda r: (-r["score"], r["median_price"] or 0, r["block_id"]))
+    return jsonify({"available": True, "flat_type": flat_type, "town": town.upper() if town else None,
+                    "months": months, "max_price": max_price, "weights": weights, "not_loaded": unloaded,
+                    "candidates": len(blocks), "scored": len(ranked), "not_located": without,
+                    "results": ranked[:limit],
+                    "scale": {k.kind: {"label": k.label, "full_score_within_m": k.full_m, "zero_score_at_m": k.zero_m}
+                              for k in am.SCORE_KINDS},
+                    "note": "Sorted by how close each block is to what you weighted; a higher score is not "
+                            "a verdict that a block is better value. Straight-line distances."})

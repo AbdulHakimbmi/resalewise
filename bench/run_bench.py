@@ -21,6 +21,9 @@ Workloads
   W4  nearest station               PostGIS KNN (GiST) vs $geoNear (2dsphere)
   W5  blocks within 1 km            ST_DWithin vs $geoWithin/$centerSphere
   W6  bulk load                     COPY vs insert_many, rows per second
+  W7  single-row writes             insert, update, delete one sale, committed, at two durability
+                                    levels (see writes()); normalised PostgreSQL vs MongoDB only,
+                                    since the flat table is a materialized view
 
 Protocol
   1. Equivalence first: every workload is checked on 20 parameter sets; a
@@ -31,10 +34,12 @@ Protocol
   3. Warm-up runs are discarded; then N measured runs per configuration.
   4. Client-observed latency (includes driver decoding), p50/p95/p99 and a
      bootstrap 95 % confidence interval for the median.
-  5. Throughput under concurrency (1, 4, 8 threads) for W1 and W4.
+  5. Throughput under concurrency (1, 2, 4, 8 threads) for W1 and W4. Each database
+     container has a CPU limit (docker-compose.yml); it is saved with the results because
+     it, not the engine, sets the ceiling once there are more threads than CPUs.
   6. Query plans: EXPLAIN (ANALYZE, BUFFERS) and explain("executionStats").
-  7. Environment (versions, settings, CPU) and the index parity table are
-     saved with the results.
+  7. Environment (versions, settings, CPU, container limits), storage size of each data
+     model and the index parity table are saved with the results.
 Writes data/results/benchmark.json (+ raw latencies in bench/results/raw/).
 
 --no-index is the control experiment for step 3 of the protocol. It copies the
@@ -52,6 +57,7 @@ import json
 import os
 import platform
 import random
+import subprocess
 import sys
 import threading
 import time
@@ -66,7 +72,7 @@ import psycopg2  # noqa: E402
 import psycopg2.extras  # noqa: E402
 
 from resalewise import config, db as rdb  # noqa: E402
-from resalewise.geo import R_MONGO  # noqa: E402
+from resalewise.geo import R_MEAN, R_MONGO  # noqa: E402
 
 RAW_DIR = os.path.join(ROOT, "bench", "results", "raw")
 OUT = os.path.join(ROOT, "data", "results", "benchmark.json")
@@ -134,7 +140,7 @@ class Workload:
     def params(self, rng, n):
         raise NotImplementedError
 
-    def same(self, a, b):
+    def same(self, a, b, p=None):
         return a == b, None
 
 
@@ -241,7 +247,7 @@ class W2(Workload):
             {"$group": {"_id": "$town", "m": {"$median": {"input": "$price", "method": "approximate"}}}}])
         return {d["_id"]: float(d["m"]) for d in rows}
 
-    def same(self, a, b):
+    def same(self, a, b, p=None):
         return _medians_close(a, b)
 
 
@@ -278,7 +284,7 @@ class W3(Workload):
                         "m": {"$median": {"input": "$price", "method": "approximate"}}}}])
         return {d["_id"].date().isoformat(): float(d["m"]) for d in rows}
 
-    def same(self, a, b):
+    def same(self, a, b, p=None):
         return _medians_close(a, b)
 
 
@@ -307,7 +313,7 @@ class W4(Workload):
                           "distanceField": "d", "spherical": True, "key": "loc"}}, {"$limit": 1}]))
         return (d["_id"], d["d"])
 
-    def same(self, a, b):
+    def same(self, a, b, p=None):
         ok = a[0] == b[0] and abs(a[1] - b[1]) <= 0.002 * max(a[1], 1) + 0.05
         return ok, {"pg": a, "mongo": b} if not ok else None
 
@@ -335,10 +341,21 @@ class W5(Workload):
         return {d["_id"] for d in mongo().blocks_geo.find(
             {"loc": {"$geoWithin": {"$centerSphere": [[p["lon"], p["lat"]], 1000 / R_MONGO]}}}, {"_id": 1})}
 
-    def same(self, a, b):
+    def same(self, a, b, p=None):
+        """MongoDB measures on a sphere 0.11 % larger than PostGIS's, so a block 999-1000 m away can be
+        inside in one and outside in the other. On the same radius the two sets must be identical."""
         union = a | b
-        j = len(a & b) / len(union) if union else 1.0
-        return j >= 0.98, {"jaccard": round(j, 4), "only_pg": len(a - b), "only_mongo": len(b - a)}
+        d = {"jaccard": round(len(a & b) / len(union), 4) if union else 1.0,
+             "only_pg": len(a - b), "only_mongo": len(b - a)}
+        if a == b:
+            return True, d
+        cur = pg()
+        cur.execute("""SELECT block_id FROM block_locations
+                       WHERE ST_DWithin(geog, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography, %s, false)""",
+                    [p["lon"], p["lat"], 1000 * R_MEAN / R_MONGO])
+        same_radius = {r[0] for r in cur.fetchall()}
+        d["same_on_mongodb_radius"] = same_radius == b
+        return same_radius == b, d
 
 
 # ----------------------------------------------------------------------------
@@ -414,7 +431,7 @@ def equivalence(w, params):
         answers = {c: getattr(w, c)(p) for c in w.configs}
         ok_all = True
         for c in w.configs[1:]:
-            ok, d = w.same(answers[reference], answers[c])
+            ok, d = w.same(answers[reference], answers[c], p)
             if not ok:
                 ok_all = False
                 if len(failures) < 5:
@@ -448,11 +465,16 @@ def concurrency(w, params, threads, seconds):
     for c in w.configs:
         fn = getattr(w, c)
         for n in threads:
-            stop = time.perf_counter() + seconds
-            lat, lock = [], threading.Lock()
+            lat, lock, clock = [], threading.Lock(), {}
+            # every thread connects and runs once before the clock starts: opening a
+            # connection is not part of the workload (MongoDB's client is already open)
+            start = threading.Barrier(n, action=lambda: clock.update(stop=time.perf_counter() + seconds))
 
             def worker(k):
                 i = k
+                fn(params[i % len(params)])
+                start.wait()
+                stop = clock["stop"]
                 while time.perf_counter() < stop:
                     ms, _ = timed(fn, params[i % len(params)])
                     with lock:
@@ -498,6 +520,136 @@ def bulk_load(rows_n, repeats):
         v = res[k]
         res[k] = {"rows_per_s_median": int(np.median(v)), "runs": v}
     return res
+
+
+# ----------------------------------------------------------------------------
+# W7: single-row writes. Each run inserts a copy of an existing sale under a new id,
+# updates its price, deletes it, and times the three statements separately (each
+# committed). Net effect on the data: none. Two durability levels, so the engines
+# are compared on the same promise:
+#   durable  PostgreSQL synchronous_commit = on  (waits for the WAL flush)
+#            MongoDB    w=1, j=true               (waits for the journal)
+#   fast     PostgreSQL synchronous_commit = off
+#            MongoDB    w=1, j=false              (the default on a standalone server)
+# ----------------------------------------------------------------------------
+WRITE_ID_BASE = 9_000_000_000            # far above any real txn_id / _id
+TXN_COLS = ("month", "block_id", "flat_type_id", "flat_model_id", "storey_low", "storey_high",
+            "floor_area_sqm", "lease_commence_date", "remaining_lease_months", "resale_price")
+
+
+def _write_templates(ctx, rng, n):
+    cur = pg()
+    ids = [rng.randint(1, ctx["max_txn_id"]) for _ in range(n)]
+    cur.execute(f"SELECT txn_id, {', '.join(TXN_COLS)} FROM resale_transactions WHERE txn_id = ANY(%s)", [ids])
+    rows = {r[0]: r[1:] for r in cur.fetchall()}
+    docs = {d["_id"]: d for d in mongo()[TXN].find({"_id": {"$in": list(rows)}})}
+    return [(rows[i], docs[i]) for i in ids if i in rows and i in docs]
+
+
+def _cleanup_writes():
+    pg().execute("DELETE FROM resale_transactions WHERE txn_id >= %s", [WRITE_ID_BASE])
+    mongo()[TXN].delete_many({"_id": {"$gte": WRITE_ID_BASE}})
+
+
+def writes(ctx, runs, warmup, stat_rng, rng):
+    from pymongo import WriteConcern
+    templates = _write_templates(ctx, rng, runs + warmup)
+    ins_sql = (f"INSERT INTO resale_transactions (txn_id, {', '.join(TXN_COLS)}) "
+               f"VALUES (%s, {', '.join(['%s'] * len(TXN_COLS))})")
+    out = {"configs": ["postgres", "mongodb"], "ops": ["insert", "update", "delete"], "modes": {}}
+    _cleanup_writes()
+    try:
+        # equivalence: after each step both engines must hold the same price, or nothing
+        checked = passed = 0
+        coll = mongo()[TXN].with_options(write_concern=WriteConcern(w=1, j=True))
+        cur = pg()
+        for k, (row, doc) in enumerate(templates[:20]):
+            new_id = WRITE_ID_BASE + k
+            cur.execute(ins_sql, [new_id, *row])
+            coll.insert_one(dict(doc, _id=new_id))
+            cur.execute("UPDATE resale_transactions SET resale_price = resale_price + 1000 WHERE txn_id = %s", [new_id])
+            coll.update_one({"_id": new_id}, {"$inc": {"price": 1000}})
+            cur.execute("SELECT resale_price FROM resale_transactions WHERE txn_id = %s", [new_id])
+            same_price = float(cur.fetchone()[0]) == float(coll.find_one({"_id": new_id})["price"])
+            cur.execute("DELETE FROM resale_transactions WHERE txn_id = %s", [new_id])
+            coll.delete_one({"_id": new_id})
+            cur.execute("SELECT COUNT(*) FROM resale_transactions WHERE txn_id = %s", [new_id])
+            gone = cur.fetchone()[0] == 0 and coll.count_documents({"_id": new_id}) == 0
+            checked += 1
+            passed += same_price and gone
+        out["equivalence"] = {"checked": checked, "passed": passed}
+
+        for mode, sync, journal in (("durable", "on", True), ("fast", "off", False)):
+            cur = pg()
+            cur.execute(f"SET synchronous_commit = {sync}")
+            coll = mongo()[TXN].with_options(write_concern=WriteConcern(w=1, j=journal))
+            lat = {op: {"postgres": [], "mongodb": []} for op in out["ops"]}
+            for i, (row, doc) in enumerate(templates):
+                new_id = WRITE_ID_BASE + 1000 + i
+                steps = {
+                    "postgres": [("insert", lambda: cur.execute(ins_sql, [new_id, *row])),
+                                 ("update", lambda: cur.execute("UPDATE resale_transactions SET resale_price = "
+                                                                "resale_price + 1000 WHERE txn_id = %s", [new_id])),
+                                 ("delete", lambda: cur.execute("DELETE FROM resale_transactions WHERE txn_id = %s",
+                                                                [new_id]))],
+                    "mongodb": [("insert", lambda: coll.insert_one(dict(doc, _id=new_id))),
+                                ("update", lambda: coll.update_one({"_id": new_id}, {"$inc": {"price": 1000}})),
+                                ("delete", lambda: coll.delete_one({"_id": new_id}))],
+                }
+                order = ("postgres", "mongodb") if i % 2 == 0 else ("mongodb", "postgres")   # rotate
+                for c in order:
+                    for op, fn in steps[c]:
+                        t0 = time.perf_counter()
+                        fn()
+                        ms = (time.perf_counter() - t0) * 1000.0
+                        if i >= warmup:
+                            lat[op][c].append(ms)
+            cur.execute("RESET synchronous_commit")
+            out["modes"][mode] = {op: {c: summarise(v, stat_rng) for c, v in by_cfg.items()}
+                                  for op, by_cfg in lat.items()}
+            for op in out["ops"]:
+                m = out["modes"][mode][op]
+                print(f"    W7 {mode:7s} {op:6s} postgres p50 {m['postgres']['p50_ms']:7.3f} ms   "
+                      f"mongodb p50 {m['mongodb']['p50_ms']:7.3f} ms")
+    finally:
+        _cleanup_writes()
+    out["note"] = ("PostgreSQL checks 3 foreign keys and 6 CHECK constraints and updates 8 indexes per insert; "
+                   "MongoDB checks the $jsonSchema validator and updates 6 indexes (incl. _id).")
+    return out
+
+
+def storage():
+    """Bytes on disk for each data model: the normalised tables, the flat table, the collection."""
+    cur = pg()
+    cur.execute("""SELECT SUM(pg_table_size(c.oid)), SUM(pg_indexes_size(c.oid))
+                   FROM pg_class c WHERE c.relname = ANY(%s)""",
+                [["resale_transactions", "blocks", "towns", "flat_types", "flat_models"]])
+    nt, ni = cur.fetchone()
+    cur.execute("SELECT pg_table_size('bench_txn_flat'), pg_indexes_size('bench_txn_flat')")
+    ft, fi = cur.fetchone()
+    st = mongo().command("collStats", TXN)
+    mb = lambda b: round(int(b) / 1048576, 1)   # noqa: E731
+    return {"postgres": {"data_mb": mb(nt), "index_mb": mb(ni)},
+            "postgres_flat": {"data_mb": mb(ft), "index_mb": mb(fi)},
+            "mongodb": {"data_mb": mb(st["storageSize"]), "index_mb": mb(st["totalIndexSize"]),
+                        "uncompressed_data_mb": mb(st["size"])},
+            "note": "PostgreSQL stores rows uncompressed; MongoDB's WiredTiger compresses data (snappy) "
+                    "and index prefixes, so its on-disk size is smaller than the BSON it holds."}
+
+
+def container_limits():
+    """CPU and memory limits of the local database containers, if Docker is how they run."""
+    out = {}
+    for name in ("resalewise-postgres", "resalewise-mongo"):
+        try:
+            r = subprocess.run(["docker", "inspect", name, "--format",
+                                "{{.HostConfig.NanoCpus}} {{.HostConfig.Memory}}"],
+                               capture_output=True, text=True, timeout=10)
+            cpus, mem = r.stdout.split()
+            out[name] = {"cpus": int(cpus) / 1e9 or None, "memory_gb": round(int(mem) / 2**30, 1) or None}
+        except Exception:
+            out[name] = None
+    return out
 
 
 def _walk(node, key):
@@ -678,7 +830,7 @@ def environment():
     return {"postgres": pg_version.split(",")[0], "postgis": r[0] if r else None, "postgres_settings": settings,
             "mongodb": info.get("version"), "python": platform.python_version(),
             "os": f"{platform.system()} {platform.release()}", "cpu_count": os.cpu_count(),
-            "machine": platform.machine(), "rows_postgres": n_pg,
+            "machine": platform.machine(), "rows_postgres": n_pg, "containers": container_limits(),
             "docs_mongodb": mongo().transactions.estimated_document_count()}
 
 
@@ -757,12 +909,17 @@ def main():
     print("Concurrency ...")
     conc = [w for w in workloads if w.id in ("W1", "W4")]
     for w in conc:
-        results["concurrency"] += concurrency(w, w_params[w.id], (1, 4, 8), args.concurrency_seconds)
+        results["concurrency"] += concurrency(w, w_params[w.id], (1, 2, 4, 8), args.concurrency_seconds)
 
     print("W6 bulk load ...")
     results["bulk_load"] = bulk_load(args.bulk_rows, args.bulk_repeats)
     print(f"    COPY {results['bulk_load']['postgres_copy']['rows_per_s_median']:,} rows/s   "
           f"insert_many {results['bulk_load']['mongodb_insert_many']['rows_per_s_median']:,} docs/s")
+
+    print("W7 single-row writes ...")
+    results["writes"] = writes(ctx, args.runs, args.warmup, stat_rng, random.Random(args.seed + 7))
+    results["storage"] = storage()
+    print("    storage (MB data + index):", {k: v for k, v in results["storage"].items() if k != "note"})
 
     print("Query plans and index parity ...")
     results["explain"] = explains(ctx, w_params["W1"][0], w_params["W2"][0])

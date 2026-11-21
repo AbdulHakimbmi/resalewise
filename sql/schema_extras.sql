@@ -6,6 +6,10 @@
 -- (see docs/data_profile.md); nothing in the real data violates them.
 
 -- ---------------------------------------------------------------------------
+-- 0. Data fix for databases loaded before it: the cleaned CSV turned "ST. GEORGE'S"
+--    (Saint) into "STREET. GEORGE'S", so OneMap could not find those 27 blocks.
+UPDATE blocks SET street_name = 'ST. ' || substr(street_name, 9) WHERE street_name LIKE 'STREET. %';
+
 -- 1. Integrity constraints (CHECK), added NOT VALID then validated, so the
 --    table is not locked for a full rewrite and an existing database can be
 --    upgraded in place.

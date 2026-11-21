@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-26T03:10:45+00:00",
+  "generated_at": "2026-11-14T09:41:36+00:00",
   "since": "2017-01-01",
   "sales_considered": 238611,
   "bootstrap": 2000,
   "seed": 2003,
   "geo_features": true,
-  "excluded_station_not_open": 4818,
+  "excluded_station_not_open": 4934,
   "outcome": "price per sqm relative to the median of the same town, flat type and quarter",
   "drivers": [
     {
@@ -59,13 +59,13 @@
         "area_band",
         "lease_band"
       ],
-      "effect_pct": 11.35,
-      "ci_low": 9.42,
-      "ci_high": 13.38,
-      "naive_pct": 3.77,
-      "n_strata": 106,
-      "n_sales": 41155,
-      "share_strata_positive": 0.915,
+      "effect_pct": 12.85,
+      "ci_low": 11.33,
+      "ci_high": 14.45,
+      "naive_pct": 4.23,
+      "n_strata": 107,
+      "n_sales": 40584,
+      "share_strata_positive": 0.953,
       "status": "ok"
     },
     {
@@ -80,13 +80,13 @@
         "area_band",
         "lease_band"
       ],
-      "effect_pct": 3.8,
-      "ci_low": 2.99,
-      "ci_high": 4.7,
-      "naive_pct": 0.8,
-      "n_strata": 132,
-      "n_sales": 57758,
-      "share_strata_positive": 0.803,
+      "effect_pct": 3.98,
+      "ci_low": 3.24,
+      "ci_high": 4.8,
+      "naive_pct": 1.18,
+      "n_strata": 139,
+      "n_sales": 58760,
+      "share_strata_positive": 0.799,
       "status": "ok"
     }
   ],

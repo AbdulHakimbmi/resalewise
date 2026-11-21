@@ -99,7 +99,8 @@ CREATE TABLE users (
     email         VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     name          VARCHAR(80),
-    created_at    TIMESTAMP NOT NULL DEFAULT now()
+    created_at    TIMESTAMP NOT NULL DEFAULT now(),
+    is_admin      BOOLEAN NOT NULL DEFAULT FALSE   -- the admin area (sql/admin.sql)
 );
 
 -- Many-to-many: a user saves many sales; a sale can be saved by many users.
@@ -201,6 +202,8 @@ def main():
     df["flat_model"] = norm(df["flat_model"])
     df["block"] = df["block"].str.strip().str.upper()
     df["street_name"] = df["street_name"].str.strip().str.upper()
+    # the cleaned CSV expanded "ST." (Saint) to "STREET.", which OneMap can't find
+    df["street_name"] = df["street_name"].str.replace(r"^STREET\. ", "ST. ", regex=True)
     df["month"] = pd.to_datetime(df["month"], errors="coerce")
 
     num = {c: pd.to_numeric(df[src], errors="coerce") for c, src in [

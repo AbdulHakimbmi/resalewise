@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-26T03:12:14+00:00",
-  "label": "Laptop, Docker, plugged in",
+  "generated_at": "2026-11-14T10:00:00+00:00",
+  "label": "Laptop, Docker, 2 CPUs per database container (run 2)",
   "environment": {
     "postgres": "PostgreSQL 17.5 (Debian 17.5-1.pgdg110+1) on x86_64-pc-linux-gnu",
     "postgis": "3.5.2",
@@ -12,11 +12,21 @@
       "effective_cache_size": "4GB"
     },
     "mongodb": "8.0.34",
-    "python": "3.13.14",
+    "python": "3.12.10",
     "os": "Windows 11",
-    "cpu_count": 14,
+    "cpu_count": 20,
     "machine": "AMD64",
     "rows_postgres": 985219,
+    "containers": {
+      "resalewise-postgres": {
+        "cpus": 2.0,
+        "memory_gb": 2.0
+      },
+      "resalewise-mongo": {
+        "cpus": 2.0,
+        "memory_gb": 2.0
+      }
+    },
     "docs_mongodb": 985219
   },
   "protocol": {
@@ -47,42 +57,42 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 2.421,
-          "p50_ms": 2.359,
+          "mean_ms": 1.62,
+          "p50_ms": 1.524,
           "p50_ci95": [
-            2.197,
-            2.445
+            1.487,
+            1.569
           ],
-          "p95_ms": 3.941,
-          "p99_ms": 6.303,
-          "min_ms": 1.018,
-          "max_ms": 10.883
+          "p95_ms": 2.436,
+          "p99_ms": 2.913,
+          "min_ms": 1.08,
+          "max_ms": 3.648
         },
         "postgres_flat": {
           "n": 300,
-          "mean_ms": 1.751,
-          "p50_ms": 1.634,
+          "mean_ms": 1.175,
+          "p50_ms": 1.086,
           "p50_ci95": [
-            1.526,
-            1.728
+            1.059,
+            1.122
           ],
-          "p95_ms": 3.062,
-          "p99_ms": 4.751,
-          "min_ms": 0.707,
-          "max_ms": 6.764
+          "p95_ms": 1.791,
+          "p99_ms": 2.071,
+          "min_ms": 0.782,
+          "max_ms": 3.743
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 2.832,
-          "p50_ms": 2.668,
+          "mean_ms": 1.603,
+          "p50_ms": 1.475,
           "p50_ci95": [
-            2.551,
-            2.829
+            1.434,
+            1.539
           ],
-          "p95_ms": 4.516,
-          "p99_ms": 6.28,
-          "min_ms": 1.036,
-          "max_ms": 15.439
+          "p95_ms": 2.375,
+          "p99_ms": 3.156,
+          "min_ms": 1.038,
+          "max_ms": 4.272
         }
       }
     },
@@ -104,42 +114,42 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 7.404,
-          "p50_ms": 7.121,
+          "mean_ms": 5.356,
+          "p50_ms": 4.984,
           "p50_ci95": [
-            6.668,
-            7.674
+            4.789,
+            5.144
           ],
-          "p95_ms": 12.681,
-          "p99_ms": 15.29,
-          "min_ms": 2.882,
-          "max_ms": 17.567
+          "p95_ms": 8.722,
+          "p99_ms": 9.912,
+          "min_ms": 3.144,
+          "max_ms": 11.226
         },
         "postgres_flat": {
           "n": 300,
-          "mean_ms": 2.035,
-          "p50_ms": 1.803,
+          "mean_ms": 1.294,
+          "p50_ms": 1.238,
           "p50_ci95": [
-            1.71,
-            1.929
+            1.2,
+            1.269
           ],
-          "p95_ms": 3.942,
-          "p99_ms": 4.981,
-          "min_ms": 0.754,
-          "max_ms": 6.226
+          "p95_ms": 1.786,
+          "p99_ms": 2.615,
+          "min_ms": 0.943,
+          "max_ms": 2.944
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 3.407,
-          "p50_ms": 3.107,
+          "mean_ms": 2.011,
+          "p50_ms": 1.925,
           "p50_ci95": [
-            2.96,
-            3.217
+            1.886,
+            2.0
           ],
-          "p95_ms": 5.987,
-          "p99_ms": 7.608,
-          "min_ms": 1.132,
-          "max_ms": 26.192
+          "p95_ms": 2.701,
+          "p99_ms": 3.735,
+          "min_ms": 1.301,
+          "max_ms": 5.37
         }
       }
     },
@@ -174,42 +184,42 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 17.463,
-          "p50_ms": 16.231,
+          "mean_ms": 17.181,
+          "p50_ms": 16.643,
           "p50_ci95": [
-            15.434,
-            17.139
+            15.907,
+            17.337
           ],
-          "p95_ms": 28.978,
-          "p99_ms": 33.22,
-          "min_ms": 7.667,
-          "max_ms": 35.456
+          "p95_ms": 26.224,
+          "p99_ms": 31.621,
+          "min_ms": 9.07,
+          "max_ms": 40.736
         },
         "postgres_flat": {
           "n": 300,
-          "mean_ms": 8.422,
-          "p50_ms": 6.857,
+          "mean_ms": 7.041,
+          "p50_ms": 6.821,
           "p50_ci95": [
-            6.486,
-            7.429
+            6.477,
+            7.241
           ],
-          "p95_ms": 18.3,
-          "p99_ms": 23.722,
-          "min_ms": 2.125,
-          "max_ms": 39.351
+          "p95_ms": 12.523,
+          "p99_ms": 15.872,
+          "min_ms": 2.222,
+          "max_ms": 18.29
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 19.804,
-          "p50_ms": 17.673,
+          "mean_ms": 21.279,
+          "p50_ms": 20.758,
           "p50_ci95": [
-            15.953,
-            21.051
+            19.583,
+            21.398
           ],
-          "p95_ms": 36.064,
-          "p99_ms": 45.614,
-          "min_ms": 5.209,
-          "max_ms": 57.605
+          "p95_ms": 40.042,
+          "p99_ms": 48.728,
+          "min_ms": 5.475,
+          "max_ms": 59.335
         }
       }
     },
@@ -244,42 +254,42 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 27.746,
-          "p50_ms": 25.541,
+          "mean_ms": 28.525,
+          "p50_ms": 25.426,
           "p50_ci95": [
-            23.584,
-            26.536
+            24.119,
+            27.521
           ],
-          "p95_ms": 48.79,
-          "p99_ms": 62.532,
-          "min_ms": 8.805,
-          "max_ms": 111.076
+          "p95_ms": 50.658,
+          "p99_ms": 60.041,
+          "min_ms": 10.313,
+          "max_ms": 65.593
         },
         "postgres_flat": {
           "n": 300,
-          "mean_ms": 13.455,
-          "p50_ms": 11.599,
+          "mean_ms": 10.479,
+          "p50_ms": 9.553,
           "p50_ci95": [
-            10.863,
-            12.731
+            8.796,
+            10.247
           ],
-          "p95_ms": 26.581,
-          "p99_ms": 39.414,
-          "min_ms": 2.606,
-          "max_ms": 64.768
+          "p95_ms": 18.799,
+          "p99_ms": 21.384,
+          "min_ms": 2.407,
+          "max_ms": 31.242
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 32.199,
-          "p50_ms": 29.476,
+          "mean_ms": 33.264,
+          "p50_ms": 29.374,
           "p50_ci95": [
-            27.54,
-            31.344
+            27.75,
+            32.831
           ],
-          "p95_ms": 60.031,
-          "p99_ms": 84.711,
-          "min_ms": 4.187,
-          "max_ms": 134.126
+          "p95_ms": 63.497,
+          "p99_ms": 85.167,
+          "min_ms": 5.859,
+          "max_ms": 88.289
         }
       }
     },
@@ -300,29 +310,29 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 1.4,
-          "p50_ms": 1.234,
+          "mean_ms": 1.135,
+          "p50_ms": 1.056,
           "p50_ci95": [
-            1.196,
-            1.288
+            1.021,
+            1.098
           ],
-          "p95_ms": 2.248,
-          "p99_ms": 4.294,
-          "min_ms": 0.648,
-          "max_ms": 6.874
+          "p95_ms": 1.671,
+          "p99_ms": 2.33,
+          "min_ms": 0.779,
+          "max_ms": 2.452
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 2.789,
-          "p50_ms": 2.665,
+          "mean_ms": 2.199,
+          "p50_ms": 2.073,
           "p50_ci95": [
-            2.553,
-            2.758
+            1.975,
+            2.187
           ],
-          "p95_ms": 4.329,
-          "p99_ms": 6.215,
-          "min_ms": 1.303,
-          "max_ms": 7.75
+          "p95_ms": 3.346,
+          "p99_ms": 3.881,
+          "min_ms": 1.32,
+          "max_ms": 4.124
         }
       }
     },
@@ -347,8 +357,8 @@
           },
           {
             "config": "mongodb",
-            "jaccard": 0.9902,
-            "only_pg": 2,
+            "jaccard": 1.0,
+            "only_pg": 0,
             "only_mongo": 0
           },
           {
@@ -362,29 +372,29 @@
       "latency": {
         "postgres": {
           "n": 300,
-          "mean_ms": 2.604,
-          "p50_ms": 2.547,
+          "mean_ms": 1.45,
+          "p50_ms": 1.324,
           "p50_ci95": [
-            2.483,
-            2.639
+            1.283,
+            1.376
           ],
-          "p95_ms": 3.635,
-          "p99_ms": 4.303,
-          "min_ms": 1.239,
-          "max_ms": 5.451
+          "p95_ms": 2.389,
+          "p99_ms": 2.823,
+          "min_ms": 0.875,
+          "max_ms": 3.463
         },
         "mongodb": {
           "n": 300,
-          "mean_ms": 3.841,
-          "p50_ms": 3.355,
+          "mean_ms": 2.405,
+          "p50_ms": 1.965,
           "p50_ci95": [
-            2.997,
-            3.784
+            1.772,
+            2.42
           ],
-          "p95_ms": 6.684,
-          "p99_ms": 7.243,
-          "min_ms": 1.006,
-          "max_ms": 7.534
+          "p95_ms": 4.723,
+          "p99_ms": 5.81,
+          "min_ms": 1.021,
+          "max_ms": 6.531
         }
       }
     }
@@ -394,121 +404,161 @@
       "workload": "W1",
       "config": "postgres",
       "threads": 1,
-      "ops_per_s": 118.7,
-      "p50_ms": 6.201,
-      "p95_ms": 12.037
+      "ops_per_s": 168.2,
+      "p50_ms": 5.362,
+      "p95_ms": 10.109
+    },
+    {
+      "workload": "W1",
+      "config": "postgres",
+      "threads": 2,
+      "ops_per_s": 344.5,
+      "p50_ms": 5.352,
+      "p95_ms": 9.439
     },
     {
       "workload": "W1",
       "config": "postgres",
       "threads": 4,
-      "ops_per_s": 419.7,
-      "p50_ms": 4.693,
-      "p95_ms": 36.63
+      "ops_per_s": 387.4,
+      "p50_ms": 6.071,
+      "p95_ms": 45.941
     },
     {
       "workload": "W1",
       "config": "postgres",
       "threads": 8,
-      "ops_per_s": 239.6,
-      "p50_ms": 9.16,
-      "p95_ms": 83.714
+      "ops_per_s": 243.0,
+      "p50_ms": 10.577,
+      "p95_ms": 89.347
     },
     {
       "workload": "W1",
       "config": "postgres_flat",
       "threads": 1,
-      "ops_per_s": 615.6,
-      "p50_ms": 1.084,
-      "p95_ms": 2.443
+      "ops_per_s": 733.2,
+      "p50_ms": 1.273,
+      "p95_ms": 1.965
+    },
+    {
+      "workload": "W1",
+      "config": "postgres_flat",
+      "threads": 2,
+      "ops_per_s": 1623.4,
+      "p50_ms": 1.155,
+      "p95_ms": 1.72
     },
     {
       "workload": "W1",
       "config": "postgres_flat",
       "threads": 4,
-      "ops_per_s": 3196.7,
-      "p50_ms": 0.844,
-      "p95_ms": 1.661
+      "ops_per_s": 2789.8,
+      "p50_ms": 1.307,
+      "p95_ms": 2.226
     },
     {
       "workload": "W1",
       "config": "postgres_flat",
       "threads": 8,
-      "ops_per_s": 5767.6,
-      "p50_ms": 0.956,
-      "p95_ms": 1.861
+      "ops_per_s": 3910.8,
+      "p50_ms": 1.909,
+      "p95_ms": 3.058
     },
     {
       "workload": "W1",
       "config": "mongodb",
       "threads": 1,
-      "ops_per_s": 500.1,
-      "p50_ms": 1.612,
-      "p95_ms": 4.029
+      "ops_per_s": 601.0,
+      "p50_ms": 1.571,
+      "p95_ms": 2.345
+    },
+    {
+      "workload": "W1",
+      "config": "mongodb",
+      "threads": 2,
+      "ops_per_s": 1186.4,
+      "p50_ms": 1.539,
+      "p95_ms": 2.496
     },
     {
       "workload": "W1",
       "config": "mongodb",
       "threads": 4,
-      "ops_per_s": 2500.0,
-      "p50_ms": 1.387,
-      "p95_ms": 2.711
+      "ops_per_s": 2103.9,
+      "p50_ms": 1.681,
+      "p95_ms": 3.169
     },
     {
       "workload": "W1",
       "config": "mongodb",
       "threads": 8,
-      "ops_per_s": 3042.2,
-      "p50_ms": 2.349,
-      "p95_ms": 4.376
+      "ops_per_s": 2072.6,
+      "p50_ms": 3.441,
+      "p95_ms": 6.979
     },
     {
       "workload": "W4",
       "config": "postgres",
       "threads": 1,
-      "ops_per_s": 909.2,
-      "p50_ms": 0.611,
-      "p95_ms": 1.896
+      "ops_per_s": 951.8,
+      "p50_ms": 1.02,
+      "p95_ms": 1.356
+    },
+    {
+      "workload": "W4",
+      "config": "postgres",
+      "threads": 2,
+      "ops_per_s": 1860.2,
+      "p50_ms": 0.972,
+      "p95_ms": 1.651
     },
     {
       "workload": "W4",
       "config": "postgres",
       "threads": 4,
-      "ops_per_s": 4403.0,
-      "p50_ms": 0.626,
-      "p95_ms": 1.205
+      "ops_per_s": 3569.6,
+      "p50_ms": 1.062,
+      "p95_ms": 1.546
     },
     {
       "workload": "W4",
       "config": "postgres",
       "threads": 8,
-      "ops_per_s": 7572.2,
-      "p50_ms": 0.709,
-      "p95_ms": 1.445
+      "ops_per_s": 5542.4,
+      "p50_ms": 1.373,
+      "p95_ms": 1.995
     },
     {
       "workload": "W4",
       "config": "mongodb",
       "threads": 1,
-      "ops_per_s": 416.4,
-      "p50_ms": 2.162,
-      "p95_ms": 4.372
+      "ops_per_s": 514.3,
+      "p50_ms": 1.783,
+      "p95_ms": 3.089
+    },
+    {
+      "workload": "W4",
+      "config": "mongodb",
+      "threads": 2,
+      "ops_per_s": 986.4,
+      "p50_ms": 1.891,
+      "p95_ms": 2.914
     },
     {
       "workload": "W4",
       "config": "mongodb",
       "threads": 4,
-      "ops_per_s": 2192.7,
-      "p50_ms": 1.555,
-      "p95_ms": 2.957
+      "ops_per_s": 1305.0,
+      "p50_ms": 2.424,
+      "p95_ms": 5.412
     },
     {
       "workload": "W4",
       "config": "mongodb",
       "threads": 8,
-      "ops_per_s": 1865.4,
-      "p50_ms": 2.409,
-      "p95_ms": 7.308
+      "ops_per_s": 1515.7,
+      "p50_ms": 3.735,
+      "p95_ms": 8.836
     }
   ],
   "geo": true,
@@ -522,21 +572,227 @@
   "bulk_load": {
     "rows": 200000,
     "postgres_copy": {
-      "rows_per_s_median": 511976,
+      "rows_per_s_median": 331599,
       "runs": [
-        378178,
-        511976,
-        536275
+        331599,
+        378083,
+        281685
       ]
     },
     "mongodb_insert_many": {
-      "rows_per_s_median": 127967,
+      "rows_per_s_median": 105006,
       "runs": [
-        127967,
-        133880,
-        126096
+        100886,
+        109168,
+        105006
       ]
     }
+  },
+  "writes": {
+    "configs": [
+      "postgres",
+      "mongodb"
+    ],
+    "ops": [
+      "insert",
+      "update",
+      "delete"
+    ],
+    "modes": {
+      "durable": {
+        "insert": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 3.501,
+            "p50_ms": 3.469,
+            "p50_ci95": [
+              3.405,
+              3.562
+            ],
+            "p95_ms": 4.667,
+            "p99_ms": 5.557,
+            "min_ms": 2.044,
+            "max_ms": 6.724
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 3.806,
+            "p50_ms": 3.619,
+            "p50_ci95": [
+              3.515,
+              3.71
+            ],
+            "p95_ms": 5.577,
+            "p99_ms": 6.477,
+            "min_ms": 2.323,
+            "max_ms": 11.831
+          }
+        },
+        "update": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 2.587,
+            "p50_ms": 2.524,
+            "p50_ci95": [
+              2.455,
+              2.606
+            ],
+            "p95_ms": 3.389,
+            "p99_ms": 3.973,
+            "min_ms": 1.886,
+            "max_ms": 5.717
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 3.052,
+            "p50_ms": 2.788,
+            "p50_ci95": [
+              2.753,
+              2.832
+            ],
+            "p95_ms": 4.796,
+            "p99_ms": 5.605,
+            "min_ms": 2.192,
+            "max_ms": 7.074
+          }
+        },
+        "delete": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 2.258,
+            "p50_ms": 2.174,
+            "p50_ci95": [
+              2.147,
+              2.202
+            ],
+            "p95_ms": 2.882,
+            "p99_ms": 3.82,
+            "min_ms": 1.771,
+            "max_ms": 5.945
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 2.873,
+            "p50_ms": 2.657,
+            "p50_ci95": [
+              2.619,
+              2.702
+            ],
+            "p95_ms": 4.328,
+            "p99_ms": 4.808,
+            "min_ms": 2.124,
+            "max_ms": 6.025
+          }
+        }
+      },
+      "fast": {
+        "insert": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 1.301,
+            "p50_ms": 1.229,
+            "p50_ci95": [
+              1.203,
+              1.249
+            ],
+            "p95_ms": 1.818,
+            "p99_ms": 2.384,
+            "min_ms": 0.922,
+            "max_ms": 2.889
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 1.467,
+            "p50_ms": 1.363,
+            "p50_ci95": [
+              1.327,
+              1.397
+            ],
+            "p95_ms": 2.112,
+            "p99_ms": 2.811,
+            "min_ms": 1.019,
+            "max_ms": 4.699
+          }
+        },
+        "update": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 1.167,
+            "p50_ms": 1.12,
+            "p50_ci95": [
+              1.101,
+              1.143
+            ],
+            "p95_ms": 1.558,
+            "p99_ms": 1.828,
+            "min_ms": 0.85,
+            "max_ms": 2.523
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 1.384,
+            "p50_ms": 1.296,
+            "p50_ci95": [
+              1.275,
+              1.322
+            ],
+            "p95_ms": 1.991,
+            "p99_ms": 2.634,
+            "min_ms": 1.007,
+            "max_ms": 3.507
+          }
+        },
+        "delete": {
+          "postgres": {
+            "n": 300,
+            "mean_ms": 1.049,
+            "p50_ms": 1.006,
+            "p50_ci95": [
+              0.987,
+              1.021
+            ],
+            "p95_ms": 1.346,
+            "p99_ms": 1.616,
+            "min_ms": 0.743,
+            "max_ms": 4.063
+          },
+          "mongodb": {
+            "n": 300,
+            "mean_ms": 1.319,
+            "p50_ms": 1.252,
+            "p50_ci95": [
+              1.227,
+              1.268
+            ],
+            "p95_ms": 1.835,
+            "p99_ms": 2.221,
+            "min_ms": 0.982,
+            "max_ms": 2.886
+          }
+        }
+      }
+    },
+    "equivalence": {
+      "checked": 20,
+      "passed": 20
+    },
+    "note": "PostgreSQL checks 3 foreign keys and 6 CHECK constraints and updates 8 indexes per insert; MongoDB checks the $jsonSchema validator and updates 6 indexes (incl. _id)."
+  },
+  "storage": {
+    "postgres": {
+      "data_mb": 80.6,
+      "index_mb": 106.3
+    },
+    "postgres_flat": {
+      "data_mb": 125.1,
+      "index_mb": 133.4
+    },
+    "mongodb": {
+      "data_mb": 53.7,
+      "index_mb": 79.1,
+      "uncompressed_data_mb": 263.2
+    },
+    "note": "PostgreSQL stores rows uncompressed; MongoDB's WiredTiger compresses data (snappy) and index prefixes, so its on-disk size is smaller than the BSON it holds."
   },
   "explain": {
     "W1": {
@@ -556,8 +812,8 @@
           "flat_models_pkey",
           "idx_txn_month"
         ],
-        "execution_ms": 4.249,
-        "shared_hit_blocks": 2271,
+        "execution_ms": 4.737,
+        "shared_hit_blocks": 2282,
         "shared_read_blocks": 0
       },
       "postgres_flat": {
@@ -569,8 +825,8 @@
         "indexes": [
           "bench_flat_town_type_month_id"
         ],
-        "execution_ms": 0.294,
-        "shared_hit_blocks": 17,
+        "execution_ms": 0.166,
+        "shared_hit_blocks": 15,
         "shared_read_blocks": 0
       },
       "mongodb": {
@@ -585,7 +841,7 @@
         ],
         "docs_examined": 66,
         "keys_examined": 66,
-        "execution_ms": 5
+        "execution_ms": 6
       }
     },
     "W2": {
@@ -602,8 +858,8 @@
         "indexes": [
           "idx_txn_month"
         ],
-        "execution_ms": 20.886,
-        "shared_hit_blocks": 5182,
+        "execution_ms": 38.891,
+        "shared_hit_blocks": 5231,
         "shared_read_blocks": 0
       },
       "mongodb": {
@@ -617,7 +873,7 @@
         ],
         "docs_examined": 12594,
         "keys_examined": 12594,
-        "execution_ms": 43
+        "execution_ms": 30
       }
     },
     "W4": {
@@ -630,7 +886,7 @@
         "indexes": [
           "gix_mrt_stations"
         ],
-        "execution_ms": 0.094,
+        "execution_ms": 0.127,
         "shared_hit_blocks": 4,
         "shared_read_blocks": 0
       },
@@ -643,8 +899,8 @@
         "indexes": [
           "loc_2dsphere"
         ],
-        "docs_examined": 119,
-        "keys_examined": 158,
+        "docs_examined": 404,
+        "keys_examined": 437,
         "execution_ms": 2
       }
     }

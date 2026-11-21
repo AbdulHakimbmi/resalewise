@@ -99,7 +99,7 @@ score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)<
 
                 <p>The charts on the search page (price histogram and the scatter plot) simply describe the sales you filtered. If your results span many years, their prices are not comparable with each other; use each flat&rsquo;s tag for that.</p>
 
-                <h2 id="drivers">What drives a price?</h2>
+                <h2 id="drivers">What goes with a higher price?</h2>
                 <p>Each transaction page compares the sale with <b>similar flats sold the same year</b>: the same flat type, the same 10&nbsp;sqm size band and the same 10-year band of remaining lease. Below that it lists features that go with higher prices across the whole market, each estimated the same way:</p>
                 <ol>
                     <li><b>Remove time and town.</b> A sale&rsquo;s price per sqm is divided by the median for its own town, flat type and quarter, so 1.00 means &ldquo;typical for then and there&rdquo;.</li>
@@ -108,17 +108,17 @@ score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)<
                 </ol>
                 <p class="side-hint"><b>These are associations, not causes.</b> A high floor or a short walk to the MRT tends to come with other things the records don&rsquo;t include, such as views, renovation or being next to a mall. The numbers describe past sales; they don&rsquo;t say what changing one feature would do to a price.</p>
 
-                <h2 id="amenities">What&rsquo;s nearby</h2>
-                <p>For every block we measure the straight-line distance to the nearest MRT/LRT station, park, hawker centre, gym, childcare centre, primary school and secondary school, and count how many are within 500&nbsp;m, 1&nbsp;km and 2&nbsp;km. Each kind gets a closeness score from 0 to 100: 100 when the nearest one is very close, falling evenly to 0 at a longer distance (for primary schools, 1&nbsp;km and 2&nbsp;km, the distances used in MOE&rsquo;s Primary&nbsp;1 registration). Walking time assumes about 80&nbsp;m a minute with a 30% detour.</p>
-                <p>Separately, a gradient-boosted model is trained on older sales to predict each sale&rsquo;s price relative to the market, and tested on the most recent months it has never seen. The &ldquo;location&rdquo; figure on a transaction page is how far above or below a typical block the model puts this block&rsquo;s surroundings, holding flat features fixed.</p>
+                <h2 id="amenities">What&rsquo;s nearby, and the &ldquo;Best fit&rdquo; page</h2>
+                <p>For every block we measure the straight-line distance to the nearest MRT/LRT station, park, hawker centre, gym, childcare centre, primary school and secondary school, and count how many are within 500&nbsp;m, 1&nbsp;km and 2&nbsp;km. Each kind gets a closeness score from 0 to 100: 100 when the nearest one is very close, falling evenly to 0 at a longer distance (for primary schools, 1&nbsp;km and 2&nbsp;km, the distances used in MOE&rsquo;s Primary&nbsp;1 registration). The <a href="match.html">Best fit</a> page averages those scores using the weights you set, so it sorts blocks by <i>your</i> priorities. Walking time assumes about 80&nbsp;m a minute with a 30% detour.</p>
+                <p>Separately, a gradient-boosted model is trained on older sales to predict each sale&rsquo;s price relative to the market, and tested on the most recent months it has never seen. The &ldquo;location&rdquo; figure on a transaction page is how far above or below a typical block the model&rsquo;s predictions are for this block&rsquo;s surroundings, for a flat with the same features. It describes what the model learned from past sales, not what moving a flat would do to its price.</p>
                 <p class="side-hint"><b>Associations, not causes.</b> Closeness is not quality, and a park or school next door is a convenience for one buyer and noise for another. Locations are as of each file&rsquo;s last update, not the map on the sale date (the gym list was last updated between 2016 and 2018 and the childcare list in December 2021, so newer places are missing), and park distances are measured to the boundary to within about 50&nbsp;m.</p>
 
                 <h2 id="validation">How the map data is checked</h2>
-                <p>Blocks are placed on the map with OneMap, Singapore&rsquo;s official geocoder, and a location is kept only if the block number <i>and</i> the street match. Distances to stations are computed in MongoDB and checked again in PostgreSQL (PostGIS). Six checks run on every rebuild:</p>
+                <p>Blocks are placed on the map with OneMap, Singapore&rsquo;s official geocoder, and a location is kept only if the block number <i>and</i> the street match. Distances to stations and to amenities are computed in MongoDB and checked again in PostgreSQL (PostGIS). Seven checks run on every rebuild:</p>
                 <div id="rwxValidation" aria-live="polite"><p class="side-hint">Loading the latest checks&hellip;</p></div>
 
                 <h2>Two databases, one site</h2>
-                <p>Transactions, blocks and accounts live in <b>PostgreSQL</b>, where joins, constraints and window functions do the work. Station locations, amenities and block points live in <b>MongoDB</b>, where flexible documents and geospatial indexes fit better. A copy of the transactions sits in both, so the same questions can be timed on each. <a href="benchmark.html">See the comparison under the hood &rarr;</a></p>
+                <p>Transactions, blocks and accounts live in <b>PostgreSQL</b>, where joins, constraints and window functions do the work. Reviews, station locations and block points live in <b>MongoDB</b>, where flexible documents and geospatial indexes fit better. A copy of the transactions sits in both, so the same questions can be timed on each. <a href="benchmark.html">See the comparison under the hood &rarr;</a></p>
 
                 <h2>What this is not</h2>
                 <ul>
@@ -128,6 +128,8 @@ score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)<
                     <li><b>The comparison is simple.</b> It adjusts only for town, flat type, period and remaining lease. Size, floor, view, renovation and exact location also affect price and are not included.</li>
                 </ul>
 
+                <h2>Reviews</h2>
+                <p>Town reviews are written by visitors to this site. They are not verified, and we don&rsquo;t endorse them. Ratings are summarised with a database aggregation over all reviews, so the headline numbers on the <a href="reviews.html">reviews page</a> count every review, not just the ones displayed.</p>
 
                 <h2>Questions or corrections</h2>
                 <p>This is a student project (INF2003 Database Systems). If you spot a number that looks wrong, compare it with the original dataset on <a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">data.gov.sg</a> first, as that is the source of truth.</p>
@@ -139,8 +141,8 @@ score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)<
         </main>
         <footer class="footer">
             <div class="foot-cols">
-                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="compare.html">Compare</a></div>
-                <div><h2>Read</h2><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
                 <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
                 <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
             </div>
@@ -163,7 +165,7 @@ score = clamp(50 &minus; 1.6 &times; price_diff_pct + lease_adjustment, 0, 100)<
           fetch(u).then(r => r.json()).catch(() => [])))
           .then(lists => {
             const items = lists.flat().map(e =>
-              `<li><a href="${escapeHtml(e.page)}">“${escapeHtml(e.title)}”</a> by ${escapeHtml(e.creator)}, ` +
+              `<li>${e.page ? `<a href="${escapeHtml(e.page)}">“${escapeHtml(e.title)}”</a>` : `“${escapeHtml(e.title)}”`} by ${escapeHtml(e.creator)}, ` +
               (e.licenseUrl ? `<a href="${escapeHtml(e.licenseUrl)}">${escapeHtml(e.license)}</a>` : escapeHtml(e.license)) +
               `, via ${escapeHtml(e.via)}</li>`);
             document.getElementById("photoCredits").innerHTML = items.join("") || "<li>Credits could not be loaded.</li>";

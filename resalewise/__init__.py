@@ -13,6 +13,8 @@ benchmarks.py    "value" benchmarks: each sale vs its own period
 mongo_setup.py   MongoDB validators and indexes
 mongo_queries.py MongoDB equivalents of the SQL search filters
 amenities.py    pure helpers for nearby places: scoring, GeoJSON/CSV parsing, engine comparison
+admin.py        the admin area: console guards, the OLAP cube's SQL, terminal commands
+concurrency.py  the admin area's concurrency runs: two transactions on real database sessions
 routes/          one blueprint per area of the API
 """
 import logging

@@ -312,7 +312,8 @@ class FakePg:
 
 
 class AccountDeleteTests(ApiTestCase):
-    """Deleting an account needs the password and removes it in one transaction."""
+    """One account lives in PostgreSQL, its reviews in MongoDB: deleting must
+    never leave the account gone while the person's name stays on reviews."""
 
     def setUp(self):
         super().setUp()
@@ -320,6 +321,9 @@ class AccountDeleteTests(ApiTestCase):
         from resalewise.auth import make_token
         self.headers = {"Authorization": "Bearer " + make_token(7, "a@b.c")}
         pw_hash = generate_password_hash("secret-pw-1")
+        self.reviews.docs = [
+            {"_id": "r1", "town": "BEDOK", "rating": 5, "comment": "x", "author": "Wei Ming", "user_id": 7},
+            {"_id": "r2", "town": "BEDOK", "rating": 4, "comment": "y", "author": "Someone else", "user_id": 8}]
 
         def fake_q(sql, params=None):
             if "password_hash FROM users" in sql:
@@ -336,15 +340,152 @@ class AccountDeleteTests(ApiTestCase):
     def delete(self, password="secret-pw-1"):
         return self.client.delete("/api/me", json={"password": password}, headers=self.headers)
 
-    def test_delete_removes_the_account(self):
+    def test_delete_removes_the_account_and_anonymises_only_its_reviews(self):
         resp = self.delete()
         self.assertEqual(resp.status_code, 200, resp.get_data(as_text=True))
+        self.assertEqual(resp.get_json()["reviews_anonymised"], 1)
         self.assertTrue(self.pg.committed and not self.pg.rolled_back)
         self.assertTrue(any(sql.startswith("DELETE FROM users") for sql in self.pg.statements))
+        mine, other = self.reviews.docs
+        self.assertEqual((mine["author"], "user_id" in mine), ("Former member", False))
+        self.assertEqual((other["author"], other["user_id"]), ("Someone else", 8))
 
     def test_wrong_password_changes_nothing_anywhere(self):
         self.assertError(self.delete("wrong"), 400, "invalid_credentials")
         self.assertEqual(self.pg.statements, [])
+        self.assertEqual(self.reviews.docs[0]["author"], "Wei Ming")
+
+    def test_mongodb_down_rolls_postgresql_back(self):
+        from pymongo.errors import ServerSelectionTimeoutError
+        with mock.patch.object(self.reviews, "update_many", side_effect=ServerSelectionTimeoutError("down")):
+            resp = self.delete()
+        self.assertError(resp, 503, "db_unavailable")
+        self.assertTrue(self.pg.rolled_back and not self.pg.committed,
+                        "the user delete must be undone when the reviews cannot be anonymised")
+        self.assertEqual(self.reviews.docs[0]["author"], "Wei Ming")        # nothing half-done
+
+
+class ConsistencyCheckTests(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
+        import check_consistency
+        self.cc = check_consistency
+
+    def test_orphans_are_review_owners_without_an_account(self):
+        self.assertEqual(self.cc.orphan_owner_ids([1, 2, 3], [2, 3, 9, 4, 9]), [4, 9])
+        self.assertEqual(self.cc.orphan_owner_ids([1], []), [])
+
+    def test_anonymise_changes_only_the_listed_owners(self):
+        coll = FakeReviews([{"author": "A", "user_id": 4}, {"author": "B", "user_id": 5}, {"author": "C"}])
+        self.assertEqual(self.cc.anonymise_reviews(coll, [4]), 1)
+        self.assertEqual([d["author"] for d in coll.docs], ["Former member", "B", "C"])
+        self.assertEqual(self.cc.anonymise_reviews(coll, []), 0)
+
+
+class ReviewPagingTests(ApiTestCase):
+    def setUp(self):
+        super().setUp()
+        base = date(2026, 1, 1)
+        self.reviews.docs = [
+            {"_id": f"id{i:02d}", "town": "BEDOK" if i % 3 else "TAMPINES", "rating": 1 + i % 5,
+             "comment": f"review {i}", "tags": [], "author": "A",
+             "created_at": date.fromordinal(base.toordinal() + i)}
+            for i in range(25)]
+
+    def get(self, qs):
+        resp = self.client.get("/api/reviews?" + qs)
+        self.assertEqual(resp.status_code, 200, resp.get_data(as_text=True))
+        return resp.get_json()
+
+    def test_without_page_the_answer_is_still_a_plain_list(self):
+        data = self.get("limit=5")
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 5)
+
+    def test_pages_do_not_overlap_and_cover_everything(self):
+        seen = []
+        first = self.get("page=1&limit=10")
+        self.assertEqual((first["total"], first["pages"], first["page"], first["limit"]), (25, 3, 1, 10))
+        for page in (1, 2, 3):
+            seen += [r["id"] for r in self.get(f"page={page}&limit=10")["rows"]]
+        self.assertEqual(len(seen), 25)
+        self.assertEqual(len(set(seen)), 25)
+
+    def test_town_filter_counts_only_that_town(self):
+        data = self.get("page=1&limit=10&town=tampines")
+        self.assertEqual(data["total"], sum(1 for d in self.reviews.docs if d["town"] == "TAMPINES"))
+        self.assertTrue(all(r["town"] == "TAMPINES" for r in data["rows"]))
+
+    def test_sort_orders(self):
+        recent = [r["created_at"] for r in self.get("page=1&limit=25")["rows"]]
+        self.assertEqual(recent, sorted(recent, reverse=True))
+        high = [r["rating"] for r in self.get("page=1&limit=25&sort=high")["rows"]]
+        self.assertEqual(high, sorted(high, reverse=True))
+        low = [r["rating"] for r in self.get("page=1&limit=25&sort=low")["rows"]]
+        self.assertEqual(low, sorted(low))
+
+    def test_page_past_the_end_shows_the_last_page(self):
+        data = self.get("page=99&limit=10")
+        self.assertEqual((data["page"], len(data["rows"])), (3, 5))
+
+    def test_unknown_sort_is_rejected(self):
+        self.assertError(self.client.get("/api/reviews?page=1&sort=best"), 400, "invalid_parameter")
+
+
+class ReviewTests(ApiTestCase):
+    GOOD = {"town": "Tampines", "rating": 4, "comment": "Great hawker centre.",
+            "tags": ["near-food", "quiet"], "author": "Wei Ming"}
+
+    def post(self, **overrides):
+        payload = {**self.GOOD, **overrides}
+        return self.client.post("/api/reviews", json=payload)
+
+    def test_valid_review_is_stored_uppercased(self):
+        self.patch_q()
+        resp = self.post()
+        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(self.reviews.docs[0]["town"], "TAMPINES")
+        self.assertEqual(self.reviews.docs[0]["rating"], 4)
+
+    def test_validation_errors_name_the_field(self):
+        self.patch_q()
+        cases = [
+            ({"rating": "abc"}, "rating"), ({"rating": 9}, "rating"), ({"rating": None}, "rating"),
+            ({"comment": "   "}, "comment"), ({"comment": "x" * 1001}, "comment"),
+            ({"town": ""}, "town"), ({"town": "Atlantis"}, "town"),
+            ({"author": "x" * 61}, "author"),
+            ({"tags": "near-food"}, "tags"), ({"tags": ["<script>"]}, "tags"), ({"tags": ["a"] * 9}, "tags"),
+        ]
+        for overrides, field in cases:
+            with self.subTest(overrides=overrides):
+                web.limiter._hits.clear()        # this loop posts more than the per-minute cap
+                body = self.assertError(self.post(**overrides), 400, "validation_error")
+                self.assertEqual(body.get("field"), field)
+        self.assertEqual(self.reviews.docs, [])
+
+    def test_blank_author_becomes_anonymous(self):
+        self.patch_q()
+        self.post(author="  ")
+        self.assertEqual(self.reviews.docs[0]["author"], "Anonymous")
+
+    def test_stats_come_from_a_mongo_aggregation(self):
+        self.reviews.docs = [
+            {"town": "TAMPINES", "rating": 5}, {"town": "TAMPINES", "rating": 4},
+            {"town": "BEDOK", "rating": 3}, {"town": "YISHUN", "rating": 2},
+            {"town": "TAMPINES", "rating": 3},
+        ]
+        data = self.client.get("/api/reviews/stats").get_json()
+        self.assertEqual(data["overall"], {"count": 5, "avg_rating": 3.4, "towns": 3})
+        self.assertEqual(data["by_town"][0], {"town": "TAMPINES", "count": 3, "avg_rating": 4.0})
+        self.assertEqual([t["town"] for t in data["by_town"]], ["TAMPINES", "BEDOK", "YISHUN"])
+
+        one = self.client.get("/api/reviews/stats?town=bedok").get_json()
+        self.assertEqual(one["overall"], {"count": 1, "avg_rating": 3.0, "towns": 1})
+
+    def test_stats_with_no_reviews(self):
+        data = self.client.get("/api/reviews/stats").get_json()
+        self.assertEqual(data["overall"], {"count": 0, "avg_rating": None, "towns": 0})
+        self.assertEqual(data["by_town"], [])
 
 
 class RateLimitTests(ApiTestCase):
@@ -562,6 +703,21 @@ class PrecomputedViewTests(ApiTestCase):
         fake = self.fake(date(2026, 9, 1), date(2026, 9, 1))
         self.assertEqual(self.client.get("/api/insights/town-medians?flat_type=4%20ROOM&months=18").status_code, 200)
         self.assertFalse(any(self.reads_view(sql) for sql, _ in fake.calls))
+
+    def test_price_bands_shape(self):
+        from datetime import date
+
+        def extra(sql, params):
+            if "to_regclass" in sql:
+                return [{"ok": False}]
+            if "band_0" in sql:
+                return [{"band_0": 1, "band_1": 2, "band_2": 3, "band_3": 4, "band_4": None}]
+            return None
+        self.patch_q(extra)
+        body = self.client.get("/api/insights/price-bands?flat_type=4%20ROOM&months=24").get_json()
+        self.assertEqual(body["n"], 10)
+        self.assertEqual([b["count"] for b in body["bands"]], [1, 2, 3, 4, 0])
+        self.assertEqual(body["bands"][-1]["high"], None)
 
 
 class PeriodBenchmarkTests(ApiTestCase):

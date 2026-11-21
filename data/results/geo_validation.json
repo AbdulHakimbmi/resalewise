@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-24T00:11:38+00:00",
+  "generated_at": "2026-11-14T10:54:36+00:00",
   "summary": {
-    "pass": 6,
+    "pass": 7,
     "warn": 0,
     "fail": 0,
     "pending": 0
@@ -14,19 +14,19 @@
       "criterion": ">= 95 % of blocks and >= 99 % of 2017+ sales located",
       "metrics": {
         "blocks": 10010,
-        "exact": 9765,
+        "exact": 9792,
         "fuzzy": 0,
-        "unmatched": 245,
+        "unmatched": 218,
         "not_attempted": 0,
         "unmatched_demolished": 160,
-        "located": 9765,
-        "pct_blocks": 97.55,
-        "pct_sales": 97.9,
-        "pct_sales_2017": 99.04,
+        "located": 9792,
+        "pct_blocks": 97.82,
+        "pct_sales": 98.18,
+        "pct_sales_2017": 99.33,
         "sales": 985219,
-        "sales_located": 964482,
+        "sales_located": 967288,
         "sales_2017": 240628,
-        "located_2017": 238329
+        "located_2017": 239009
       },
       "detail": {
         "largest_unmatched": [
@@ -36,13 +36,6 @@
             "town_name": "BUKIT MERAH",
             "in_property_info": false,
             "sales": 452
-          },
-          {
-            "block_no": "3",
-            "street_name": "STREET. GEORGE'S ROAD",
-            "town_name": "KALLANG/WHAMPOA",
-            "in_property_info": true,
-            "sales": 368
           },
           {
             "block_no": "16",
@@ -57,13 +50,6 @@
             "town_name": "CLEMENTI",
             "in_property_info": false,
             "sales": 249
-          },
-          {
-            "block_no": "7",
-            "street_name": "STREET. GEORGE'S LANE",
-            "town_name": "KALLANG/WHAMPOA",
-            "in_property_info": true,
-            "sales": 233
           },
           {
             "block_no": "83",
@@ -122,18 +108,32 @@
             "sales": 182
           },
           {
-            "block_no": "2",
-            "street_name": "STREET. GEORGE'S ROAD",
-            "town_name": "KALLANG/WHAMPOA",
-            "in_property_info": true,
-            "sales": 181
-          },
-          {
             "block_no": "787C",
             "street_name": "WOODLANDS CRESCENT",
             "town_name": "WOODLANDS",
             "in_property_info": true,
             "sales": 181
+          },
+          {
+            "block_no": "10",
+            "street_name": "GHIM MOH ROAD",
+            "town_name": "QUEENSTOWN",
+            "in_property_info": false,
+            "sales": 177
+          },
+          {
+            "block_no": "79",
+            "street_name": "TOA PAYOH CENTRAL",
+            "town_name": "TOA PAYOH",
+            "in_property_info": false,
+            "sales": 175
+          },
+          {
+            "block_no": "840",
+            "street_name": "WOODLANDS STREET 82",
+            "town_name": "WOODLANDS",
+            "in_property_info": true,
+            "sales": 170
           }
         ]
       }
@@ -144,15 +144,15 @@
       "status": "pass",
       "criterion": "100 % inside Singapore's bounding box; <= 0.5 % of blocks sit among neighbours of another town (6 of the 7 nearest from a different town)",
       "metrics": {
-        "located": 9765,
+        "located": 9792,
         "outside_bbox": 0,
         "neighbour_inconsistent": 6,
         "pct_neighbour_inconsistent": 0.06,
         "distance_test_flagged": 351,
-        "pct_distance_test_flagged": 3.59
+        "pct_distance_test_flagged": 3.58
       },
       "detail": {
-        "note": "The first-planned distance test (> median + 3 MAD and > 2 km from the town's median point) flags long, thin towns where far-apart blocks are normal, so it is reported for transparency but is not the pass criterion; the neighbour test is. This change was made after seeing the distance-test result.",
+        "note": "The originally planned distance test (> median + 3 MAD and > 2 km from the town's median point) flags long, thin towns where far-apart blocks are normal, so it is reported for transparency but is not the pass criterion; the neighbour test is. This change was made after seeing the distance-test result.",
         "neighbour_inconsistent_blocks": [
           {
             "block_id": 752,
@@ -267,7 +267,7 @@
           {
             "town": "KALLANG/WHAMPOA",
             "flagged": 14,
-            "blocks": 249
+            "blocks": 276
           },
           {
             "town": "BUKIT TIMAH",
@@ -391,8 +391,8 @@
             "block_no": "14",
             "street": "KG ARANG ROAD",
             "quality": "exact",
-            "km_from_town_centre": 3.52,
-            "cutoff_km": 2.0
+            "km_from_town_centre": 3.53,
+            "cutoff_km": 2.04
           },
           {
             "block_id": 1725,
@@ -400,8 +400,8 @@
             "block_no": "12",
             "street": "KG ARANG ROAD",
             "quality": "exact",
-            "km_from_town_centre": 3.42,
-            "cutoff_km": 2.0
+            "km_from_town_centre": 3.43,
+            "cutoff_km": 2.04
           },
           {
             "block_id": 1726,
@@ -410,7 +410,7 @@
             "street": "JALAN BATU",
             "quality": "exact",
             "km_from_town_centre": 3.42,
-            "cutoff_km": 2.0
+            "cutoff_km": 2.04
           },
           {
             "block_id": 2186,
@@ -418,8 +418,8 @@
             "block_no": "5",
             "street": "JALAN BATU",
             "quality": "exact",
-            "km_from_town_centre": 3.4,
-            "cutoff_km": 2.0
+            "km_from_town_centre": 3.41,
+            "cutoff_km": 2.04
           }
         ],
         "outside": []
@@ -429,49 +429,59 @@
       "id": "V3",
       "name": "Manual ground truth",
       "status": "pass",
-      "criterion": ">= 29 of 30 sampled blocks confirmed on the map",
+      "criterion": "at most 1 of 60 fresh blocks wrong on the map (2+ per town)",
       "metrics": {
-        "sampled": 30,
-        "checked": 30,
-        "correct": 30,
-        "accuracy_pct": 100.0
+        "sampled": 60,
+        "checked": 60,
+        "correct": 60,
+        "accuracy_pct": 100.0,
+        "towns": 27,
+        "error_rate_upper_95_pct": 4.9
       },
       "detail": {
         "wrong": [],
-        "round1": {
-          "sampled": 30,
-          "correct": 26,
-          "wrong": [
-            {
-              "block": "309",
-              "street": "ANG MO KIO AVENUE 1",
-              "match_quality": "fuzzy",
-              "onemap_address": "309 ANG MO KIO AVENUE 2 HORIZON GARDENS SINGAPORE 569953",
-              "notes": "different road number"
-            },
-            {
-              "block": "1",
-              "street": "SELETAR WEST FARMWAY 6",
-              "match_quality": "fuzzy",
-              "onemap_address": "1 SELETAR WEST FARMWAY 9 SINGAPORE 797977",
-              "notes": "different road number"
-            },
-            {
-              "block": "2",
-              "street": "SELETAR WEST FARMWAY 6",
-              "match_quality": "fuzzy",
-              "onemap_address": "2 SELETAR WEST FARMWAY 2 SINGAPORE 798098",
-              "notes": "different road number"
-            },
-            {
-              "block": "321",
-              "street": "CLEMENTI AVENUE 5",
-              "match_quality": "fuzzy",
-              "onemap_address": "321 CLEMENTI AVENUE 3 321 CLEMENTI SINGAPORE 129905",
-              "notes": "different road number"
-            }
-          ],
-          "outcome": "defect found and fixed: a fuzzy match accepted a road with a different number; fuzzy matching now requires identical road numbers, and a fresh sample was drawn"
+        "earlier_rounds": {
+          "round1": {
+            "sampled": 30,
+            "correct": 26,
+            "wrong": [
+              {
+                "block": "309",
+                "street": "ANG MO KIO AVENUE 1",
+                "match_quality": "fuzzy",
+                "onemap_address": "309 ANG MO KIO AVENUE 2 HORIZON GARDENS SINGAPORE 569953",
+                "notes": "different road number"
+              },
+              {
+                "block": "1",
+                "street": "SELETAR WEST FARMWAY 6",
+                "match_quality": "fuzzy",
+                "onemap_address": "1 SELETAR WEST FARMWAY 9 SINGAPORE 797977",
+                "notes": "different road number"
+              },
+              {
+                "block": "2",
+                "street": "SELETAR WEST FARMWAY 6",
+                "match_quality": "fuzzy",
+                "onemap_address": "2 SELETAR WEST FARMWAY 2 SINGAPORE 798098",
+                "notes": "different road number"
+              },
+              {
+                "block": "321",
+                "street": "CLEMENTI AVENUE 5",
+                "match_quality": "fuzzy",
+                "onemap_address": "321 CLEMENTI AVENUE 3 321 CLEMENTI SINGAPORE 129905",
+                "notes": "different road number"
+              }
+            ],
+            "outcome": "found a defect: all 4 fuzzy matches were on a road with a different number; fuzzy matching now requires identical road numbers"
+          },
+          "round2": {
+            "sampled": 30,
+            "correct": 30,
+            "wrong": [],
+            "outcome": "26 of its 30 blocks were already in round 1, so it was not an independent check; round 3 replaces it"
+          }
         }
       }
     },
@@ -481,8 +491,8 @@
       "status": "pass",
       "criterion": "same nearest station >= 99.5 % (ties excluded); |Mongo - PostGIS sphere| <= 0.2 %; |Mongo - PostGIS spheroid| <= 1.0 % (beyond the 0.05 m storage rounding)",
       "metrics": {
-        "blocks_compared": 9765,
-        "same_nearest_station": 9765,
+        "blocks_compared": 9792,
+        "same_nearest_station": 9792,
         "ties_within_1pct": 0,
         "disagreements": 0,
         "agreement_pct_excl_ties": 100.0,
@@ -491,13 +501,13 @@
           "p99_pct": 0.1111
         },
         "rel_diff_vs_postgis_spheroid": {
-          "max_pct": 0.6726,
-          "p99_pct": 0.668
+          "max_pct": 0.6727,
+          "p99_pct": 0.6679
         },
         "rel_diff_vs_haversine_same_radius": {
           "max_pct": 0.0
         },
-        "one_km_band_flips": 12,
+        "one_km_band_flips": 13,
         "radius_ratio_pct": 0.1113
       },
       "detail": {
@@ -574,8 +584,8 @@
           },
           {
             "case": "station opening years attached",
-            "with_year": 0,
-            "stations": 202,
+            "with_year": 191,
+            "stations": 194,
             "ok": true,
             "note": "optional (data/reference/station_opening_years.csv)"
           }
@@ -588,12 +598,37 @@
       "status": "pass",
       "criterion": "re-running geocode (from cache) and feature build reproduces the stored tables exactly",
       "metrics": {
-        "block_features_stored": "cf6818247935dec2",
-        "block_features_rebuilt": "cf6818247935dec2",
-        "block_locations_stored": "4e09a52db637eae5",
-        "block_locations_rebuilt": "4e09a52db637eae5"
+        "block_features_stored": "cdff6fe9972f5cf1",
+        "block_features_rebuilt": "cdff6fe9972f5cf1",
+        "block_locations_stored": "b739c813a1b42f65",
+        "block_locations_rebuilt": "b739c813a1b42f65"
       },
       "detail": ""
+    },
+    {
+      "id": "V7",
+      "name": "Amenity cross-check",
+      "status": "pass",
+      "criterion": "on MongoDB's sphere every count and nearest distance matches PostGIS; on the WGS84 spheroid a count may differ only for a place within 1 % of a radius edge",
+      "metrics": {
+        "rows_compared": 58752,
+        "counts_identical_same_sphere": 58752,
+        "counts_identical_same_sphere_pct": 100.0,
+        "nearest_max_diff_same_sphere_m": 0.05,
+        "counts_identical_spheroid_pct": 88.85,
+        "spheroid_differences_by_kind": {
+          "primary_school": 581,
+          "gym": 250,
+          "park": 986,
+          "hawker": 301,
+          "childcare": 3947,
+          "secondary_school": 484
+        },
+        "differences_away_from_an_edge": 0
+      },
+      "detail": {
+        "explanation": "MongoDB measures on a 6,378.1 km sphere and PostGIS geography on the WGS84 spheroid. The two can differ by up to about 0.7 %, so a place a few metres from 500 m, 1 km or 2 km can be inside the radius in one model and outside in the other. Dense kinds (childcare) have the most places near an edge."
+      }
     }
   ],
   "tolerances": {
