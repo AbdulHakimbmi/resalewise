@@ -16,7 +16,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import psycopg2  # noqa: E402
 
-from resalewise import config  # noqa: E402
+from resalewise import config, db  # noqa: E402
+from resalewise.admin import ensure_admin  # noqa: E402
+from resalewise.mongo_setup import ensure_all  # noqa: E402
 
 SQL_DIR = os.path.join(config.ROOT, "sql")
 # Precomputed answers (sql/schema_extras.sql). Refresh them after reloading the data;
@@ -56,10 +58,21 @@ def main():
         if args.indexes:
             run_file(cur, "indexes.sql")
         run_file(cur, "schema_extras.sql")
+        ensure_admin(cur)
+        print("  admin.sql              applied (admin account, sample accounts)")
         for n in conn.notices:
             print("  notice:", n.strip())
     conn.close()
 
+    print("MongoDB:")
+    ensure_all(db.mongo(), ["reviews"])
+    print("  reviews: validator + indexes in place")
+    m = db.mongo()
+    if "transactions" in m.list_collection_names():     # same street fix as schema_extras.sql
+        fixed = m.transactions.update_many(
+            {"street": {"$regex": r"^STREET\. "}},
+            [{"$set": {"street": {"$concat": ["ST. ", {"$substrCP": ["$street", 8, 200]}]}}}])
+        print(f"  transactions: {fixed.modified_count} street names fixed")
     print("Done.")
 
 

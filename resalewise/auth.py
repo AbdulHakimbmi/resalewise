@@ -68,7 +68,7 @@ def current_user():
     payload = verify_token(auth[7:])
     if not payload:
         return None
-    rows = db.q("SELECT user_id, email, name, created_at FROM users WHERE user_id = %s", [payload["uid"]])
+    rows = db.q("SELECT user_id, email, name, created_at, is_admin FROM users WHERE user_id = %s", [payload["uid"]])
     return rows[0] if rows else None
 
 
@@ -79,5 +79,19 @@ def require_auth(fn):
         user = current_user()
         if not user:
             raise ApiError("Please log in to continue.", 401, "unauthorized")
+        return fn(*args, user=user, **kwargs)
+    return wrapper
+
+
+def require_admin(fn):
+    """401 without a valid token, 403 if the user isn't an admin. The flag is read from the
+    database each time, so taking it away works straight away."""
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = current_user()
+        if not user:
+            raise ApiError("Please log in to continue.", 401, "unauthorized")
+        if not user.get("is_admin"):
+            raise ApiError("This area is for administrators.", 403, "forbidden")
         return fn(*args, user=user, **kwargs)
     return wrapper

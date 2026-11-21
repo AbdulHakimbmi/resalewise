@@ -22,6 +22,17 @@ def _startup_tasks():
             cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(80)")
     except Exception as e:
         app.logger.warning("[startup] users.name migration skipped: %s", e)
+    try:
+        from resalewise.admin import ensure_admin
+        with db.pg_conn() as conn, conn.cursor() as cur:
+            ensure_admin(cur)                       # admin tables, the admin account, the sample accounts
+    except Exception as e:
+        app.logger.warning("[startup] admin area set-up skipped: %s", e)
+    try:
+        from resalewise.mongo_setup import ensure_collection
+        ensure_collection(db.mongo(), "reviews")
+    except Exception as e:
+        app.logger.warning("[startup] mongo reviews setup skipped: %s", e)
     # Pre-compute what the first visit to the home, search and insights pages
     # asks for, so no visitor (or a live demo) waits for a cold aggregate.
     # Answers are cached for a day; the cache keys ignore parameter order and

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex">
+    <meta name="description" content="ResaleWise SG — the administrator's view of the two databases.">
+    <meta name="theme-color" content="#0e1013">
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+    <title>Admin · ResaleWise SG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <link rel="stylesheet" href="assets/css/features.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <script>
+        // set the saved theme before paint so the page never flashes the wrong one
+        document.documentElement.classList.add('js');
+        try { if (localStorage.getItem('rw_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+    </script>
+</head>
+
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="shell">
+        <nav class="nav" aria-label="Main"><a class="brand" href="index.html"><span class="brand-mark"></span><span>ResaleWise <span class="brand-accent">SG</span></span></a>
+            <div class="nav-links"><a href="index.html">Home</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+            <div class="nav-actions"><a class="text-btn" href="login.html">Log in</a><a class="primary-btn" href="register.html">Sign up →</a></div><button class="menu" data-menu-toggle aria-label="Open navigation" aria-expanded="false">Menu</button></nav>
+        <main id="main" tabindex="-1">
+        <header class="adm-head">
+            <h1>Database</h1>
+            <p>Query both databases, reshape the sales, and see an index and two transactions at work.</p>
+        </header>
+
+        <!-- shown instead of the tools when the visitor is not an administrator -->
+        <section class="section" id="admGate" hidden>
+            <article class="card chart-card">
+                <h2 id="admGateTitle">Administrators only</h2>
+                <p class="rwx-muted" id="admGateText">Sign in with the administrator account to use this page.</p>
+                <p style="margin-top:16px"><a class="primary-btn" id="admGateLink" href="login.html?next=admin.html">Log in →</a></p>
+            </article>
+        </section>
+
+        <section class="section" id="admApp" hidden>
+            <div class="adm-tabs" role="tablist" aria-label="Admin tools">
+                <button role="tab" id="t-overview" aria-controls="p-overview" aria-selected="true">Overview</button>
+                <button role="tab" id="t-console" aria-controls="p-console" aria-selected="false" tabindex="-1">Query console</button>
+                <button role="tab" id="t-cube" aria-controls="p-cube" aria-selected="false" tabindex="-1">Sales cube</button>
+                <button role="tab" id="t-index" aria-controls="p-index" aria-selected="false" tabindex="-1">Index analysis</button>
+                <button role="tab" id="t-concurrency" aria-controls="p-concurrency" aria-selected="false" tabindex="-1">Concurrency</button>
+            </div>
+
+            <!-- Overview -->
+            <article class="card chart-card adm-panel" role="tabpanel" id="p-overview" aria-labelledby="t-overview" tabindex="0">
+                <h2>What is in the two databases</h2>
+                <p class="adm-lead">Every table in PostgreSQL and every collection in MongoDB, with its size.</p>
+                <details class="adm-details"><summary>Details</summary><p>Row counts are the databases' own estimates. Nothing on this page can change the site's data: the consoles are read-only, and the rest writes only to its own sample tables.</p></details>
+                <div class="adm-split">
+                    <div class="adm-main" id="admOverview" aria-live="polite"><p class="adm-loading">Loading</p></div>
+                    <aside class="adm-term" id="ovTerm" aria-label="Run it in a terminal"></aside>
+                </div>
+            </article>
+
+            <!-- Query console -->
+            <article class="card chart-card adm-panel" role="tabpanel" id="p-console" aria-labelledby="t-console" tabindex="0" hidden>
+                <h2>Ask either database directly</h2>
+                <p class="adm-lead">Type a question for either database and see the answer. It can only read, so nothing can be broken.</p>
+                <details class="adm-details"><summary>Details</summary><p>Read-only. PostgreSQL runs one statement at a time as a role that can only read, and can never read password hashes; MongoDB runs an aggregation pipeline. Results stop at 200 rows.</p></details>
+                <div class="adm-seg" role="group" aria-label="Database">
+                    <button type="button" id="engSql" aria-pressed="true">PostgreSQL</button>
+                    <button type="button" id="engMongo" aria-pressed="false">MongoDB</button>
+                </div>
+                <div class="adm-split">
+                    <div class="adm-main">
+                        <form id="consoleForm" class="adm-console">
+                            <div class="adm-row">
+                                <div><label for="consoleExample">Examples</label><select id="consoleExample"></select></div>
+                                <div id="mongoCollWrap" hidden><label for="mongoColl">Collection</label><select id="mongoColl"></select></div>
+                            </div>
+                            <label for="consoleInput" id="consoleLabel">SQL</label>
+                            <textarea id="consoleInput" rows="8" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+                            <div class="adm-actions"><button class="primary-btn" type="submit" id="consoleRun">Run →</button><span class="rwx-muted">Ctrl + Enter also runs it</span></div>
+                        </form>
+                        <div id="consoleOut" aria-live="polite"></div>
+                    </div>
+                    <aside class="adm-term" id="consoleTerm" aria-label="Run it in a terminal"></aside>
+                </div>
+            </article>
+
+            <!-- Sales cube -->
+            <article class="card chart-card adm-panel" role="tabpanel" id="p-cube" aria-labelledby="t-cube" tabindex="0" hidden>
+                <h2>The sales as a cube</h2>
+                <p class="adm-lead">The sales as a table you can reshape: pick the rows and columns, click a heading to zoom in, add a filter to see one slice.</p>
+                <details class="adm-details"><summary>Details</summary><p>The sales table is the fact table; town, street, flat type, flat model, storey and time are its dimensions. Pick what goes down the side and across the top. <b>Click a heading to drill down</b> into it; roll up to come back. Every view is one <code>GROUP BY</code>, shown underneath.</p></details>
+                <div class="adm-split">
+                    <div class="adm-main">
+                        <div class="adm-row adm-cube-controls">
+                            <div><label for="cubeRows">Rows</label><select id="cubeRows"></select></div>
+                            <div><label for="cubeCols">Columns</label><select id="cubeCols"></select></div>
+                            <div><label for="cubeMeasure">Measure</label><select id="cubeMeasure"></select></div>
+                            <div><label for="cubeTotals">Subtotals</label><select id="cubeTotals"><option value="rollup">ROLLUP</option><option value="cube">CUBE</option><option value="none">None</option></select></div>
+                        </div>
+                        <div class="adm-actions">
+                            <button type="button" class="ghost-btn" id="cubePivot">Pivot (swap rows and columns)</button>
+                            <button type="button" class="ghost-btn" id="cubeUpRows">Roll up rows</button>
+                            <button type="button" class="ghost-btn" id="cubeUpCols">Roll up columns</button>
+                        </div>
+                        <form class="adm-row adm-slice" id="cubeSliceForm">
+                            <div><label for="sliceDim">Slice or dice by</label><select id="sliceDim"></select></div>
+                            <div><label for="sliceValue">Value (several, separated by commas, makes a dice)</label><input id="sliceValue" placeholder="e.g. TAMPINES, BEDOK" autocomplete="off"></div>
+                            <button class="ghost-btn" type="submit">Add</button>
+                        </form>
+                        <div class="adm-chips" id="cubeFilters" aria-live="polite"></div>
+                        <p class="adm-op" id="cubeOp" aria-live="polite"></p>
+                        <div id="cubeOut"></div>
+                    </div>
+                    <aside class="adm-term" id="cubeTerm" aria-label="Run it in a terminal"></aside>
+                </div>
+            </article>
+
+            <!-- Index analysis -->
+            <article class="card chart-card adm-panel" role="tabpanel" id="p-index" aria-labelledby="t-index" tabindex="0" hidden>
+                <h2>One query, with and without its index</h2>
+                <p class="adm-lead">One query, run twice: normally, and as if the database had no index. Compare the time and the pages read.</p>
+                <details class="adm-details"><summary>Details</summary><p>Each case runs twice on the 985,219 sales: once as normal, once with the planner told to act as if no index existed. The plans, the pages read and the times are PostgreSQL's own (<code>EXPLAIN ANALYZE</code>).</p></details>
+                <div class="adm-cases" id="indexCases"></div>
+                <div class="adm-split">
+                    <div class="adm-main" id="indexOut" aria-live="polite"><p class="adm-empty">Pick a case above to run it.</p></div>
+                    <aside class="adm-term" id="indexTerm" aria-label="Run it in a terminal"></aside>
+                </div>
+            </article>
+
+            <!-- Concurrency -->
+            <article class="card chart-card adm-panel" role="tabpanel" id="p-concurrency" aria-labelledby="t-concurrency" tabindex="0" hidden>
+                <h2>Two transactions at once</h2>
+                <p class="adm-lead">Two jobs changing the same two bank accounts at the same moment, run for real. A red “Wrong” shows what happens when the changes are not protected.</p>
+                <details class="adm-details"><summary>Details</summary><p>Alice and Bob have 200 dollars each. <b>T1</b> moves 100 from Alice to Bob; <b>T2</b> pays both 3% interest. Done one after the other, in either order, they end with 412 between them. The first four scenarios run exactly that pair of jobs; the last four use a smaller job to show one idea each. Every statement is sent to PostgreSQL on a real database session, and the page shows what it really did, including the cases where the answer comes out wrong, which is the point.</p></details>
+                <div class="adm-cases" id="ccCases"></div>
+                <div class="adm-split">
+                    <div class="adm-main" id="ccOut" aria-live="polite"><p class="adm-empty">Pick a scenario above to run it.</p></div>
+                    <aside class="adm-term" id="ccTerm" aria-label="Run it in two terminals"></aside>
+                </div>
+            </article>
+        </section>
+        </main>
+        <footer class="footer">
+            <div class="foot-cols">
+                <div><h2>Use it</h2><a href="index.html#check">Check a price</a><a href="search.html">Find a flat</a><a href="town.html">Towns</a><a href="match.html">Best fit</a><a href="compare.html">Compare</a></div>
+                <div><h2>Read</h2><a href="insights.html">Market insights</a><a href="reviews.html">Town reviews</a><a href="benchmark.html">Under the hood</a><a href="about.html">About &amp; methodology</a></div>
+                <div><h2>Account</h2><a href="login.html">Log in</a><a href="register.html">Sign up</a><a href="account.html">Your account</a></div>
+                <div class="footer-source"><h2>Data</h2><p><a href="https://data.gov.sg/dataset/resale-flat-prices" target="_blank" rel="noopener">HDB Resale Flat Prices, data.gov.sg</a><span data-freshness hidden></span>. A historical record, not a listings site.</p></div>
+            </div>
+            <div class="foot-end">
+                <p>© 2026 ResaleWise SG · Historical HDB resale insights · <a class="photo-link" href="about.html#photo-credits">Photo credits</a></p>
+                <a class="btn" href="#main">Back to top</a>
+            </div>
+        </footer>
+        <div class="toast" role="status" aria-live="polite"></div>
+        <script src="assets/js/config.js"></script>
+        <script src="assets/js/api.js"></script>
+        <script src="assets/js/ux.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/ui-polish.js"></script>
+        <script src="assets/js/features.js"></script>
+        <script src="assets/js/admin.js"></script>
+    </div>
+</body>
+
+</html>
