@@ -1,4 +1,6 @@
 """Market insights (PostgreSQL aggregates and window functions)."""
+import re
+
 from flask import Blueprint, jsonify, request
 
 from .. import db
@@ -25,6 +27,10 @@ def _latest_data_month():
 # ---------------------------------------------------------------------------
 STATIC_TTL = 24 * 3600
 PRECOMPUTED_WINDOWS = (12, 24, 36, 60, 120)      # = the months in mv_window_stats
+# Price brackets of the "price bands" chart. Must match band_0..band_4 in mv_window_stats.
+PRICE_BANDS = (("Under $400k", 0, 400_000), ("$400k to $500k", 400_000, 500_000),
+               ("$500k to $650k", 500_000, 650_000), ("$650k to $800k", 650_000, 800_000),
+               ("$800k and above", 800_000, None))
 
 WINDOW_SQL = "t.month >= ((SELECT MAX(month) FROM resale_transactions) - (%s || ' months')::interval)"
 
@@ -205,6 +211,143 @@ def insights_summary():
         "summary": agg,
         "extremes": extremes,
     })
+
+
+# --- by flat type -----------------------------------------------------------
+def by_flat_type_rows(months, town=None, live=False):
+    if _use_window_view(months, live):
+        return db.q("""
+          SELECT flat_type_name, flat_type_id, median_price, median_psm, txn_count
+          FROM mv_window_stats
+          WHERE months = %s AND town_name = %s AND txn_count >= 5
+          ORDER BY flat_type_id
+        """, [months, town or ""])
+    where = """
+      FROM resale_transactions t
+      JOIN blocks b      ON b.block_id = t.block_id
+      JOIN towns tw      ON tw.town_id = b.town_id
+      JOIN flat_types ft ON ft.flat_type_id = t.flat_type_id
+      WHERE """ + WINDOW_SQL
+    p = [months]
+    if town:
+        where += " AND tw.town_name = %s"
+        p.append(town)
+    return db.q("""
+      SELECT UPPER(REPLACE(ft.flat_type_name, '-', ' ')) AS flat_type_name,
+             MIN(ft.flat_type_id) AS flat_type_id,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY t.resale_price))::int AS median_price,
+             ROUND(PERCENTILE_CONT(0.5) WITHIN GROUP (
+               ORDER BY (t.resale_price / NULLIF(t.floor_area_sqm, 0))))::int AS median_psm,
+             COUNT(*)::int AS txn_count
+    """ + where + """
+      GROUP BY 1
+      HAVING COUNT(*) >= 5
+      ORDER BY MIN(ft.flat_type_id)
+    """, p)
+
+
+@bp.route("/api/insights/by-flat-type")
+@cache_json(STATIC_TTL)
+def insights_by_flat_type():
+    """Median price and price/sqm for EACH flat type in the window."""
+    town   = arg_str(request.args, "town")
+    months = arg_int(request.args, "months", 24, lo=1, hi=240)
+    return jsonify({"town": town, "months": months, "rows": by_flat_type_rows(months, town, _live_flag())})
+
+
+# --- price bands ------------------------------------------------------------
+def price_band_counts(flat_type, months, town=None, live=False):
+    if _use_window_view(months, live):
+        rows = db.q("SELECT band_0, band_1, band_2, band_3, band_4 FROM mv_window_stats "
+                    "WHERE months = %s AND flat_type_name = %s AND town_name = %s",
+                    [months, flat_type, town or ""])
+        return [rows[0]["band_%d" % i] for i in range(len(PRICE_BANDS))] if rows else [0] * len(PRICE_BANDS)
+    cols = []
+    for i, (_, lo, hi) in enumerate(PRICE_BANDS):
+        cond = "t.resale_price >= %d" % lo + (" AND t.resale_price < %d" % hi if hi else "")
+        cols.append("COUNT(*) FILTER (WHERE %s)::int AS band_%d" % (cond, i))
+    sql = "SELECT " + ", ".join(cols) + """
+      FROM resale_transactions t
+      JOIN blocks b      ON b.block_id = t.block_id
+      JOIN towns tw      ON tw.town_id = b.town_id
+      JOIN flat_types ft ON ft.flat_type_id = t.flat_type_id
+      WHERE UPPER(REPLACE(ft.flat_type_name, '-', ' ')) = %s AND """ + WINDOW_SQL
+    p = [flat_type, months]
+    if town:
+        sql += " AND tw.town_name = %s"
+        p.append(town)
+    row = db.q(sql, p)[0]
+    return [row["band_%d" % i] or 0 for i in range(len(PRICE_BANDS))]
+
+
+@bp.route("/api/insights/price-bands")
+@cache_json(STATIC_TTL)
+def price_bands():
+    """How many sales fell in each price bracket within the window (the
+    'price bands' chart). Counts only, so no sort is needed even live."""
+    flat_type = norm_flat_type(arg_str(request.args, "flat_type", "4 ROOM"))
+    town      = arg_str(request.args, "town")
+    months    = arg_int(request.args, "months", 24, lo=1, hi=240)
+    counts = price_band_counts(flat_type, months, town, _live_flag())
+    return jsonify({"flat_type": flat_type, "town": town, "months": months, "n": sum(counts),
+                    "bands": [{"label": lab, "low": lo, "high": hi, "count": c}
+                              for (lab, lo, hi), c in zip(PRICE_BANDS, counts)]})
+
+
+# Window functions over the quarterly materialized view (sql/schema_extras.sql).
+# RANGE frames with an INTERVAL offset look up "the same town exactly one
+# quarter / one year earlier" by date, so a quarter with no sales gives NULL
+# instead of silently comparing with the wrong quarter (which LAG(..., 4) would).
+MOMENTUM_SQL = """
+WITH ranked AS (
+  SELECT town_name, quarter, median_price, median_psm, txn_count,
+         RANK()         OVER (PARTITION BY quarter ORDER BY median_price DESC) AS price_rank,
+         PERCENT_RANK() OVER (PARTITION BY quarter ORDER BY median_price)      AS price_pctile
+  FROM mv_town_quarter_stats
+  WHERE flat_type_name = %s AND txn_count >= %s
+), framed AS (
+  SELECT r.*,
+         FIRST_VALUE(median_price) OVER (PARTITION BY town_name ORDER BY quarter
+             RANGE BETWEEN INTERVAL '3 months' PRECEDING AND INTERVAL '3 months' PRECEDING)   AS prev_q_price,
+         FIRST_VALUE(median_price) OVER (PARTITION BY town_name ORDER BY quarter
+             RANGE BETWEEN INTERVAL '12 months' PRECEDING AND INTERVAL '12 months' PRECEDING) AS prev_y_price,
+         FIRST_VALUE(price_rank) OVER (PARTITION BY town_name ORDER BY quarter
+             RANGE BETWEEN INTERVAL '12 months' PRECEDING AND INTERVAL '12 months' PRECEDING) AS prev_y_rank,
+         ROUND(AVG(median_price) OVER (PARTITION BY town_name ORDER BY quarter
+             RANGE BETWEEN INTERVAL '9 months' PRECEDING AND CURRENT ROW))::int               AS moving_avg_4q
+  FROM ranked r
+)
+SELECT town_name, quarter, median_price, median_psm, txn_count, price_rank,
+       ROUND(price_pctile::numeric, 3)::float AS price_pctile,
+       moving_avg_4q,
+       ROUND(100.0 * (median_price - prev_q_price) / NULLIF(prev_q_price, 0), 1)::float AS qoq_pct,
+       ROUND(100.0 * (median_price - prev_y_price) / NULLIF(prev_y_price, 0), 1)::float AS yoy_pct,
+       (prev_y_rank - price_rank) AS rank_change_1y
+FROM framed
+WHERE quarter = COALESCE(%s::date, (SELECT MAX(quarter) FROM framed))
+ORDER BY price_rank, town_name
+"""
+
+
+@bp.route("/api/insights/momentum")
+@cache_json(STATIC_TTL)
+def momentum():
+    """Which towns are rising fastest? For one quarter (default: the newest),
+    every town's median price with its quarter-on-quarter and year-on-year
+    change, its price rank and how that rank moved in a year."""
+    flat_type = norm_flat_type(arg_str(request.args, "flat_type", "4 ROOM"))
+    min_n     = arg_int(request.args, "min_n", 10, lo=1, hi=1000)
+    quarter   = arg_str(request.args, "quarter", max_len=10)        # YYYY-MM-DD (quarter start)
+    if quarter and not re.fullmatch(r"\d{4}-(01|04|07|10)-01", quarter):
+        raise ApiError("'quarter' must be a quarter start like 2026-07-01.", 400, "invalid_parameter")
+    if not db.has_relation("mv_town_quarter_stats"):
+        raise ApiError("Run `python scripts/migrate.py` to create the quarterly view first.",
+                       503, "feature_unavailable")
+    rows = db.q(MOMENTUM_SQL, [flat_type, min_n, quarter])
+    for r in rows:
+        r["quarter"] = r["quarter"].isoformat()
+    return jsonify({"flat_type": flat_type, "min_n": min_n,
+                    "quarter": rows[0]["quarter"] if rows else quarter, "rows": rows})
 
 
 @bp.route("/api/insights/sparklines")
