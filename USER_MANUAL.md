@@ -33,7 +33,7 @@ Type each command in the **VS Code terminal (PowerShell)**, in the project folde
 **A. Get the project**
 
 1. Already have the folder? `git checkout main`, then `git pull`.
-   New to it? `git clone https://github.com/AbdulHakimbmi/resalewise-sg.git`, then `cd resalewise-sg`.
+   New to it? `git clone https://github.com/AbdulHakimbmi/resalewise.git`, then `cd resalewise`.
 2. Make sure Python 3.11–3.13, Git and Docker Desktop are installed, and that
    Docker Desktop is **open and running** [1].
 3. Get `resale_clean.csv` from a teammate (it is too big for Git) and put it in
@@ -94,7 +94,7 @@ About 3 GB of free disk space and 4 GB of free memory for the two database conta
 ## 2. One-time setup
 
 ```powershell
-cd path\to\resalewise-sg
+cd path\to\resalewise
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1          # macOS/Linux: source .venv/bin/activate
 python -m pip install -r requirements-dev.txt

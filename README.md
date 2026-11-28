@@ -1,6 +1,6 @@
 # ResaleWise SG
 
-ResaleWise SG helps people make sense of Singapore's HDB resale market. You can
+ResaleWise helps people make sense of Singapore's HDB resale market. You can
 search 985,219 real resale transactions (January 1990 to September 2026), see how
 a flat is priced against similar flats sold in the same period, find out how far
 it is from the MRT, read what residents say about a town, and shortlist the
