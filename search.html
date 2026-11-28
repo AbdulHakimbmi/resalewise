@@ -659,6 +659,8 @@
               townInput.setAttribute("aria-expanded", "true");
               if (comboActive >= 0) townInput.setAttribute("aria-activedescendant", "townOpt-" + comboActive);
               else townInput.removeAttribute("aria-activedescendant");
+              const current = townMenu.querySelector(".combo-item.active");
+              if (current) current.scrollIntoView({ block: "nearest" });
             }
             function closeMenu() {
               townMenu.hidden = true;
@@ -668,9 +670,9 @@
               townInput.removeAttribute("aria-activedescendant");
             }
             function filtered() {
-              const q = townInput.value.trim().toLowerCase();
-              const base = q ? townList.filter(n => n.toLowerCase().includes(q)) : townList.slice();
-              return base.slice(0, 8);
+              // A town that is already picked shows the full list again; typed text filters it.
+              const q = townValue.value ? "" : townInput.value.trim().toLowerCase();
+              return q ? townList.filter(n => n.toLowerCase().includes(q)) : townList.slice();
             }
             function pick(name) {
               townInput.value = name;
@@ -686,6 +688,7 @@
               openMenu(filtered());
             });
             townInput.addEventListener("focus", () => openMenu(filtered()));
+            townInput.addEventListener("click", () => openMenu(filtered()));
             townInput.addEventListener("keydown", e => {
               const items = [...townMenu.querySelectorAll(".combo-item")];
               if (e.key === "ArrowDown") { e.preventDefault(); comboActive = Math.min(comboActive + 1, items.length - 1); openMenu(filtered()); }

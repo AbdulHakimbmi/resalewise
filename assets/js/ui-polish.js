@@ -196,6 +196,9 @@
     if (typeof populateTowns === "function") {
       populateTowns(townSel, { includeAny: true, anyLabel: "Any town" });
     }
+    if (typeof populateFlatTypes === "function") {
+      populateFlatTypes(form.querySelector("#heroType"), { includeAny: true, anyLabel: "Any flat type" });
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -347,7 +350,7 @@
     function matches() {
       var qv = input.value.trim().toLowerCase();
       var base = qv ? towns.filter(function (n) { return n.toLowerCase().indexOf(qv) !== -1; }) : towns;
-      return base.slice(0, 6);
+      return base;
     }
     function open(items) {
       if (!items.length) { close(); return; }
@@ -355,6 +358,8 @@
         return '<li role="option" class="combo-item' + (i === active ? ' active' : '') + '" data-name="' + n + '">' + n + '</li>';
       }).join("");
       menu.hidden = false;
+      var current = menu.querySelector(".combo-item.active");
+      if (current) current.scrollIntoView({ block: "nearest" });
     }
     function close() { menu.hidden = true; menu.innerHTML = ""; active = -1; }
     function go2(town) {
